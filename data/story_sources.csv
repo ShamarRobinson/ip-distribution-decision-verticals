@@ -1,0 +1,25 @@
+dashboard,n,source,url,as_of
+D1 Market,1,Bowker via Publishers Weekly,https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html,2026-10-11
+D1 Market,2,Circana BookScan via Publishers Weekly,https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html,2026-10-11
+D2 Gross to Net,1,IngramSpark 2026 pricing,https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More,2026-10-11
+D2 Gross to Net,2,KDP royalty calculator,https://profitable.app/tools/kdp-royalty-calculator,2026-10-11
+D2 Gross to Net,3,B&N Press royalties,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,2026-10-11
+D2 Gross to Net,4,Lulu pricing,https://blog.chapter.pub/lulu-pricing/,2026-10-11
+D3 Cost Variance,1,IngramSpark 2026 pricing,https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More,2026-10-11
+D3 Cost Variance,2,KDP royalty calculator,https://profitable.app/tools/kdp-royalty-calculator,2026-10-11
+D4 Ebook,1,ScribeCount platform comparison,https://scribecount.com/tools/platform-comparison,2026-10-11
+D4 Ebook,2,PublishDrive vs Draft2Digital,https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html,2026-10-11
+D4 Ebook,3,IngramSpark,https://www.ingramspark.com/,2026-10-11
+D5 Breakeven,1,USCO 2026 fee schedule (Hypebot),https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/,2026-10-11
+D5 Breakeven,2,ISBN pricing (ScribeCount),https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark,2026-10-11
+D5 Breakeven,3,PublishDrive plans,https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans,2026-10-11
+D6 Scenarios,1,PublishDrive plans,https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans,2026-10-11
+D6 Scenarios,2,KDP royalty calculator,https://profitable.app/tools/kdp-royalty-calculator,2026-10-11
+D6 Scenarios,3,B&N Press royalties,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,2026-10-11
+D7 Cash,1,B&N Press payments,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,2026-10-11
+D7 Cash,2,IngramSpark,https://www.ingramspark.com/,2026-10-11
+D7 Cash,3,Written Word Media 2025 survey,https://www.writtenwordmedia.com/2025-indie-author-survey-results/,2026-10-11
+D8 Pool Volatility,1,Profitable.app KENP tracker,https://profitable.app/kdp/stats/kenp-rate,2026-10-11
+D8 Pool Volatility,2,Written Word Media 2025 survey,https://www.writtenwordmedia.com/2025-indie-author-survey-results/,2026-10-11
+D9 AB Test,1,KDP royalty calculator,https://profitable.app/tools/kdp-royalty-calculator,2026-10-11
+D9 AB Test,2,Model and method on GitHub,https://github.com/ShamarRobinson/ip-distribution-decision-verticals,2026-10-11

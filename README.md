@@ -24,6 +24,7 @@
 8. [Scenario, sensitivity and cash timing](#scenario-sensitivity-and-cash-timing)
 9. [A/B test design](#ab-test-design)
 10. [Decision trees and choice options](#decision-trees-and-choice-options)
+    - [Stakeholder decision paths](#stakeholder-decision-paths)
 11. [Tableau story](#tableau-story)
 12. [Repository structure and reproducibility](#repository-structure-and-reproducibility)
 13. [Methodology and assumptions](#methodology-and-assumptions)
@@ -180,18 +181,33 @@ flowchart TD
 | D. Brand, educator or corporate | Lulu Direct on own site + KDP | IngramSpark Share & Sell links | Lulu Bookstore + KDP |
 | E. Wide ebook strategist | KDP + direct Apple, Kobo, B&N | KDP + Draft2Digital | KDP + PublishDrive (above 40/mo) |
 
+
+### Stakeholder decision paths
+
+Every chart in this repository carries a short "what is going on" note written in plain language, so readers from any industry can follow it. The deck ends with a walkthrough for each stakeholder type: the highlighted path through the decision tree, a summary, key numbers and what to do now, test next and watch.
+
+| Stakeholder | Your path | Do now | Test next | Watch |
+|---|---|---|---|---|
+| **A. Independent creator** | ![Path A](diagrams/d2_path_A.png) | KDP print + ebook; price ebooks $2.99 to $9.99; register the copyright before launch | $16.99 vs $14.99 for 90 days; keep the lower price only if sales rise more than 21% | Breakeven at 158 sales; then add a wide ebook route |
+| **B. Small press or imprint** | ![Path B](diagrams/d2_path_B.png) | KDP for Amazon + IngramSpark for bookstores; start non-returnable; hold a cash reserve for the 90-day lag | 55% returnable vs 40% non-returnable (returnable must sell 77% more) | Monthly returns and offsets; switch to Path C above ~17 sales/format/month |
+| **C. Catalog or backlist owner** | ![Path C](diagrams/d2_path_C.png) | KDP + PublishDrive plan sized to title count | Move half the catalog first and compare 90 days | Per-title volume vs the 16.6 switch point |
+| **D. Brand, educator or corporate IP owner** | ![Path D](diagrams/d2_path_D.png) | Sell from your own site with Lulu Direct; keep KDP for discovery | Split one campaign between your store and Amazon; compare money kept per visitor | Fulfillment and support costs |
+| **E. Wide ebook strategist** | ![Path E](diagrams/d2_path_E.png) | KDP for Kindle + Draft2Digital or direct Apple, Kobo, B&N | One title in KDP Select for one 90-day term | Kindle Unlimited pay as a range; PublishDrive above 40 ebooks/month |
+
+**What each team should do:** Finance and FP&A own the model and the monthly variance review; Marketing owns price tests and traffic; Rights and legal own copyright registration and contract terms; Investors ask for breakeven units, margin of safety, DSO and the scenario range; Operations turns on distribution only at launch and keeps metadata consistent.
+
 ## Tableau story
 
-The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains 11 worksheets, 9 annotated dashboards and a 9-point story with full-sentence captions. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
+The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains a 10-point story with full-sentence captions. Each dashboard has a plain-language "what is going on" note and a numbered source list where each source name is a clickable link, and the last story point tells each stakeholder type what to do. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
 
 **[Open the Tableau story](https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals)**
 
 ## Repository structure and reproducibility
 
 ```
-analysis/        model.py (all datasets), charts.py, build_deck.py, build_tableau.py
+analysis/        model.py (all datasets), charts.py, diagrams.py, build_deck.py, build_tableau.py, stamp_workbook.py
 data/            tidy CSVs used by the deck, Excel model and Tableau
-charts/          SVG + PNG charts
+charts/          SVG + PNG charts with plain-language notes; charts/pages has two-chart slide pages
 diagrams/        Graphviz flowcharts and decision trees (.dot, .svg, .png)
 docs/            GitHub Pages slide deck (index.html) and PDF export
 tableau/         packaged Tableau workbook and story captions
@@ -201,7 +217,7 @@ workbook/        Excel cost variance model with live formulas
 ```bash
 pip install matplotlib
 pip install tableauhyperapi openpyxl
-python analysis/model.py && python analysis/charts.py && python analysis/build_deck.py && python analysis/build_tableau.py && python analysis/stamp_workbook.py
+python analysis/model.py && python analysis/charts.py && python analysis/diagrams.py && python analysis/build_deck.py && python analysis/build_tableau.py && python analysis/stamp_workbook.py
 ```
 
 ## Methodology and assumptions
