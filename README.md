@@ -3,9 +3,11 @@
 **A cost variance, breakeven and A/B testing framework for deciding how to take intellectual property to market, organized by business type.**
 
 [![Slide deck](https://img.shields.io/badge/Slide%20deck-GitHub%20Pages-0b1424?style=for-the-badge)](https://shamarrobinson.github.io/ip-distribution-decision-verticals/)
-[![Tableau story](https://img.shields.io/badge/Tableau-Story-E97627?style=for-the-badge&logo=tableau&logoColor=white)](TABLEAU_URL)
+[![Tableau story](https://img.shields.io/badge/Tableau-Story-E97627?style=for-the-badge&logo=tableau&logoColor=white)](https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals)
 [![PDF](https://img.shields.io/badge/PDF-Download-5aa2ff?style=for-the-badge)](docs/IP_Distribution_Decision_Verticals.pdf)
 [![Excel model](https://img.shields.io/badge/Excel-Cost%20variance%20model-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)](workbook/IP_Distribution_Cost_Variance_Model.xlsx)
+
+> **Data as of <!--ASOF-->October 11, 2026<!--/ASOF-->.** All prices, fees and rates reflect published terms on that date. The dataset is refreshed every three months; next refresh: <!--NEXT-->January 11, 2027<!--/NEXT-->. See [Quarterly refresh](#quarterly-refresh).
 
 > **Status note:** certain works referenced by this analysis are in the initial stage of pre-publication copyright registration with the [U.S. Copyright Office](https://www.copyright.gov/registration/). No title-specific details are disclosed.
 
@@ -25,7 +27,8 @@
 11. [Tableau story](#tableau-story)
 12. [Repository structure and reproducibility](#repository-structure-and-reproducibility)
 13. [Methodology and assumptions](#methodology-and-assumptions)
-14. [Sources](#sources)
+14. [Quarterly refresh](#quarterly-refresh)
+15. [Sources](#sources)
 
 ## The decision
 
@@ -181,7 +184,7 @@ flowchart TD
 
 The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains 11 worksheets, 9 annotated dashboards and a 9-point story with full-sentence captions. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
 
-**[Open the Tableau story](TABLEAU_URL)**
+**[Open the Tableau story](https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals)**
 
 ## Repository structure and reproducibility
 
@@ -197,7 +200,8 @@ workbook/        Excel cost variance model with live formulas
 
 ```bash
 pip install matplotlib
-python analysis/model.py && python analysis/charts.py && python analysis/build_deck.py && python analysis/build_tableau.py
+pip install tableauhyperapi openpyxl
+python analysis/model.py && python analysis/charts.py && python analysis/build_deck.py && python analysis/build_tableau.py && python analysis/stamp_workbook.py
 ```
 
 ## Methodology and assumptions
@@ -207,7 +211,17 @@ python analysis/model.py && python analysis/charts.py && python analysis/build_d
 - Print costs for IngramSpark ($4.00), B&N Press ($3.50) and Lulu ($5.00) are planning estimates to replace with each platform's calculator.
 - The $1,500 launch budget, 65/35 channel mix and launch-decay curve are illustrative.
 - A/B sample sizes use a two-proportion z-test (alpha 0.05, power 0.80).
+- All prices, fees and rates are as of the date in `as_of.json`.
 - Contract terms summarize the IngramSpark Agreement (last updated March 20, 2025) in plain language; this is not legal or financial advice.
+
+## Quarterly refresh
+
+Platform prices, fees and rates change often, so every figure is stamped with an **as of** date held in [`as_of.json`](as_of.json). Every three months a scheduled refresh:
+
+1. Re-checks each source listed below for changed rates, fees and market figures.
+2. Updates the assumptions in `analysis/model.py` and the date in `as_of.json`.
+3. Re-runs `model.py`, `charts.py`, `build_deck.py`, `build_tableau.py` and `stamp_workbook.py`, then commits the result with a change log entry in [CHANGELOG.md](CHANGELOG.md).
+4. Republishes the Tableau story over the same link.
 
 ## Sources
 
@@ -240,4 +254,4 @@ python analysis/model.py && python analysis/charts.py && python analysis/build_d
 - [Profitable.app: KENP rate tracker](https://profitable.app/kdp/stats/kenp-rate)
 
 ---
-Prepared by Shamar Robinson, October 2026. Figures reflect sources available as of October 2026; platform terms change often.
+Prepared by Shamar Robinson. Prices, fees and rates as of <!--ASOF2-->October 11, 2026<!--/ASOF2-->; refreshed quarterly.

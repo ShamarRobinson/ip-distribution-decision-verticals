@@ -1,6 +1,6 @@
-platform,input,base_net,net_at_minus20,net_at_plus20,swing
-Amazon KDP,List price ±20%,6.794,4.7552,8.8328,4.0776
-Amazon KDP,Page count ±20%,6.794,7.274,6.314,0.96
-IngramSpark,List price ±20%,3.3269,1.8615,4.7923,2.9308
-IngramSpark,Wholesale discount ±20%,3.3269,5.1958,1.458,3.7378
-IngramSpark,Print cost ±20%,3.3269,4.1269,2.5269,1.6
+platform,input,base_net,net_at_minus20,net_at_plus20,swing,as_of
+Amazon KDP,List price ±20%,6.794,4.7552,8.8328,4.0776,2026-10-11
+Amazon KDP,Page count ±20%,6.794,7.274,6.314,0.96,2026-10-11
+IngramSpark,List price ±20%,3.3269,1.8615,4.7923,2.9308,2026-10-11
+IngramSpark,Wholesale discount ±20%,3.3269,5.1958,1.458,3.7378,2026-10-11
+IngramSpark,Print cost ±20%,3.3269,4.1269,2.5269,1.6,2026-10-11

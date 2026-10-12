@@ -1,9 +1,12 @@
 """Build the hyperlinked HTML slide deck at docs/index.html."""
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
+import json
+AS = json.load(open(ROOT / "as_of.json"))
+ASOF, NEXT = AS["as_of_label"], AS["next_refresh_label"]
 GH = "https://github.com/ShamarRobinson/ip-distribution-decision-verticals"
 PAGES = "https://shamarrobinson.github.io/ip-distribution-decision-verticals/"
-TABLEAU = "TABLEAU_URL"
+TABLEAU = "https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals"
 PDF = "IP_Distribution_Decision_Verticals.pdf"
 
 S = {  # sources
@@ -31,7 +34,7 @@ S = {  # sources
  "jf": ("Jane Friedman: IngramSpark 2026 pricing", "https://janefriedman.com/ingramspark-will-increase-pricing-in-2026/"),
 }
 def src(*keys):
-    return '<div class="src">Sources: ' + "; ".join(f'<a href="{S[k][1]}" target="_blank" rel="noopener">{S[k][0]}</a>' for k in keys) + "</div>"
+    return f'<div class="src">Prices, fees and rates as of {ASOF}. Sources: ' + "; ".join(f'<a href="{S[k][1]}" target="_blank" rel="noopener">{S[k][0]}</a>' for k in keys) + "</div>"
 def img(path, alt):
     return f'<figure class="viz"><img src="assets/{path}" alt="{alt}" loading="lazy"></figure>'
 
@@ -51,7 +54,7 @@ slide("title", "", "", f"""
     <a class="btn ghost" href="{GH}" target="_blank" rel="noopener">View on GitHub</a>
   </div>
   <p class="note">Status note: certain works referenced by this analysis are in the initial stage of pre-publication copyright registration with the <a href="https://www.copyright.gov/registration/" target="_blank" rel="noopener">U.S. Copyright Office</a>. No title-specific details are disclosed.</p>
-  <p class="byline">Prepared by Shamar Robinson &middot; October 2026</p>
+  <p class="byline">Prepared by Shamar Robinson &middot; Data as of {ASOF} &middot; Refreshed quarterly; next refresh {NEXT}</p>
 </div>""", "title-slide")
 
 # 2 Contents
@@ -210,7 +213,7 @@ slide("method", "Methodology", "How the numbers were built", f"""
 <div><h4>Assumptions to replace</h4><ul>
 <li>Print costs for IngramSpark ($4.00), B&amp;N Press ($3.50) and Lulu ($5.00) are planning estimates.</li>
 <li>The $1,500 launch budget, the 65/35 channel mix and the launch-decay curve are illustrative.</li>
-<li>Platform terms reflect sources available as of October 2026 and change often.</li>
+<li>All prices, fees and rates are as of {ASOF}. The dataset is refreshed every three months; the next refresh is scheduled for {NEXT}.</li>
 <li>Status note: certain works referenced are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office.</li></ul></div>
 </div>""")
 
@@ -233,7 +236,7 @@ slide("glossary", "Reference", "Glossary of cross-industry analytics and FP&amp;
 
 order = ["aap","bowker","circana","usco","uscotime","uscofee","ingram","ingramtc","jf","kdp","kdped","bn","bd","lulu","pd","d2d","booksby","store","isbn","tortora","wwm","kenp"]
 slide("sources", "Attribution", "Sources", '<ol class="srclist">' + "".join(f'<li><a href="{S[k][1]}" target="_blank" rel="noopener">{S[k][0]}</a> <span>{S[k][1]}</span></li>' for k in order) +
-'</ol><p class="muted">Mainstream industry sources (AAP, Bowker, Circana BookScan, U.S. Copyright Office) frame the market; platform help centers and agreements set the rates. Figures reflect sources available as of October 2026.</p>')
+f'</ol><p class="muted">Mainstream industry sources (AAP, Bowker, Circana BookScan, U.S. Copyright Office) frame the market; platform help centers and agreements set the rates. Prices, fees and rates are as of {ASOF} and are refreshed quarterly (next: {NEXT}).</p>')
 
 # ---------------------------------------------------------------- render
 n = len(slides)
@@ -246,7 +249,7 @@ for i, (sid, kicker, title, body, cls) in enumerate(slides):
            + (f'<a href="#{prev_id}">&larr; Prev</a>' if prev_id else "")
            + (f'<a href="#{next_id}">Next &rarr;</a>' if next_id else "")
            + f'<a href="{TABLEAU}" target="_blank" rel="noopener">Tableau</a><a href="{GH}" target="_blank" rel="noopener">GitHub</a>'
-           + f'<span class="pg">{i+1} / {n}</span></nav>')
+           + f'<span class="pg">{i+1} / {n} &middot; Data as of {ASOF}</span></nav>')
     sec.append(f'<section class="slide {cls}" id="{sid}" aria-label="Slide {i+1}: {title or "Title"}"><div class="inner">{head}<div class="body">{body}</div></div>{nav}</section>')
 
 html = f"""<!doctype html>

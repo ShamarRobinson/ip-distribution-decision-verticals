@@ -1,43 +1,43 @@
-format,platform,driver,variance,total_variance
-Print,Amazon KDP,Channel share,0.0,0.0
-Print,Amazon KDP,Production cost,0.0,0.0
-Print,Amazon KDP,Platform fee,0.0,0.0
-Print,KDP Expanded Distribution,Channel share,-3.398,-3.398
-Print,KDP Expanded Distribution,Production cost,0.0,-3.398
-Print,KDP Expanded Distribution,Platform fee,0.0,-3.398
-Print,IngramSpark,Channel share,-2.5485,-3.4671
-Print,IngramSpark,Production cost,-0.6,-3.4671
-Print,IngramSpark,Platform fee,-0.3186,-3.4671
-Print,B&N Press,Channel share,-0.8495,-0.9495
-Print,B&N Press,Production cost,-0.1,-0.9495
-Print,B&N Press,Platform fee,0.0,-0.9495
-Print,Lulu Bookstore,Channel share,6.796,2.798
-Print,Lulu Bookstore,Production cost,-1.6,2.798
-Print,Lulu Bookstore,Platform fee,-2.398,2.798
-Print,Lulu Retail,Channel share,-1.699,-3.998
-Print,Lulu Retail,Production cost,-1.6,-3.998
-Print,Lulu Retail,Platform fee,-0.699,-3.998
-Print,PublishDrive,Channel share,-2.5485,-3.1485
-Print,PublishDrive,Production cost,-0.6,-3.1485
-Print,PublishDrive,Platform fee,0.0,-3.1485
-Ebook,Amazon KDP,Channel share,0.0,0.0
-Ebook,Amazon KDP,Production cost,0.0,0.0
-Ebook,Amazon KDP,Platform fee,0.0,0.0
-Ebook,Apple Books direct,Channel share,-0.09,0.21
-Ebook,Apple Books direct,Production cost,0.3,0.21
-Ebook,Apple Books direct,Platform fee,0.0,0.21
-Ebook,B&N Press,Channel share,-0.09,0.21
-Ebook,B&N Press,Production cost,0.3,0.21
-Ebook,B&N Press,Platform fee,0.0,0.21
-Ebook,Draft2Digital,Channel share,-0.09,-0.1393
-Ebook,Draft2Digital,Production cost,0.3,-0.1393
-Ebook,Draft2Digital,Platform fee,-0.3493,-0.1393
-Ebook,IngramSpark,Channel share,-0.09,-0.3139
-Ebook,IngramSpark,Production cost,0.3,-0.3139
-Ebook,IngramSpark,Platform fee,-0.5239,-0.3139
-Ebook,PublishDrive,Channel share,-0.09,0.21
-Ebook,PublishDrive,Production cost,0.3,0.21
-Ebook,PublishDrive,Platform fee,0.0,0.21
-Ebook,Lulu Retail,Channel share,-1.088,-1.287
-Ebook,Lulu Retail,Production cost,0.3,-1.287
-Ebook,Lulu Retail,Platform fee,-0.499,-1.287
+format,platform,driver,variance,total_variance,as_of
+Print,Amazon KDP,Channel share,0.0,0.0,2026-10-11
+Print,Amazon KDP,Production cost,0.0,0.0,2026-10-11
+Print,Amazon KDP,Platform fee,0.0,0.0,2026-10-11
+Print,KDP Expanded Distribution,Channel share,-3.398,-3.398,2026-10-11
+Print,KDP Expanded Distribution,Production cost,0.0,-3.398,2026-10-11
+Print,KDP Expanded Distribution,Platform fee,0.0,-3.398,2026-10-11
+Print,IngramSpark,Channel share,-2.5485,-3.4671,2026-10-11
+Print,IngramSpark,Production cost,-0.6,-3.4671,2026-10-11
+Print,IngramSpark,Platform fee,-0.3186,-3.4671,2026-10-11
+Print,B&N Press,Channel share,-0.8495,-0.9495,2026-10-11
+Print,B&N Press,Production cost,-0.1,-0.9495,2026-10-11
+Print,B&N Press,Platform fee,0.0,-0.9495,2026-10-11
+Print,Lulu Bookstore,Channel share,6.796,2.798,2026-10-11
+Print,Lulu Bookstore,Production cost,-1.6,2.798,2026-10-11
+Print,Lulu Bookstore,Platform fee,-2.398,2.798,2026-10-11
+Print,Lulu Retail,Channel share,-1.699,-3.998,2026-10-11
+Print,Lulu Retail,Production cost,-1.6,-3.998,2026-10-11
+Print,Lulu Retail,Platform fee,-0.699,-3.998,2026-10-11
+Print,PublishDrive,Channel share,-2.5485,-3.1485,2026-10-11
+Print,PublishDrive,Production cost,-0.6,-3.1485,2026-10-11
+Print,PublishDrive,Platform fee,0.0,-3.1485,2026-10-11
+Ebook,Amazon KDP,Channel share,0.0,0.0,2026-10-11
+Ebook,Amazon KDP,Production cost,0.0,0.0,2026-10-11
+Ebook,Amazon KDP,Platform fee,0.0,0.0,2026-10-11
+Ebook,Apple Books direct,Channel share,-0.09,0.21,2026-10-11
+Ebook,Apple Books direct,Production cost,0.3,0.21,2026-10-11
+Ebook,Apple Books direct,Platform fee,0.0,0.21,2026-10-11
+Ebook,B&N Press,Channel share,-0.09,0.21,2026-10-11
+Ebook,B&N Press,Production cost,0.3,0.21,2026-10-11
+Ebook,B&N Press,Platform fee,0.0,0.21,2026-10-11
+Ebook,Draft2Digital,Channel share,-0.09,-0.1393,2026-10-11
+Ebook,Draft2Digital,Production cost,0.3,-0.1393,2026-10-11
+Ebook,Draft2Digital,Platform fee,-0.3493,-0.1393,2026-10-11
+Ebook,IngramSpark,Channel share,-0.09,-0.3139,2026-10-11
+Ebook,IngramSpark,Production cost,0.3,-0.3139,2026-10-11
+Ebook,IngramSpark,Platform fee,-0.5239,-0.3139,2026-10-11
+Ebook,PublishDrive,Channel share,-0.09,0.21,2026-10-11
+Ebook,PublishDrive,Production cost,0.3,0.21,2026-10-11
+Ebook,PublishDrive,Platform fee,0.0,0.21,2026-10-11
+Ebook,Lulu Retail,Channel share,-1.088,-1.287,2026-10-11
+Ebook,Lulu Retail,Production cost,0.3,-1.287,2026-10-11
+Ebook,Lulu Retail,Platform fee,-0.499,-1.287,2026-10-11

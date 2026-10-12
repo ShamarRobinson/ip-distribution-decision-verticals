@@ -1,19 +1,19 @@
-scenario,units_per_format_per_month,stack,year1_net
-Bear,10,Amazon KDP,1124.24
-Bear,10,IngramSpark,545.52
-Bear,10,B&N Press,910.5
-Bear,10,Lulu,478.04
-Bear,10,PublishDrive,478.74
-Bear,10,Draft2Digital (ebook only),272.244
-Base,50,Amazon KDP,5961.2
-Base,50,IngramSpark,3567.6
-Base,50,B&N Press,5392.5
-Base,50,Lulu,2778.2
-Base,50,PublishDrive,3905.22
-Base,50,Draft2Digital (ebook only),1781.22
-Bull,250,Amazon KDP,30146.0
-Bull,250,IngramSpark,18678.0
-Bull,250,B&N Press,27802.5
-Bull,250,Lulu,14279.0
-Bull,250,PublishDrive,21037.62
-Bull,250,Draft2Digital (ebook only),9326.1
+scenario,units_per_format_per_month,stack,year1_net,as_of
+Bear,10,Amazon KDP,1124.24,2026-10-11
+Bear,10,IngramSpark,545.52,2026-10-11
+Bear,10,B&N Press,910.5,2026-10-11
+Bear,10,Lulu,478.04,2026-10-11
+Bear,10,PublishDrive,478.74,2026-10-11
+Bear,10,Draft2Digital (ebook only),272.244,2026-10-11
+Base,50,Amazon KDP,5961.2,2026-10-11
+Base,50,IngramSpark,3567.6,2026-10-11
+Base,50,B&N Press,5392.5,2026-10-11
+Base,50,Lulu,2778.2,2026-10-11
+Base,50,PublishDrive,3905.22,2026-10-11
+Base,50,Draft2Digital (ebook only),1781.22,2026-10-11
+Bull,250,Amazon KDP,30146.0,2026-10-11
+Bull,250,IngramSpark,18678.0,2026-10-11
+Bull,250,B&N Press,27802.5,2026-10-11
+Bull,250,Lulu,14279.0,2026-10-11
+Bull,250,PublishDrive,21037.62,2026-10-11
+Bull,250,Draft2Digital (ebook only),9326.1,2026-10-11

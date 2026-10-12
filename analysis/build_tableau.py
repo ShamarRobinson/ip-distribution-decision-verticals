@@ -2,6 +2,8 @@
 import csv, uuid, zipfile, html
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
+import json
+ASOF = json.load(open(ROOT / "as_of.json"))["as_of_label"]
 OUT = ROOT / "tableau"
 esc = lambda s: html.escape(str(s), quote=True)
 COL = {"Amazon KDP": "#2a78d6", "IngramSpark": "#eb6834", "B&N Press": "#1baf7a", "Lulu Retail": "#eda100", "Lulu Bookstore": "#c98500",
@@ -204,12 +206,15 @@ def dash(name, sheets, note, header):
         else:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each}' x='{i*w_each}' y='8000' />"
     hdr = f"<zone h='8000' id='{nid()}' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontcolor='#0b0b0b' fontsize='18'>{esc(header)}</run></formatted-text></zone>"
+    links = " | ".join(f"{t}: {u}" for t, u in SRC_LINKS[name])
     ann = (f"<zone h='18000' id='{nid()}' type-v2='text' w='100000' x='0' y='82000'><formatted-text>"
-           f"<run bold='true' fontcolor='#eb6834' fontsize='11'>Annotation: </run><run fontcolor='#333333' fontsize='11'>{esc(note)}</run></formatted-text></zone>")
+           f"<run fontcolor='#1f1f1f' fontsize='11'>As of {esc(ASOF)}: {esc(note)}</run><run>&#10;</run>"
+           f"<run fontcolor='#2a62b8' fontsize='9'>Sources: {esc(links)}</run></formatted-text></zone>")
     return (f"<dashboard name='{esc(name)}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{hdr}{''.join(f for f in [inner])}{ann}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
+SRC_LINKS = {'D1 Market': [('Bowker via Publishers Weekly', 'https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html'), ('Circana BookScan via Publishers Weekly', 'https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html')], 'D2 Gross to Net': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('Lulu pricing', 'https://blog.chapter.pub/lulu-pricing/')], 'D3 Cost Variance': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator')], 'D4 Ebook': [('ScribeCount platform comparison', 'https://scribecount.com/tools/platform-comparison'), ('PublishDrive vs Draft2Digital', 'https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html'), ('IngramSpark', 'https://www.ingramspark.com/')], 'D5 Breakeven': [('USCO 2026 fee schedule (Hypebot)', 'https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/'), ('ISBN pricing (ScribeCount)', 'https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark'), ('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans')], 'D6 Scenarios': [('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales')], 'D7 Cash': [('B&N Press payments', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('IngramSpark', 'https://www.ingramspark.com/'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D8 Pool Volatility': [('Profitable.app KENP tracker', 'https://profitable.app/kdp/stats/kenp-rate'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D9 AB Test': [('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('Model and method on GitHub', 'https://github.com/ShamarRobinson/ip-distribution-decision-verticals')]}
 DASH = [
  ("D1 Market", ["01 Market ISBNs"], "Self-published ISBNs rose 38.7% to 3.53 million in 2025, while Circana BookScan reports print unit sales up only 0.3% to 762.4 million. Supply is outgrowing demand, so margin per sale matters more each year.", "Market context: more works are competing for the same buyers",
   "Self-published ISBNs rose 38.7% in 2025."),
@@ -237,7 +242,7 @@ points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' i
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='964' maxwidth='1366' minheight='964' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
-         f"<zone h='5000' id='3' type-v2='title' w='98800' x='600' y='1000' />"
+         f"<zone h='5000' id='3' type-v2='text' w='98800' x='600' y='1000'><formatted-text><run bold='true' fontsize='18'>IP Distribution Decision Verticals</run><run fontcolor='#52514e' fontsize='11'>   Prices, fees and rates as of {esc(ASOF)}; refreshed quarterly</run></formatted-text></zone>"
          f"<zone h='17000' id='4' is-fixed='true' paired-zone-id='5' removable='false' type-v2='flipboard-nav' w='98800' x='600' y='6000' />"
          f"<zone h='75000' id='5' paired-zone-id='4' removable='false' type-v2='flipboard' w='98800' x='600' y='23000'><flipboard active-id='1' nav-type='caption' show-nav-arrows='true'>"
          f"<story-points>{points}</story-points></flipboard></zone></zone></zone></zones>"
@@ -269,5 +274,5 @@ with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
 with open(OUT / "story_captions.md", "w") as f:
     f.write("# Tableau story captions\n\n")
     for i, (n, s, note, hdr, cap) in enumerate(DASH, 1):
-        f.write(f"**Story point {i}.** {cap}\n\n*Annotation:* {note}\n\n")
+        f.write(f"**Story point {i}.** {cap}\n\n{note}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
 print("ok", len(twb))

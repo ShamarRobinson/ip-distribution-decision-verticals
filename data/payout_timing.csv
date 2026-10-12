@@ -1,5 +1,5 @@
-platform,terms,avg_days_sale_to_cash,source
-B&N Press,~30 days after month end,45,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales
-Amazon KDP,~60 days after month end,75,https://www.thebookdesigner.com/barnes-and-noble-press-review/
-Draft2Digital,"Monthly, ~60-day lag",75,https://books.by/compare/booksby-vs-draft2digital
-IngramSpark,~90 days after month end (Sec. 9 of agreement),105,https://www.ingramspark.com/
+platform,terms,avg_days_sale_to_cash,source,as_of
+B&N Press,~30 days after month end,45,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,2026-10-11
+Amazon KDP,~60 days after month end,75,https://www.thebookdesigner.com/barnes-and-noble-press-review/,2026-10-11
+Draft2Digital,"Monthly, ~60-day lag",75,https://books.by/compare/booksby-vs-draft2digital,2026-10-11
+IngramSpark,~90 days after month end (Sec. 9 of agreement),105,https://www.ingramspark.com/,2026-10-11
