@@ -1,23 +1,37 @@
-digraph G { rankdir=TB;   bgcolor="#fcfcfb"; pad=0.3; nodesep=0.35; ranksep=0.45;
-  node [shape=box, style="rounded,filled", fontname="Inter", fontsize=12, color="#c9c8c2", fillcolor="#ffffff", fontcolor="#0b0b0b", penwidth=1.2, margin="0.18,0.10"];
-  edge [fontname="Inter", fontsize=10.5, color="#8a8984", fontcolor="#52514e", penwidth=1.3, arrowsize=0.7];
-
-  labelloc=t; label=<<b>Decision tree: which distribution stack fits your business type?</b>>; fontname="Inter"; fontsize=16;
-  q1 [label="Where will most buyers come from?", shape=diamond, style="filled", fillcolor="#f0efec", margin="0.05,0.05"];
-  q2 [label="Need bookstore or\nlibrary placement?", shape=diamond, style="filled", fillcolor="#f0efec", margin="0.05,0.05"];
-  q3 [label="Expected volume above\n17 units/format/month?", shape=diamond, style="filled", fillcolor="#f0efec", margin="0.05,0.05"];
-  q4 [label="Own audience?\n(email list, events,\nclients, students)", shape=diamond, style="filled", fillcolor="#f0efec", margin="0.05,0.05"];
-  v1 [label="Vertical A: Independent creator\nKDP print + ebook\n(+ KDP Select if exclusive)\nBreakeven ~158 unit pairs", fillcolor="#e8f0fb", color="#2a78d6"];
-  v2 [label="Vertical B: Small press / imprint\nKDP for Amazon\n+ IngramSpark for wholesale\n(55% discount, returnable)", fillcolor="#fdeee7", color="#eb6834"];
-  v3 [label="Vertical C: Catalog / backlist owner\nKDP for Amazon\n+ PublishDrive subscription\n(volume beats the flat fee)", fillcolor="#fcecf2", color="#e87ba4"];
-  v4 [label="Vertical D: Brand, educator,\nor corporate IP owner\nLulu Direct / own store\n+ KDP for discovery", fillcolor="#fdf4df", color="#eda100"];
-  v5 [label="Vertical E: Wide ebook strategy\nKDP (Kindle) + Draft2Digital\nor direct Apple / Kobo / B&N", fillcolor="#e6f3e6", color="#008300"];
-  q1 -> q2 [label="  Retail stores & online"];
-  q1 -> q4 [label="  My own channels"];
-  q2 -> v1 [label="  No, Amazon is enough"];
-  q2 -> q3 [label="  Yes"];
-  q3 -> v2 [label="  No"];
-  q3 -> v3 [label="  Yes"];
-  q4 -> v4 [label="  Yes"];
-  q4 -> v5 [label="  No, ebook-led"];
+digraph G { rankdir=TB; bgcolor="#fcfcfb"; pad=0.3; nodesep=0.35; ranksep=0.5;
+labelloc=t; label=<<b>Decision tree: which distribution stack fits your business type?</b>>; fontname="Inter"; fontsize=16;
+node [fontname="Inter", fontsize=12, penwidth=1.3]; edge [fontname="Inter", fontsize=10.5, arrowsize=0.75];
+q1 [label="Where will most
+buyers come from?", shape=diamond, style=filled, fillcolor="#f0efec", color="#c9c8c2", fontcolor="#0b0b0b", margin="0.04,0.04", penwidth=1.2];
+q2 [label="Need bookstore or
+library placement?", shape=diamond, style=filled, fillcolor="#f0efec", color="#c9c8c2", fontcolor="#0b0b0b", margin="0.04,0.04", penwidth=1.2];
+q3 [label="Selling more than ~17 of
+each format a month?", shape=diamond, style=filled, fillcolor="#f0efec", color="#c9c8c2", fontcolor="#0b0b0b", margin="0.04,0.04", penwidth=1.2];
+q4 [label="Do you own an audience?
+(email list, events,
+clients, students)", shape=diamond, style=filled, fillcolor="#f0efec", color="#c9c8c2", fontcolor="#0b0b0b", margin="0.04,0.04", penwidth=1.2];
+A [label="A. Independent creator
+KDP print + ebook", shape=box, style="rounded,filled", fillcolor="#e8f0fb", color="#2a78d6", fontcolor="#0b0b0b", margin="0.18,0.1", penwidth=1.3];
+B [label="B. Small press or imprint
+KDP + IngramSpark", shape=box, style="rounded,filled", fillcolor="#fdeee7", color="#eb6834", fontcolor="#0b0b0b", margin="0.18,0.1", penwidth=1.3];
+C [label="C. Catalog or backlist owner
+KDP + PublishDrive", shape=box, style="rounded,filled", fillcolor="#fcecf2", color="#e87ba4", fontcolor="#0b0b0b", margin="0.18,0.1", penwidth=1.3];
+D [label="D. Brand, educator or
+corporate IP owner
+Own store (Lulu Direct) + KDP", shape=box, style="rounded,filled", fillcolor="#fdf4df", color="#eda100", fontcolor="#0b0b0b", margin="0.18,0.1", penwidth=1.3];
+E [label="E. Wide ebook strategist
+KDP + Draft2Digital or
+direct Apple / Kobo / B&N", shape=box, style="rounded,filled", fillcolor="#e3f5ee", color="#1baf7a", fontcolor="#0b0b0b", margin="0.18,0.1", penwidth=1.3];
+q1 -> q2 [label="Stores and
+online retail", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q1 -> q4 [label="My own
+channels", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q2 -> A [label="No, Amazon
+is enough", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q2 -> q3 [label="Yes", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q3 -> B [label="No", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q3 -> C [label="Yes", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q4 -> D [label="Yes", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
+q4 -> E [label="No,
+ebook-led", color="#8a8984", fontcolor="#0b0b0b", penwidth=1.3];
 }

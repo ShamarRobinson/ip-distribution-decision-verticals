@@ -41,202 +41,249 @@ def img(path, alt):
 slides = []
 def slide(sid, kicker, title, body, cls=""):
     slides.append((sid, kicker, title, body, cls))
+def pageimg(name, alt):
+    return f'<figure class="viz page"><img src="assets/charts/pages/{name}.svg" alt="{alt}" loading="lazy"></figure>'
+XLSX = f"{GH}/raw/main/workbook/IP_Distribution_Cost_Variance_Model.xlsx"
 
-# 1 Title
+# 1 Title -----------------------------------------------------------------
 slide("title", "", "", f"""
 <div class="hero">
   <div class="eyebrow">Intellectual property strategy &middot; Cost variance &middot; Breakeven &middot; A/B testing</div>
   <h1>IP Distribution<br>Decision Verticals</h1>
-  <p class="lede">A decision framework that helps owners of intellectual property choose a distribution model that fits their business type, built on unit economics, cost variance analysis, breakeven analysis and testable hypotheses.</p>
+  <p class="lede">A decision guide that helps owners of intellectual property pick how to sell their work, explained step by step for five kinds of stakeholders, using unit economics, cost variance analysis, breakeven analysis and A/B testing.</p>
   <div class="cta">
     <a class="btn" href="#contents">Start the walkthrough &rarr;</a>
-    <a class="btn ghost" href="{TABLEAU}" target="_blank" rel="noopener">Open the Tableau story</a>
-    <a class="btn ghost" href="{GH}" target="_blank" rel="noopener">View on GitHub</a>
+    <a class="btn ghost" href="#tree-how">Jump to your decision path</a>
+    <a class="btn ghost" href="{TABLEAU}" target="_blank" rel="noopener">Tableau story</a>
+    <a class="btn ghost" href="{GH}" target="_blank" rel="noopener">GitHub</a>
   </div>
   <p class="note">Status note: certain works referenced by this analysis are in the initial stage of pre-publication copyright registration with the <a href="https://www.copyright.gov/registration/" target="_blank" rel="noopener">U.S. Copyright Office</a>. No title-specific details are disclosed.</p>
   <p class="byline">Prepared by Shamar Robinson &middot; Data as of {ASOF} &middot; Refreshed quarterly; next refresh {NEXT}</p>
 </div>""", "title-slide")
 
-# 2 Contents
-toc = [("summary","Executive summary"),("decision","The decision and the five verticals"),("lens","A cross-industry lens"),
-("market","Market context in numbers"),("market-charts","Market context charts"),("value-chain","The IP value chain"),
-("options","The options on the table"),("gross-to-net","Gross-to-net unit economics"),("variance","Cost variance analysis"),
-("ebook","Ebook economics"),("sensitivity","Sensitivity analysis"),("breakeven","Breakeven analysis"),("crossover","Breakeven curves and crossover"),
-("scenarios","Scenario analysis"),("cash","Accrual vs cash and DSO"),("pool","Pool-based payout volatility"),("abtest","A/B test design"),
-("tree-verticals","Decision tree by business type"),("tree-terms","Decision trees: exclusivity and returns"),("choices","Choice options by vertical"),
-("risks","Contract risk register"),("recommendation","Recommendation and decision request"),("method","Methodology and assumptions"),
-("glossary","Glossary of cross-industry terms"),("sources","Sources")]
+# 2 Contents --------------------------------------------------------------
+toc = [("concepts", "Concepts you will see"), ("summary", "Executive summary"), ("decision", "Who this is for"),
+       ("market", "Market context in numbers"), ("market-charts", "Market charts"), ("value-chain", "The IP value chain"),
+       ("options", "The options on the table"), ("unit-econ", "Unit economics"), ("variance", "Cost variance and sensitivity"),
+       ("breakeven", "Breakeven analysis"), ("scale", "Crossover and scenarios"), ("cash", "Cash timing"),
+       ("testing", "Pool payouts and A/B tests"), ("risks", "Contract risk register"),
+       ("tree-how", "How to read the decision tree"), ("v-a", "Path A: Independent creator"), ("v-b", "Path B: Small press or imprint"),
+       ("v-c", "Path C: Catalog or backlist owner"), ("v-d", "Path D: Brand, educator or corporate IP owner"), ("v-e", "Path E: Wide ebook strategist"),
+       ("tree-terms", "Follow-on decisions"), ("roles", "What each team should do"), ("choices", "Options at a glance"),
+       ("recommendation", "Decision request"), ("method", "Methodology"), ("glossary", "Glossary"), ("sources", "Sources")]
 half = (len(toc)+1)//2
-cols = "".join('<ol start="%d">%s</ol>' % (start+1, "".join(f'<li><a href="#{a}">{t}</a></li>' for a,t in part)) for start, part in ((0, toc[:half]), (half, toc[half:])))
-slide("contents", "Navigate", "Contents", f"""
-<div class="toc">{cols}</div>
-<div class="linkrow">
-  <a href="{TABLEAU}" target="_blank" rel="noopener">Tableau story &#8599;</a>
-  <a href="{GH}" target="_blank" rel="noopener">GitHub repository &#8599;</a>
-  <a href="{GH}/tree/main/data" target="_blank" rel="noopener">Data (CSV) &#8599;</a>
-  <a href="{GH}/raw/main/workbook/IP_Distribution_Cost_Variance_Model.xlsx">Excel model &#8595;</a>
-  <a href="{PDF}" target="_blank" rel="noopener">PDF version &#8595;</a>
-</div>""")
+cols = "".join('<ol start="%d">%s</ol>' % (st+1, "".join(f'<li><a href="#{a}">{t}</a></li>' for a, t in part)) for st, part in ((0, toc[:half]), (half, toc[half:])))
+slide("contents", "Navigate", "Contents", f"""<div class="toc">{cols}</div>
+<div class="linkrow"><a href="{TABLEAU}" target="_blank" rel="noopener">Tableau story &#8599;</a><a href="{GH}" target="_blank" rel="noopener">GitHub repository &#8599;</a>
+<a href="{GH}/tree/main/data" target="_blank" rel="noopener">Data (CSV) &#8599;</a><a href="{XLSX}">Excel model &#8595;</a><a href="{PDF}" target="_blank" rel="noopener">PDF version &#8595;</a></div>""")
 
-# 3 Exec summary
+# 3 Concepts -------------------------------------------------------------
+concepts = [
+ ("Intellectual property (IP)", "Something you created that the law protects, like a book, song, course or design.", "Your idea is yours, like owning a house you built.", "Registering a copyright with the U.S. Copyright Office is what lets you enforce it in court."),
+ ("Distribution channel", "A company that sells your work to buyers, such as Amazon KDP or IngramSpark.", "The stores and delivery trucks between you and your reader.", "Every industry picks channels: apps use app stores, bands use streaming."),
+ ("Gross-to-net and unit economics", "The path from the price a buyer pays to the money you keep, one sale at a time.", "Cutting a pizza into slices and seeing which slice is yours.", "Pharma, consumer goods and music all track gross-to-net."),
+ ("Contribution margin", "Money left from one sale after the costs of making that sale.", "Each sale's 'scoop' that helps pay back start-up costs.", "Restaurants and retailers price menus and products with it."),
+ ("Cost variance analysis", "Explaining why one result costs more than another by splitting the gap into causes.", "Finding out which slice made your pizza smaller.", "Finance teams use it every month to compare plan vs actual."),
+ ("Breakeven analysis", "How many sales it takes to earn back what you spent to start.", "Filling a hole one scoop at a time.", "Startups, factories and new product launches all use it."),
+ ("Sensitivity and scenarios", "Changing one number, or a few at once, to see what moves the result.", "Asking 'what if' before you bet.", "Budget planning, investment cases and infrastructure finance."),
+ ("A/B testing", "Comparing two versions fairly to see which one really works better.", "Trying two lemonade prices on two days and counting cups sold.", "Websites, apps and marketing teams run these daily."),
+ ("Cash timing (DSO)", "How many days pass between a sale and the money reaching your bank.", "Waiting for allowance day after doing chores.", "Every business plans cash this way to pay its bills."),
+ ("Pool-based payouts", "Getting paid a share of one shared pot, split by usage.", "Splitting one pizza by how many slices each friend ate.", "Music streaming royalties and ad networks pay this way."),
+]
+cards = "".join(f'<div class="ccard"><h4>{a}</h4><p><b>What it is:</b> {b}</p><p><b>Think of it as:</b> {c}</p><p><b>How it is used:</b> {d}</p></div>' for a, b, c, d in concepts)
+slide("concepts", "Introduction", "Ten ideas you will see in this deck, in plain words", f'<div class="cgrid">{cards}</div>')
+
+# 4 Executive summary -----------------------------------------------------
 slide("summary", "Executive summary", "Three findings drive the decision", f"""
 <div class="grid3">
-  <div class="card"><div class="big">$6.79 vs $3.33</div><h3>Channel share drives the cost variance</h3><p>On a $16.99 paperback, Amazon KDP returns $6.79 per unit while IngramSpark's bookstore route returns $3.33. About $2.55 of that $3.47 gap is the retailer discount, not printing or platform fees. <a href="#variance">See the variance bridge</a>.</p></div>
-  <div class="card"><div class="big">158 vs 272</div><h3>Breakeven depends on contribution, not fees</h3><p>With $1,585 to $1,710 in Year-1 fixed costs, KDP breaks even at 158 unit pairs (one print plus one ebook) and IngramSpark at 272. Platform fees alone are recovered within 20 pairs. <a href="#breakeven">See the breakeven analysis</a>.</p></div>
-  <div class="card"><div class="big">16.6 / month</div><h3>A subscription only wins at scale</h3><p>PublishDrive's flat $13.99 monthly fee beats IngramSpark's per-sale fees only above 16.6 units per format per month. Below that, variable-cost models are cheaper. <a href="#crossover">See the crossover</a>.</p></div>
+  <div class="card"><div class="big">$6.79 vs $3.33</div><h3>The store's cut drives the gap</h3><p>On a $16.99 paperback, Amazon KDP leaves the creator $6.79 and IngramSpark's bookstore route leaves $3.33. About $2.55 of that $3.47 gap is the store's discount. <a href="#variance">See the variance</a>.</p></div>
+  <div class="card"><div class="big">158 vs 272</div><h3>Payback depends on each sale's scoop</h3><p>KDP earns back Year-1 costs after 158 sales of one print plus one ebook; IngramSpark needs 272. Platform fees alone are earned back within 42. <a href="#breakeven">See breakeven</a>.</p></div>
+  <div class="card"><div class="big">16.6 / month</div><h3>Flat fees only win at volume</h3><p>A $13.99 monthly plan beats per-sale fees only above about 17 sales of each format a month. <a href="#scale">See the crossover</a>.</p></div>
 </div>
-<p class="callout"><b>Decision ask:</b> approve a two-channel launch (KDP plus one wide-distribution route chosen by business vertical), with a 90-day A/B test on price and channel terms before committing to exclusivity. <a href="#recommendation">Go to the recommendation</a>.</p>""")
+<p class="callout"><b>Decision ask:</b> launch on two channels (KDP plus one route picked from <a href="#tree-how">your decision path</a>), keep print non-returnable at launch, and run one 90-day A/B test per quarter. <a href="#recommendation">Go to the recommendation</a>.</p>""")
 
-# 4 decision + verticals
-slide("decision", "Scope", "The decision, and who it is for", """
-<p class="lede-s">Every owner of intellectual property faces the same make-or-buy distribution question: <b>which channels turn a protected work into the most contribution margin, at acceptable risk and cash timing?</b> The answer differs by business type, so this analysis is organized into five decision verticals.</p>
+# 5 Who this is for --------------------------------------------------------
+slide("decision", "Stakeholders", "Who this is for: five kinds of IP owners", """
+<p class="lede-s">Every IP owner faces the same question: <b>which sales channels turn a protected work into the most money kept per sale, with risk and cash timing you can live with?</b> The right answer depends on what kind of business you are, so this deck gives each type its own path.</p>
 <div class="grid5">
- <div class="vcard a"><span>A</span><h4>Independent creator</h4><p>One work, Amazon-led discovery, limited capital.</p></div>
- <div class="vcard b"><span>B</span><h4>Small press or imprint</h4><p>Needs bookstore and library placement for a curated list.</p></div>
- <div class="vcard c"><span>C</span><h4>Catalog or backlist owner</h4><p>Many titles and steady volume; fixed fees amortize well.</p></div>
- <div class="vcard d"><span>D</span><h4>Brand, educator or corporate IP owner</h4><p>Owns an audience; sells through events, courses or a website.</p></div>
- <div class="vcard e"><span>E</span><h4>Wide ebook strategist</h4><p>Digital-first, wants reach beyond one retailer.</p></div>
+ <a class="vcard a" href="#v-a"><span>A</span><h4>Independent creator</h4><p>One work, sold mostly on Amazon, small budget.</p></a>
+ <a class="vcard b" href="#v-b"><span>B</span><h4>Small press or imprint</h4><p>Wants books on bookstore and library shelves.</p></a>
+ <a class="vcard c" href="#v-c"><span>C</span><h4>Catalog or backlist owner</h4><p>Many titles that sell steadily every month.</p></a>
+ <a class="vcard d" href="#v-d"><span>D</span><h4>Brand, educator or corporate IP owner</h4><p>Has its own audience: events, courses, clients, a website.</p></a>
+ <a class="vcard e" href="#v-e"><span>E</span><h4>Wide ebook strategist</h4><p>Digital-first, wants readers on every store.</p></a>
 </div>
-<p class="muted">Stakeholders: IP owners, finance and FP&amp;A partners, marketing leads, rights and contracts teams, and investors evaluating content businesses.</p>""")
+<p class="muted">Also inside: guidance for finance and FP&amp;A, marketing, rights and legal, and investors (<a href="#roles">jump to roles</a>). Click a card to jump to that path.</p>""")
 
-# 5 lens
-rows = [("Cost variance analysis","Net royalty per unit vs a KDP baseline, split into channel, production and fee drivers","Manufacturing, SaaS, healthcare budgeting"),
-("Gross-to-net (GTN)","List price to net royalty waterfall","Pharma, CPG, music streaming"),
-("Contribution margin and breakeven","Units needed to recover launch costs","Retail, restaurants, hardware startups"),
-("Fixed vs variable cost crossover","Subscription vs per-sale fee models","Cloud pricing, payments, logistics"),
-("Sensitivity and scenario analysis","Tornado chart; bear, base and bull volumes","Corporate FP&amp;A, infrastructure finance"),
-("A/B testing and breakeven lift","Price and channel-term experiments with sample sizes","E-commerce, product, marketing"),
-("Days sales outstanding (DSO)","45 to 105 days from sale to cash","Every B2B business, working-capital planning"),
-("Pool-based payouts","Kindle Unlimited per-page rate","Music streaming pro-rata pools, ad networks"),
-("Returns reserve and counterparty risk","Returnable wholesale terms; retailer non-payment","Retail, distribution, insurance")]
-slide("lens", "Why it matters beyond publishing", "A cross-industry lens on one IP decision", 
-'<table class="tbl"><thead><tr><th>Concept</th><th>How it is used here</th><th>Where else you see it</th></tr></thead><tbody>' +
-"".join(f"<tr><td><b>{a}</b></td><td>{b}</td><td>{c}</td></tr>" for a,b,c in rows) + '</tbody></table><p class="muted">Full definitions are in the <a href="#glossary">glossary</a>.</p>')
-
-# 6 market tiles
-tiles = [("$33.4B","U.S. publisher revenue, 2025","+2.5% vs 2024","aap"),("4.17M","ISBNs issued in the U.S., 2025","3.53M self-published, +38.7%","bowker"),
-("762.4M","Print units sold, 2025","+0.3% vs 2024","circana"),("415,780","Copyright registrations, FY2025","169,098 were literary works","usco"),
-("3.4 mo","Average e-filed registration time","5.3 months with correspondence","uscotime"),("$65 &rarr; $85","Standard Application fee","New fee schedule from mid-November 2026","uscofee")]
+# 6 Market tiles -----------------------------------------------------------
+tiles = [("$33.4B", "U.S. publisher revenue, 2025", "+2.5% vs 2024", "aap"), ("4.17M", "ISBNs issued in the U.S., 2025", "3.53M self-published, +38.7%", "bowker"),
+         ("762.4M", "Print units sold, 2025", "+0.3% vs 2024", "circana"), ("415,780", "Copyright registrations, FY2025", "169,098 were literary works", "usco"),
+         ("3.4 mo", "Average e-filed registration time", "5.3 months with correspondence", "uscotime"), ("$65 &rarr; $85", "Standard Application fee", "New fee schedule from mid-November 2026", "uscofee")]
 slide("market", "Market context", "Mainstream benchmarks frame the opportunity", '<div class="tiles">' + "".join(
-f'<a class="tile" href="{S[k][1]}" target="_blank" rel="noopener"><div class="tv">{v}</div><div class="tl">{l}</div><div class="td">{d}</div><div class="ts">{S[k][0]} &#8599;</div></a>' for v,l,d,k in tiles) +
-'</div><p class="lede-s">Supply of new works is growing much faster than unit demand: ISBN output rose 32.5% in 2025 while print unit sales rose 0.3%. More works compete for the same buyers, so the margin kept per sale and the cost to launch matter more every year.</p>')
+f'<a class="tile" href="{S[k][1]}" target="_blank" rel="noopener"><div class="tv">{v}</div><div class="tl">{l}</div><div class="td">{d}</div><div class="ts">{S[k][0]} &#8599;</div></a>' for v, l, d, k in tiles) +
+'</div><p class="lede-s"><b>In plain words:</b> the number of new books jumped by about a third in 2025, but the number of printed books people bought barely moved. More creators are competing for the same readers, so the money you keep from each sale matters more every year.</p>')
 
-slide("market-charts", "Market context", "Self-published supply is surging while print still earns most revenue",
-'<div class="two">' + img("charts/01_market_isbn_stacked.svg","Stacked line chart of ISBN output 2022 to 2025") + img("charts/02_market_aap_formats.svg","Bar chart of 2025 revenue by format") + '</div>' +
-'<p class="lede-s">The stacked line shows self-published ISBNs climbing to 3.53 million in 2025. Hardback and paperback still bring in $16.2 billion of the $33.4 billion market, which is why print distribution choices carry the most dollars.</p>' + src("bowker","aap"))
+slide("market-charts", "Market context", "More books, the same number of buyers", pageimg("p1_market", "ISBN output and revenue by format") + src("bowker", "aap"))
 
-slide("value-chain", "Process flow", "The IP value chain: from protected work to reconciled cash",
-img("diagrams/d1_ip_value_chain.svg","Flowchart of the IP value chain") +
-'<div class="grid2s"><p><b>Step 2 is where rights are secured.</b> Certain works covered here are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office. Registration is a prerequisite for filing an infringement suit over a U.S. work and for statutory damages, so it is treated as a fixed launch cost ($85 Standard Application under the new schedule).</p><p><b>Steps 7 through 10 are where finance lives.</b> Gross-to-net deductions, cash timing and reconciliation are the same disciplines used in film participations, music royalties and SaaS revenue operations.</p></div>' + src("usco","uscofee","uscotime"))
+slide("value-chain", "Process flow", "The IP value chain: from protected work to cash in the bank",
+img("diagrams/d1_ip_value_chain.svg", "Flowchart of the IP value chain") +
+'<div class="grid2s"><p><b>Step 2 is where rights are secured.</b> Certain works covered here are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office. Registration lets an owner file an infringement suit over a U.S. work and seek statutory damages, so it is counted as a launch cost ($85 under the new fee schedule).</p><p><b>In plain words:</b> you make something, protect it, give it an ID, choose formats and stores, and then money flows back to you after each store takes its share. The dashed arrow means you keep testing and adjusting.</p></div>' + src("usco", "uscofee", "uscotime"))
 
-opt_rows = [("Amazon KDP","60% of list minus print","70% ($2.99 to $9.99)","Free","~60 days after month end","Amazon only"),
-("IngramSpark","List minus 35 to 55% discount, print, 1.875% fee","85% of store payout","Free setup; own ISBN","~90 days after month end","Bookstores, libraries, 45,000+ outlets"),
-("B&amp;N Press","55% of list minus print","70% flat","Free; print ISBN free","~30 days after month end","BN.com (U.S.)"),
-("Lulu","Retail: 50% fee, print, then 20% commission","Fee plus commission","Free; proof required","Monthly","Own store, retail, your site"),
-("PublishDrive","Ingram network, 0% commission","100% of store payout","$13.99 to $83.99/mo","Monthly","400+ stores"),
-("Draft2Digital","Print via partners","~90% of store payout","$20 account fee","Monthly, ~60-day lag","Apple, Kobo, Google, libraries")]
-slide("options", "Choice set", "Six options, three cost models", '<table class="tbl sm"><thead><tr><th>Platform</th><th>Print economics</th><th>Ebook economics</th><th>Fixed cost</th><th>Payment terms</th><th>Reach</th></tr></thead><tbody>' +
-"".join("<tr>" + "".join(f"<td>{c}</td>" if i else f"<td><b>{c}</b></td>" for i,c in enumerate(r)) + "</tr>" for r in opt_rows) +
-'</tbody></table><p class="lede-s">The options fall into three cost models: <b>retailer-direct</b> (KDP, B&amp;N), <b>wholesale with per-sale fees</b> (IngramSpark, Lulu, Draft2Digital) and <b>subscription with zero commission</b> (PublishDrive).</p>' + src("ingram","kdp","bn","lulu","pd","d2d","store"))
+opt_rows = [("Amazon KDP", "60% of list minus print", "70% ($2.99 to $9.99)", "Free", "~60 days after month end", "Amazon only"),
+("IngramSpark", "List minus 35 to 55% discount, print, 1.875% fee", "85% of store payout", "Free setup; own ISBN", "~90 days after month end", "Bookstores, libraries, 45,000+ outlets"),
+("B&amp;N Press", "55% of list minus print", "70% flat", "Free; print ISBN free", "~30 days after month end", "BN.com (U.S.)"),
+("Lulu", "Retail: 50% fee, print, then 20% commission", "Fee plus commission", "Free; proof required", "Monthly", "Own store, retail, your site"),
+("PublishDrive", "Ingram network, 0% commission", "100% of store payout", "$13.99 to $83.99/mo", "Monthly", "400+ stores"),
+("Draft2Digital", "Print via partners", "~90% of store payout", "$20 account fee", "Monthly, ~60-day lag", "Apple, Kobo, Google, libraries")]
+slide("options", "Choice set", "Six options, three ways of charging", '<table class="tbl sm"><thead><tr><th>Platform</th><th>Print</th><th>Ebook</th><th>Fixed cost</th><th>Payment terms</th><th>Reach</th></tr></thead><tbody>' +
+"".join("<tr>" + "".join(f"<td>{c}</td>" if i else f"<td><b>{c}</b></td>" for i, c in enumerate(r)) + "</tr>" for r in opt_rows) +
+'</tbody></table><p class="lede-s"><b>In plain words:</b> some stores sell to buyers directly (KDP, B&amp;N), some act as a wholesaler that charges per sale (IngramSpark, Lulu, Draft2Digital), and one charges a flat monthly fee and takes nothing from each sale (PublishDrive).</p>' + src("ingram", "kdp", "bn", "lulu", "pd", "d2d", "store"))
 
-slide("gross-to-net", "Unit economics", "Gross-to-net: where each $16.99 goes", img("charts/03_print_gross_to_net.svg","Stacked bar of list price components by platform") +
-'<p class="lede-s">The gray channel share is the largest deduction on every wholesale route. Lulu&rsquo;s own bookstore keeps $9.59 because no retailer takes a cut, but it brings almost no shoppers on its own. Print costs for IngramSpark, B&amp;N and Lulu are planning estimates to be replaced with each platform&rsquo;s calculator output.</p>' + src("kdp","ingram","bn","lulu","jf"))
+slide("unit-econ", "Unit economics", "Gross-to-net: how much of each sale the creator keeps", pageimg("p2_unit_economics", "Gross-to-net print and ebook net per unit") + src("kdp", "ingram", "bn", "lulu", "store", "d2d"))
+slide("variance", "Cost variance analysis", "Why some options pay less, and which number matters most", pageimg("p3_variance_sensitivity", "Cost variance drivers and sensitivity tornado") + src("ingram", "kdp"))
+slide("breakeven", "Breakeven analysis", "How many sales it takes to earn back the start-up cost", pageimg("p4_breakeven", "Breakeven units and cumulative profit curves") +
+      f'<p class="muted">Formula: breakeven sales = Year-1 fixed costs &divide; money kept per sale. The $1,500 launch budget is a placeholder; replace it with your own in the <a href="{XLSX}">Excel model</a>.</p>' + src("uscofee", "isbn", "pd"))
+slide("scale", "Breakeven analysis", "When a flat fee beats a per-sale cut, and what if sales are slow or great", pageimg("p5_scale", "Crossover and scenario analysis") + src("pd", "ingram", "kdp", "bn"))
+slide("cash", "Working capital", "Earning money is not the same as having it", pageimg("p6_cash", "Accrual vs cash and days to payment") + src("bn", "ingramtc", "bd", "booksby", "wwm"))
+slide("testing", "Uncertainty and experiments", "Pay that moves every month, and how to test a price fairly", pageimg("p7_uncertainty_testing", "KENP pool volatility and A/B breakeven lift") + src("kenp", "wwm", "kdp"))
 
-slide("variance", "Cost variance analysis", "The variance bridge: channel share explains most of the gap", img("charts/04_cost_variance_drivers.svg","Diverging stacked bar of variance drivers vs KDP") +
-'<p class="lede-s">Each bar decomposes one platform&rsquo;s variance against the KDP baseline into three drivers that sum to the total, the same price, cost and mix logic used in a budget-vs-actual review. For IngramSpark, the 55% discount costs $2.55, higher print costs $0.60 and the market access fee $0.32, for a total unfavorable variance of $3.47 per unit.</p>' + src("ingram","kdp"))
-
-slide("ebook", "Unit economics", "Ebooks: direct uploads beat aggregators", img("charts/05_ebook_net_per_unit.svg","Bar chart of ebook net royalty by platform") +
-'<p class="lede-s">On a $4.99 ebook, direct stores pay $3.49. KDP pays $3.28 after a $0.30 delivery fee. Aggregators trade $0.35 to $0.52 per unit for one-upload reach, which is a classic take-rate versus convenience trade-off.</p>' + src("store","kdp","d2d","ingramtc"))
-
-slide("sensitivity", "Risk", "Sensitivity analysis: price is the biggest lever", img("charts/06_sensitivity_tornado.svg","Tornado chart") +
-'<p class="lede-s">Flexing each input by 20% shows that list price moves KDP&rsquo;s net royalty by $4.08 per unit, four times the effect of page count. On IngramSpark, the wholesale discount is the largest controllable lever, which makes discount terms the first thing to test.</p>' + src("kdp","ingram"))
-
-slide("breakeven", "Breakeven analysis", "How many sales recover the launch investment?", img("charts/07_breakeven_units.svg","Breakeven units by platform") +
-'<div class="formula">Breakeven units = Year-1 fixed costs &divide; contribution per unit pair &nbsp;&nbsp;|&nbsp;&nbsp; Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions</div>' +
-'<p class="lede-s">KDP needs 158 unit pairs and IngramSpark 272. Without the illustrative launch budget, platform-only fixed costs are recovered within 0 to 42 pairs, so the real breakeven risk sits in production spend, not platform fees. Stakeholders should replace the $1,500 placeholder with their own budget in the <a href="' + GH + '/raw/main/workbook/IP_Distribution_Cost_Variance_Model.xlsx">Excel model</a>.</p>' + src("uscofee","isbn","pd"))
-
-slide("crossover", "Breakeven analysis", "Breakeven curves and the subscription crossover", '<div class="two">' + img("charts/08_breakeven_curve.svg","Cumulative profit curves") + img("charts/09_crossover_breakeven.svg","Crossover chart") + '</div>' +
-'<p class="lede-s">Left: each line crosses zero at its breakeven point, and steeper slopes mean higher contribution margin. Right: PublishDrive&rsquo;s fixed fee overtakes IngramSpark&rsquo;s variable fees at 16.6 units per format per month, and overtakes Draft2Digital for ebooks at 40.1 units per month.</p>' + src("pd","ingram","d2d"))
-
-slide("scenarios", "Scenario planning", "Bear, base and bull volumes change the ranking very little", img("charts/10_scenario_analysis.svg","Small multiples of scenario results") +
-'<p class="lede-s">KDP leads in every scenario, followed by B&amp;N Press. PublishDrive moves ahead of IngramSpark once volume clears the crossover, which happens in the base and bull cases. These are planning scenarios, not forecasts; reach differs by channel, so equal volume per platform is a simplifying assumption.</p>' + src("kdp","bn","pd"))
-
-slide("cash", "Working capital", "Accrual vs cash: royalties earned lead cash by two to three months", '<div class="two w64">' + img("charts/11_hybrid_stack_accrual_vs_cash.svg","Stacked line of cumulative earned royalties vs cash") + img("charts/12_payout_timing_dso.svg","Days from sale to cash by platform") + '</div>' +
-'<p class="lede-s">In an illustrative hybrid stack (KDP plus IngramSpark plus Draft2Digital), $948 of earned royalties is still uncollected at month 12. IngramSpark&rsquo;s terms add about 60 days of DSO versus B&amp;N Press, and the agreement also lets it hold payments while a retailer has not paid (counterparty risk).</p>' + src("bn","ingramtc","bd","booksby","wwm"))
-
-slide("pool", "Variable revenue", "Pool-based payouts add volatility to exclusive ebook income", img("charts/13_kenp_pool_volatility.svg","KENP per-page rate line chart") +
-'<p class="lede-s">Kindle Unlimited pays from a monthly pool divided by pages read, the same pro-rata mechanism used by music streaming services. Over the last 12 reported months the rate averaged $4.55 per 1,000 pages with a 6.1% coefficient of variation, swinging from $4.19 to $5.01. In the 2025 Written Word Media survey, 38% of authors kept every book in KDP Select and 30% were fully wide.</p>' + src("kenp","wwm"))
-
-slide("abtest", "Experimentation", "A/B test design: know the breakeven lift before you test", '<div class="stack">' + img("diagrams/d5_ab_test_flow.svg","A/B test workflow") + img("charts/14_ab_test_breakeven_lift.svg","Breakeven lift by test") + '</div>' +
-'<p class="lede-s">A price cut must lift unit sales by more than its breakeven lift to raise profit: 21.4% for a $16.99 to $14.99 print test and 27.1% for a $4.99 to $3.99 ebook test. Detecting a lift that size at a 2% baseline conversion takes about 18,467 visitors per arm. Retail platforms do not split traffic, so run time-boxed sequential tests or route paid traffic to two purchase links (for example, IngramSpark Share &amp; Sell links).</p>' + src("kdp","ingramtc"))
-
-slide("tree-verticals", "Decision tree", "Which distribution stack fits your business type?", img("diagrams/d2_vertical_decision_tree.svg","Decision tree by business vertical") +
-'<p class="lede-s">The thresholds come from the model: a 16.6-unit monthly crossover separates Vertical B from Vertical C, and owned-audience businesses (Vertical D) keep the most margin by selling direct, where Lulu Direct takes no revenue share.</p>' + src("pd","lulu"))
-
-slide("tree-terms", "Decision trees", "Two follow-on decisions: exclusivity and returns", '<div class="two">' + img("diagrams/d3_exclusivity_tree.svg","Ebook exclusivity decision tree") + img("diagrams/d4_returns_discount_tree.svg","Returns and discount decision tree") + '</div>' +
-'<p class="lede-s">Exclusivity trades reach for pool income; returnability trades margin and return risk for shelf placement. Both are reversible on known terms (90-day KDP Select periods; a 180-day return tail on IngramSpark), so both are good candidates for time-boxed tests.</p>' + src("wwm","ingramtc"))
-
-ch = [("A","Independent creator","KDP print + ebook","KDP + Draft2Digital (wide ebook)","KDP + KDP Select","158 pairs"),
-("B","Small press or imprint","KDP + IngramSpark 55% returnable","KDP + IngramSpark 40% non-returnable","KDP + B&amp;N Press + IngramSpark","272 pairs (IngramSpark)"),
-("C","Catalog or backlist owner","KDP + PublishDrive","KDP + IngramSpark + Draft2Digital","PublishDrive only","264 pairs; crossover 16.6/mo"),
-("D","Brand, educator or corporate","Lulu Direct on own site + KDP","IngramSpark Share &amp; Sell links","Lulu Bookstore + KDP","Driven by owned traffic"),
-("E","Wide ebook strategist","KDP + direct Apple, Kobo, B&amp;N","KDP + Draft2Digital","KDP + PublishDrive (above 40/mo)","Ebook-only economics")]
-slide("choices", "Choice options", "Three options per vertical, from lowest risk to widest reach", '<table class="tbl sm"><thead><tr><th></th><th>Vertical</th><th>Option 1: Recommended</th><th>Option 2: Alternative</th><th>Option 3: Stretch</th><th>Breakeven marker</th></tr></thead><tbody>' +
-"".join(f'<tr><td><span class="pill {r[0].lower()}">{r[0]}</span></td><td><b>{r[1]}</b></td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td><td>{r[5]}</td></tr>' for r in ch) +
-'</tbody></table><p class="lede-s">Option 1 maximizes contribution per unit for each business type. Option 2 changes one variable and doubles as the B arm of an A/B test. Option 3 adds reach once volume supports it.</p>')
-
-risks = [("Returns liability","Returnable titles bill returns back to the IP owner; a 180-day tail applies after switching to non-returnable","High","Start non-returnable; test returnability later","Sec. 5.4.5"),
-("Payment timing and offsets","Compensation paid ~90 days after month end; can be held or offset for returns and other Ingram accounts","Medium","Plan cash with DSO assumptions; keep a reserve","Sec. 8.5, 9"),
-("Counterparty non-payment","IP owner bears its share if a retailer never pays","Low to medium","Monitor statements; reconcile monthly","Sec. 8.3"),
-("Unilateral changes","Terms and pricing can change; compensation changes take effect after 30 days","Medium","Review notices; re-run the model on each change","Sec. 2"),
-("Early release","Enabling distribution lets orders ship before the publication date","Medium","Enable distribution only at launch","Sec. 5.1.2"),
-("Liability cap","Platform liability capped at $500; broad indemnity owed by the IP owner","Low frequency, high impact","Confirm rights and clearances before upload","Sec. 12, 13")]
+risks = [("Returns liability", "Returnable titles bill returns back to the IP owner; a 180-day tail applies after switching to non-returnable", "High", "Start non-returnable; test returnability later", "Sec. 5.4.5"),
+("Payment timing and offsets", "Paid ~90 days after month end; can be held or offset for returns and other Ingram accounts", "Medium", "Plan cash with DSO assumptions; keep a reserve", "Sec. 8.5, 9"),
+("Counterparty non-payment", "IP owner bears its share if a retailer never pays", "Low to medium", "Reconcile statements monthly", "Sec. 8.3"),
+("Unilateral changes", "Terms and pricing can change; compensation changes take effect after 30 days", "Medium", "Re-run the model on each change", "Sec. 2"),
+("Early release", "Enabling distribution lets orders ship before the publication date", "Medium", "Enable distribution only at launch", "Sec. 5.1.2"),
+("Liability cap", "Platform liability capped at $500; broad indemnity owed by the IP owner", "Low frequency, high impact", "Confirm rights and clearances before upload", "Sec. 12, 13")]
 slide("risks", "Risk register", "Contract terms that change the economics", '<table class="tbl sm"><thead><tr><th>Risk</th><th>What the agreement says</th><th>Rating</th><th>Mitigation</th><th>Reference</th></tr></thead><tbody>' +
-"".join("<tr>" + "".join(f"<td>{c}</td>" if i else f"<td><b>{c}</b></td>" for i,c in enumerate(r)) + "</tr>" for r in risks) +
-'</tbody></table><p class="muted">Section references are to the IngramSpark Agreement (last updated March 20, 2025). This is a plain-language business summary, not legal advice.</p>' + src("ingramtc"))
+"".join("<tr>" + "".join(f"<td>{c}</td>" if i else f"<td><b>{c}</b></td>" for i, c in enumerate(r)) + "</tr>" for r in risks) +
+'</tbody></table><p class="lede-s"><b>In plain words:</b> the fine print can take money back later (returns), pay you late, or change the rules. Knowing these ahead of time is part of choosing well.</p><p class="muted">References are to the IngramSpark Agreement (last updated March 20, 2025). Plain-language business summary, not legal advice.</p>' + src("ingramtc"))
 
-slide("recommendation", "Recommendation", "Decision request: a two-channel launch with a 90-day test window", """
+# Decision tree walkthrough ----------------------------------------------
+slide("tree-how", "Decision walkthrough", "How to read the decision tree", f"""
+<div class="split"><div>{img("diagrams/d2_vertical_decision_tree.svg", "Decision tree by business type")}</div>
+<div class="steps"><ol>
+<li><b>Start at the top diamond.</b> Ask where most of your buyers will come from: stores and online retailers, or channels you own like an email list, events or a website.</li>
+<li><b>Store path:</b> if Amazon alone is enough, you land on <a href="#v-a">Path A</a>. If you need bookstores or libraries, ask how many you sell each month.</li>
+<li><b>Volume check:</b> under about 17 sales of each format a month, a per-sale wholesaler is cheaper (<a href="#v-b">Path B</a>). Above it, a flat monthly plan wins (<a href="#v-c">Path C</a>).</li>
+<li><b>Own-channel path:</b> if you already have an audience, sell direct and keep the store's slice (<a href="#v-d">Path D</a>). If you are ebook-first, spread across every ebook store (<a href="#v-e">Path E</a>).</li>
+<li><b>Then:</b> answer the two follow-on questions on <a href="#tree-terms">exclusivity and returns</a>.</li></ol>
+<p class="muted">The 17-a-month switch point comes from the <a href="#scale">crossover analysis</a>.</p></div></div>""")
+
+V = [
+ ("v-a", "A", "Independent creator", "One work, discovered mostly on Amazon, with a small budget.",
+  [("$6.79", "kept per $16.99 paperback on KDP"), ("158", "sales (print + ebook) to break even"), ("$5,961", "Year-1 money kept at 50 sales a month")],
+  "Amazon is where your readers already shop, and KDP keeps the biggest slice of each sale, so it pays back your start-up costs fastest. Adding bookstore distribution now would cut what you keep per book in half without a plan to get shelf space.",
+  ["Publish print and ebook on KDP; price the ebook between $2.99 and $9.99 to earn 70%.", "Register the copyright before launch and budget for the $85 fee.", "Skip KDP Expanded Distribution; it keeps only $3.40 per copy."],
+  ["Run a 90-day price test ($16.99 vs $14.99); keep the lower price only if sales rise more than 21%."],
+  ["Watch breakeven progress monthly; when you pass 158 sales, consider adding a wide ebook route (Path E)."],
+  "KDP print + ebook", "KDP + Draft2Digital for other ebook stores", "KDP + KDP Select (Kindle Unlimited)"),
+ ("v-b", "B", "Small press or imprint", "A curated list that needs bookstore and library placement.",
+  [("$3.33", "kept per copy at a 55% discount"), ("272", "sales to break even"), ("105 days", "average wait for IngramSpark cash")],
+  "Bookstores expect a 55% discount and the right to return books, which shrinks what you keep and adds risk. In exchange you reach 45,000+ outlets that KDP cannot. KDP still handles Amazon, where it pays twice as much per copy.",
+  ["Use KDP for Amazon and IngramSpark for bookstores and libraries.", "Start IngramSpark titles non-returnable; switching later leaves a 180-day return tail.", "Keep a cash reserve for the 90-day payment lag."],
+  ["Test 55% returnable against 40% non-returnable; returnable must sell 77% more copies to come out ahead."],
+  ["Reconcile IngramSpark statements monthly for returns and offsets; revisit Path C if any title passes 17 sales of each format a month."],
+  "KDP + IngramSpark, 55% returnable", "KDP + IngramSpark, 40% non-returnable", "KDP + B&N Press + IngramSpark"),
+ ("v-c", "C", "Catalog or backlist owner", "Many titles with steady monthly sales.",
+  [("16.6", "sales/format/month where the flat fee wins"), ("$3,905", "Year-1 kept on PublishDrive vs $3,568 IngramSpark"), ("$21,038", "Year-1 kept at 250 sales a month")],
+  "With steady volume, a flat monthly fee costs less than paying a cut on every sale. PublishDrive prints through the same Ingram network, so you keep wide reach while dropping the 1.875% per-sale fee.",
+  ["Keep KDP for Amazon; move wide print and ebook distribution to a PublishDrive plan sized to your title count.", "Check each title's monthly sales against the 16.6 switch point.", "Use the Excel model to compare plan tiers ($13.99 to $83.99)."],
+  ["Move half the catalog first and compare 90 days of results against titles left on IngramSpark."],
+  ["Watch per-title volume each quarter; low sellers may be cheaper on a per-sale route."],
+  "KDP + PublishDrive", "KDP + IngramSpark + Draft2Digital", "PublishDrive for everything"),
+ ("v-d", "D", "Brand, educator or corporate IP owner", "Already has an audience: clients, students, events or a website.",
+  [("$9.59", "kept per $16.99 copy sold on Lulu's own store"), ("+$2.80", "more per copy than KDP"), ("~167", "own-store sales to break even (estimate)")],
+  "When you bring the buyers yourself, you do not need to give a store its slice. Selling through your own site with print-on-demand fulfillment keeps the most per copy, while KDP lets new people discover you.",
+  ["Sell print copies from your own site with Lulu Direct (no revenue share; you pay printing and shipping).", "Keep KDP listed for discovery and reviews.", "Use IngramSpark Share &amp; Sell links for one-off campaigns."],
+  ["Send half your audience to your own store and half to Amazon for one campaign; compare money kept per visitor."],
+  ["Watch fulfillment costs and customer support load as direct sales grow."],
+  "Own store (Lulu Direct) + KDP", "IngramSpark Share &amp; Sell links + KDP", "Lulu Bookstore + KDP"),
+ ("v-e", "E", "Wide ebook strategist", "Digital-first and wants readers on every ebook store.",
+  [("$3.49", "kept per $4.99 ebook sold direct"), ("$3.14", "kept through Draft2Digital"), ("6.1%", "monthly swing in Kindle Unlimited pay")],
+  "Going direct to Apple, Kobo and B&N keeps the most, but takes more uploads. Draft2Digital trades about 35 cents a sale for one upload. Kindle Unlimited pays from a shared pot that changes monthly, so it is less predictable.",
+  ["Publish the Kindle edition on KDP directly.", "Use Draft2Digital for other stores, or go direct to Apple, Kobo and B&N if you can manage several uploads.", "Price between $2.99 and $9.99 to keep KDP's 70% rate."],
+  ["Test exclusivity: enroll one title in KDP Select for one 90-day term and compare to a wide title."],
+  ["Plan Kindle Unlimited income as a range; above 40 ebook sales a month, compare a PublishDrive plan."],
+  "KDP + direct Apple, Kobo, B&amp;N", "KDP + Draft2Digital", "KDP + PublishDrive (above 40/month)"),
+]
+for sid, letter, name, who, stats, summary, now, test, watch, o1, o2, o3 in V:
+    chips = "".join(f'<div class="chip"><b>{a}</b><span>{b}</span></div>' for a, b in stats)
+    body = f"""<div class="split">
+<div>{img(f"diagrams/d2_path_{letter}.svg", f"Highlighted decision path for vertical {letter}")}
+<div class="opts"><div><span>Option 1 (recommended)</span>{o1}</div><div><span>Option 2 (test arm)</span>{o2}</div><div><span>Option 3 (stretch)</span>{o3}</div></div></div>
+<div class="vpanel {letter.lower()}">
+<p class="who"><b>Who you are:</b> {who}</p>
+<div class="chips">{chips}</div>
+<h4>Summary and insight</h4><p>{summary}</p>
+<h4>What to do</h4>
+<ul class="todo"><li class="now"><b>Do now:</b> {'</li><li class="now"><b>Do now:</b> '.join(now)}</li>
+<li class="test"><b>Test next:</b> {' '.join(test)}</li><li class="watch"><b>Watch:</b> {' '.join(watch)}</li></ul>
+</div></div>"""
+    slide(sid, f"Decision walkthrough &middot; Path {letter}", f"If you are {'an' if name[0] in 'AEIOU' else 'a'} {name[0].lower() + name[1:]}: here is your path", body)
+
+slide("tree-terms", "Decision walkthrough", "Two follow-on decisions for every path: exclusivity and returns",
+'<div class="two">' + img("diagrams/d3_exclusivity_tree.svg", "Exclusivity decision tree") + img("diagrams/d4_returns_discount_tree.svg", "Returns decision tree") + '</div>' +
+'<div class="grid2s"><p><b>Exclusivity, in plain words:</b> Kindle Unlimited is like a library pass that pays authors from a shared pot. You must sell the ebook only on Amazon for 90 days. Choose it if your genre lives there and you can handle pay that changes monthly; otherwise stay wide. 38% of surveyed authors keep every book exclusive and 30% stay fully wide.</p>'
+'<p><b>Returns, in plain words:</b> letting stores return unsold books gets you on more shelves, but you pay for the books that come back, and that bill can be bigger than what you earned. Start non-returnable unless shelf space is the main goal and you have cash set aside.</p></div>' + src("wwm", "kenp", "ingramtc"))
+
+roles = [("Finance and FP&amp;A", "Own the model and the monthly variance review.", "Track money kept per sale vs plan by driver; forecast cash with 45 to 105 day lags; re-run breakeven when any fee changes."),
+ ("Marketing", "Own price tests and where traffic goes.", "Run one A/B test per quarter with a pre-set breakeven lift; send owned audiences to the highest-margin store."),
+ ("Rights and legal", "Own copyright registration and contract terms.", "Register before launch; review returns, liability and change-notice clauses; confirm all rights and clearances before upload."),
+ ("Investors and partners", "Judge whether the plan pays back.", "Ask for breakeven units, margin of safety, DSO and the scenario range rather than a single sales forecast."),
+ ("Operations", "Own uploads, metadata and timing.", "Turn on distribution only at launch; keep ISBNs and metadata consistent across stores; log every price change.")]
+slide("roles", "Stakeholder roles", "What each team should do, whatever the path", '<table class="tbl"><thead><tr><th>Team</th><th>Their job here</th><th>What they should do</th></tr></thead><tbody>' +
+"".join(f"<tr><td><b>{a}</b></td><td>{b}</td><td>{c}</td></tr>" for a, b, c in roles) + '</tbody></table>')
+
+ch = [("A", "Independent creator", "KDP print + ebook", "KDP + Draft2Digital", "KDP + KDP Select", "158 sales"),
+("B", "Small press or imprint", "KDP + IngramSpark 55% returnable", "KDP + IngramSpark 40% non-returnable", "KDP + B&amp;N Press + IngramSpark", "272 sales"),
+("C", "Catalog or backlist owner", "KDP + PublishDrive", "KDP + IngramSpark + Draft2Digital", "PublishDrive only", "Switch point 16.6/month"),
+("D", "Brand, educator or corporate", "Own store (Lulu Direct) + KDP", "IngramSpark Share &amp; Sell + KDP", "Lulu Bookstore + KDP", "~167 own-store sales"),
+("E", "Wide ebook strategist", "KDP + direct Apple, Kobo, B&amp;N", "KDP + Draft2Digital", "KDP + PublishDrive (above 40/month)", "Ebook-only economics")]
+slide("choices", "Choice options", "Options at a glance for every stakeholder type", '<table class="tbl sm"><thead><tr><th></th><th>Stakeholder</th><th>Option 1: Recommended</th><th>Option 2: Test arm</th><th>Option 3: Stretch</th><th>Breakeven marker</th></tr></thead><tbody>' +
+"".join(f'<tr><td><a class="pill {r[0].lower()}" href="#v-{r[0].lower()}">{r[0]}</a></td><td><b>{r[1]}</b></td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td><td>{r[5]}</td></tr>' for r in ch) +
+'</tbody></table><p class="lede-s">Option 1 keeps the most money per sale for that business type. Option 2 changes one thing and doubles as the B group in an A/B test. Option 3 adds reach once sales can support it.</p>')
+
+slide("recommendation", "Recommendation", "Decision request: two channels now, one test every 90 days", f"""
 <div class="grid3">
- <div class="card"><h3>1. Launch</h3><p>List print and ebook on KDP for every vertical. Add one wide route chosen from the <a href="#tree-verticals">decision tree</a>. Keep print non-returnable at launch and enable distribution only on the release date.</p></div>
- <div class="card"><h3>2. Test</h3><p>Run one A/B test per 90 days: price first, then channel terms. Pre-register the metric (net royalty per visitor) and the <a href="#abtest">breakeven lift</a>, and stop only at the planned sample size.</p></div>
- <div class="card"><h3>3. Review</h3><p>Hold a monthly variance review (budget vs actual by driver) and a quarterly re-forecast. Revisit exclusivity and subscriptions when volume crosses 16.6 units per format per month.</p></div>
+ <div class="card"><h3>1. Launch</h3><p>Every path lists on KDP plus the one route your <a href="#tree-how">decision path</a> picks. Keep print non-returnable at launch and turn on distribution only on release day.</p></div>
+ <div class="card"><h3>2. Test</h3><p>One A/B test per 90 days: price first, then store terms. Write down the metric (money kept per visitor) and the <a href="#testing">breakeven lift</a> before starting, and do not stop early.</p></div>
+ <div class="card"><h3>3. Review</h3><p>Hold a monthly variance review and a quarterly re-forecast. Revisit exclusivity and subscriptions once sales pass 17 of each format a month.</p></div>
 </div>
-<p class="callout"><b>Success measures:</b> breakeven reached within the planned unit count; contribution per unit within 5% of plan; cash received within the modeled DSO; one decision-grade A/B result per quarter.</p>""")
+{img("diagrams/d5_ab_test_flow.svg", "A/B test workflow")}
+<p class="callout"><b>Success measures:</b> breakeven reached within the planned number of sales; money kept per sale within 5% of plan; cash received within the modeled wait; one decision-grade A/B result per quarter.</p>""")
 
 slide("method", "Methodology", "How the numbers were built", f"""
 <div class="grid2s">
 <div><h4>Model</h4><ul>
-<li>One Python model (<a href="{GH}/blob/main/analysis/model.py">analysis/model.py</a>) writes every dataset in <a href="{GH}/tree/main/data">/data</a>; the deck, Excel workbook and Tableau story all read the same numbers.</li>
-<li>Base case: $16.99 paperback, 200 pages, $4.99 ebook (2 MB), equal unit volume per platform.</li>
-<li>Variance = platform net royalty minus KDP net royalty, decomposed into channel share, production and platform-fee drivers that sum exactly to the total.</li>
-<li>A/B sample sizes use a two-proportion z-test (alpha 0.05, power 0.80).</li></ul></div>
+<li>One Python model (<a href="{GH}/blob/main/analysis/model.py">analysis/model.py</a>) writes every dataset in <a href="{GH}/tree/main/data">/data</a>; the deck, Excel model and Tableau story read the same numbers.</li>
+<li>Base case: $16.99 paperback, 200 pages, $4.99 ebook (2 MB), equal sales per platform.</li>
+<li>Variance = platform's money kept minus KDP's, split into store share, production and fee drivers that add up exactly.</li>
+<li>A/B sample sizes use a two-proportion z-test (95% confidence, 80% power).</li></ul></div>
 <div><h4>Assumptions to replace</h4><ul>
 <li>Print costs for IngramSpark ($4.00), B&amp;N Press ($3.50) and Lulu ($5.00) are planning estimates.</li>
-<li>The $1,500 launch budget, the 65/35 channel mix and the launch-decay curve are illustrative.</li>
-<li>All prices, fees and rates are as of {ASOF}. The dataset is refreshed every three months; the next refresh is scheduled for {NEXT}.</li>
+<li>The $1,500 launch budget, the 65/35 channel mix, the launch-decay curve and Path D's own-store breakeven are illustrative.</li>
+<li>All prices, fees and rates are as of {ASOF}. The data is refreshed every three months; next refresh {NEXT}.</li>
 <li>Status note: certain works referenced are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office.</li></ul></div>
 </div>""")
 
-gl = [("A/B test","A controlled comparison of two variants on one metric, run long enough to reach a pre-set sample size."),
-("Breakeven lift","The minimum increase in volume a cheaper variant needs just to match the control's contribution."),
-("Breakeven point","Units at which cumulative contribution equals fixed costs."),
-("Channel share / take rate","The portion of the sale price kept by the retailer or marketplace."),
-("Coefficient of variation (CV)","Standard deviation divided by mean; a unit-free measure of volatility."),
-("Contribution margin","Revenue per unit minus variable costs per unit; what each sale adds toward fixed costs."),
-("Cost variance analysis","Explaining the difference between two cost outcomes by isolating each driver."),
-("Days sales outstanding (DSO)","Average days between a sale and the cash arriving."),
-("Gross-to-net (GTN)","The waterfall from list price to net revenue after discounts, fees and allowances."),
-("Margin of safety","How far planned volume can fall before reaching breakeven."),
-("Pool-based payout","Revenue paid from a fixed pool shared by usage, as in streaming royalties."),
-("Returns reserve","Cash or earnings held back to cover expected returns."),
-("Scenario analysis","Comparing outcomes under bear, base and bull assumptions."),
-("Sensitivity analysis","Flexing one input at a time to see which one moves the result most."),
-("Working capital gap","Revenue earned but not yet collected in cash.")]
-slide("glossary", "Reference", "Glossary of cross-industry analytics and FP&amp;A terms", '<dl class="gloss">' + "".join(f"<dt>{a}</dt><dd>{b}</dd>" for a,b in gl) + "</dl>")
+gl = [("A/B test", "A fair comparison of two versions on one measure, run long enough to trust the result."),
+("Breakeven lift", "How many more sales a cheaper option needs just to match the original."),
+("Breakeven point", "Sales at which total money kept equals start-up costs."),
+("Channel share / take rate", "The part of the price the store or marketplace keeps."),
+("Coefficient of variation (CV)", "How much something swings, compared to its average."),
+("Contribution margin", "Money kept from one sale after that sale's own costs."),
+("Cost variance analysis", "Explaining a cost gap by splitting it into its causes."),
+("Days sales outstanding (DSO)", "Average days between a sale and the cash arriving."),
+("Gross-to-net (GTN)", "The steps from list price to the money you keep."),
+("Margin of safety", "How far sales can drop before you stop covering costs."),
+("Pool-based payout", "Pay that comes from a shared pot split by usage."),
+("Returns reserve", "Money held back to cover books that may be returned."),
+("Scenario analysis", "Comparing results under slow, normal and great outcomes."),
+("Sensitivity analysis", "Changing one input at a time to see which matters most."),
+("Working capital gap", "Money earned but not yet collected.")]
+slide("glossary", "Reference", "Glossary of analytics and FP&amp;A terms", '<dl class="gloss">' + "".join(f"<dt>{a}</dt><dd>{b}</dd>" for a, b in gl) + "</dl>")
 
-order = ["aap","bowker","circana","usco","uscotime","uscofee","ingram","ingramtc","jf","kdp","kdped","bn","bd","lulu","pd","d2d","booksby","store","isbn","tortora","wwm","kenp"]
-slide("sources", "Attribution", "Sources", '<ol class="srclist">' + "".join(f'<li><a href="{S[k][1]}" target="_blank" rel="noopener">{S[k][0]}</a> <span>{S[k][1]}</span></li>' for k in order) +
-f'</ol><p class="muted">Mainstream industry sources (AAP, Bowker, Circana BookScan, U.S. Copyright Office) frame the market; platform help centers and agreements set the rates. Prices, fees and rates are as of {ASOF} and are refreshed quarterly (next: {NEXT}).</p>')
+order = ["aap", "bowker", "circana", "usco", "uscotime", "uscofee", "ingram", "ingramtc", "jf", "kdp", "kdped", "bn", "bd", "lulu", "pd", "d2d", "booksby", "store", "isbn", "tortora", "wwm", "kenp"]
+slide("sources", "Attribution", "Sources", '<ol class="srclist">' + "".join(f'<li><a href="{S[k][1]}" target="_blank" rel="noopener">{S[k][0]}</a></li>' for k in order) +
+f'</ol><p class="muted">Mainstream industry and government sources (AAP, Bowker, Circana BookScan, U.S. Copyright Office) frame the market; platform help centers and agreements set the rates. Prices, fees and rates are as of {ASOF} and are refreshed quarterly (next: {NEXT}).</p>')
 
 # ---------------------------------------------------------------- render
 n = len(slides)
@@ -285,6 +332,23 @@ h3 {{ margin:6px 0 6px; font-size:17px; }} h4 {{ margin:4px 0; font-size:15px; }
 .two {{ display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:center; }}
 .two.w64 {{ grid-template-columns:1.35fr 1fr; }} .two.w55 {{ grid-template-columns:1fr 1.2fr; }}
 .stack {{ display:grid; gap:10px; }} .stack .viz:first-child img {{ max-height:20vh; }} .stack .viz:last-child img {{ max-height:34vh; }}
+.viz.page img {{ max-height:72vh; }}
+.cgrid {{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }}
+.ccard {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:11px 12px; font-size:12.4px; color:var(--ink2); line-height:1.4; }}
+.ccard h4 {{ color:var(--ink); font-size:14px; margin:0 0 6px; }} .ccard p {{ margin:4px 0; }} .ccard b {{ color:#f0b98f; font-weight:600; }}
+.split {{ display:grid; grid-template-columns:1.08fr 1fr; gap:18px; align-items:start; }}
+.split .viz img {{ max-height:46vh; }}
+.steps ol {{ padding-left:20px; color:var(--ink2); font-size:15px; }} .steps li {{ margin:8px 0; }} .steps b {{ color:var(--ink); }}
+.vpanel {{ background:var(--panel); border:1px solid var(--line); border-top:4px solid; border-radius:12px; padding:14px 16px; color:var(--ink2); font-size:14px; }}
+.vpanel.a {{ border-top-color:#2a78d6; }} .vpanel.b {{ border-top-color:#eb6834; }} .vpanel.c {{ border-top-color:#e87ba4; }} .vpanel.d {{ border-top-color:#eda100; }} .vpanel.e {{ border-top-color:#1baf7a; }}
+.vpanel h4 {{ color:var(--ink); margin:10px 0 4px; font-size:14.5px; }} .vpanel p {{ margin:4px 0; }} .who b {{ color:var(--ink); }}
+.chips {{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:8px 0; }}
+.chip {{ background:#0e1930; border:1px solid var(--line); border-radius:8px; padding:8px; }} .chip b {{ display:block; font-family:Fraunces,serif; font-size:22px; color:var(--ink); }} .chip span {{ font-size:12px; }}
+.todo {{ list-style:none; padding:0; margin:4px 0; }} .todo li {{ padding:5px 8px; border-left:3px solid; margin:5px 0; background:#0e1930; border-radius:4px; }}
+.todo .now {{ border-color:#5aa2ff; }} .todo .test {{ border-color:#c59bff; }} .todo .watch {{ border-color:#f0894f; }} .todo b {{ color:var(--ink); }}
+.opts {{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; font-size:13px; color:var(--ink); }}
+.opts div {{ background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px; }} .opts span {{ display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }}
+a.vcard {{ text-decoration:none; }} a.vcard:hover {{ border-color:var(--accent); }} a.pill {{ text-decoration:none; }}
 .grid3 {{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }}
 .grid2s {{ display:grid; grid-template-columns:1fr 1fr; gap:22px; color:var(--ink2); font-size:15px; }}
 .grid5 {{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:14px 0; }}
@@ -317,6 +381,7 @@ ul {{ padding-left:20px; }} li {{ margin:4px 0; }}
 .snav {{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:16px; font-size:13px; align-items:center; width:min(1240px, calc(100% - 32px)); justify-content:flex-end; }}
 .snav .pg {{ color:var(--muted); margin-left:auto; order:-1; }}
 @media (max-width: 900px) {{
+  .cgrid, .split, .chips, .opts {{ grid-template-columns:1fr; }}
   .two, .two.w64, .two.w55, .grid3, .grid2s, .tiles, .toc {{ grid-template-columns:1fr; }}
   .grid5 {{ grid-template-columns:1fr 1fr; }} .gloss {{ grid-template-columns:1fr; }} .srclist {{ columns:1; }}
   html {{ scroll-snap-type:none; }} .tbl {{ display:block; overflow-x:auto; }}
@@ -327,6 +392,9 @@ ul {{ padding-left:20px; }} li {{ margin:4px 0; }}
   body {{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }}
   .slide {{ height:7.5in; min-height:0; page-break-after:always; break-after:page; overflow:hidden; padding:0.35in 0.45in 0.55in; justify-content:flex-start; }}
   .viz img {{ max-height:3.9in; }}
+  .viz.page img {{ max-height:5.6in; }}
+  .split .viz img {{ max-height:3.0in; }}
+  .ccard {{ font-size:10.5px; padding:7px 9px; }}
   .two .viz img {{ max-height:3.6in; }}
 }}
 </style></head>

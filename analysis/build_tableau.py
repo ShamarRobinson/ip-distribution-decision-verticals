@@ -65,7 +65,7 @@ def datasource(key, fname, color_field=None):
             fields += f"<column datatype='{t}' name='[{esc(c)}]' role='dimension' type='{'ordinal' if c in ('year','month') else 'nominal'}' />"
         else:
             pct = c in ("breakeven_lift_required", "net_margin_pct", "variance_pct", "share_of_price", "yoy_change", "margin_of_safety_at_600", "baseline_conversion")
-            cnt = c in ("titles", "breakeven_unit_pairs", "breakeven_platform_only", "unit_pairs", "visitors_per_arm_80pct_power", "avg_days_sale_to_cash", "payout_lag_days", "units_per_format_per_month", "month")
+            cnt = c in ("n", "titles", "breakeven_unit_pairs", "breakeven_platform_only", "unit_pairs", "visitors_per_arm_80pct_power", "avg_days_sale_to_cash", "payout_lag_days", "units_per_format_per_month", "month")
             rate = c == "per_page_rate"
             fmt = "p0.0%" if pct else ("n#,##0" if cnt else ("c&quot;$&quot;#,##0.00000" if rate else ("c&quot;$&quot;#,##0" if c in ("year1_net","cumulative_earned","cumulative_cash","cumulative_profit","total_fixed_year1") else "c&quot;$&quot;#,##0.00")))
             fields += f"<column datatype='{t}' default-format='{fmt}' name='[{esc(c)}]' role='measure' type='quantitative' />"
@@ -152,6 +152,15 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
          f"<rows>{rref}</rows><cols>{cref}</cols></table><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></worksheet>")
     SHEETS.append((name, x))
 
+SRC_LINKS = {'D1 Market': [('Bowker via Publishers Weekly', 'https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html'), ('Circana BookScan via Publishers Weekly', 'https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html')], 'D2 Gross to Net': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('Lulu pricing', 'https://blog.chapter.pub/lulu-pricing/')], 'D3 Cost Variance': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator')], 'D4 Ebook': [('ScribeCount platform comparison', 'https://scribecount.com/tools/platform-comparison'), ('PublishDrive vs Draft2Digital', 'https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html'), ('IngramSpark', 'https://www.ingramspark.com/')], 'D5 Breakeven': [('USCO 2026 fee schedule (Hypebot)', 'https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/'), ('ISBN pricing (ScribeCount)', 'https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark'), ('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans')], 'D6 Scenarios': [('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales')], 'D7 Cash': [('B&N Press payments', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('IngramSpark', 'https://www.ingramspark.com/'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D8 Pool Volatility': [('Profitable.app KENP tracker', 'https://profitable.app/kdp/stats/kenp-rate'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D9 AB Test': [('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('Model and method on GitHub', 'https://github.com/ShamarRobinson/ip-distribution-decision-verticals')]}
+# ---------------- sources table for named, clickable links
+import csv as _csv
+with open(ROOT / "data" / "story_sources.csv", "w", newline="") as _f:
+    _w = _csv.writer(_f); _w.writerow(["dashboard", "n", "source", "url", "as_of"])
+    for _d, _lst in SRC_LINKS.items():
+        for _i, (_t, _u) in enumerate(_lst, 1):
+            _w.writerow([_d, _i, _t, _u, json.load(open(ROOT / "as_of.json"))["as_of"]])
+
 # ---------------- data sources
 dsx = [
  datasource("isbn", "market_bowker_isbn.csv", "segment"),
@@ -165,6 +174,7 @@ dsx = [
  datasource("kenp", "kenp_pool_rate.csv"),
  datasource("ab", "ab_test_design.csv"),
  datasource("pay", "payout_timing.csv", "platform"),
+ datasource("src", "story_sources.csv"),
 ]
 
 # ---------------- worksheets
@@ -191,12 +201,25 @@ sheet("10 KENP Pool Rate", "Kindle Unlimited per-page payout rate", "kenp", [("p
 sheet("11 AB Breakeven Lift", "Volume lift a challenger needs to match the control", "ab", [("test","nk")], [("breakeven_lift_required","sum")], "Bar", label=("breakeven_lift_required","sum"),
       subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80")
 
+for _d in SRC_LINKS:
+    sheet(f"Sources {_d[:2]}", "Sources (click a name to open it)", "src", [("n", "ok")], [], "Text", label=("source", "nk"), filt=("dashboard", _d))
+# add url to detail of each source sheet so the URL action can read it
+import re as _re
+for _i, (_n, _x) in enumerate(SHEETS):
+    if _n.startswith("Sources "):
+        ds = DS["src"]["name"]
+        _x = _x.replace("<encodings>", f"<encodings><lod column='[{ds}].[none:url:nk]' />")
+        _x = _x.replace("</view><style /><panes>", "</view><style><style-rule element='worksheet'><format attr='display-field-labels' scope='rows' value='false' /></style-rule></style><panes>")
+        _x = _x.replace("</datasource-dependencies>", f"<column-instance column='[url]' derivation='None' name='[none:url:nk]' pivot='key' type='nominal' /></datasource-dependencies>", 1)
+        _x = _x.replace("<column datatype='string' name='[source]'", "<column datatype='string' name='[url]' role='dimension' type='nominal' /><column datatype='string' name='[source]'", 1)
+        SHEETS[_i] = (_n, _x)
+
 # ---------------- dashboards with annotation text boxes
 def dash(name, sheets, note, header):
     zid = [10]
     def nid(): zid[0] += 1; return zid[0]
     n = len(sheets)
-    chart_h = 74000
+    chart_h = 64000
     w_each = 100000 // n
     inner = ""
     for i, s in enumerate(sheets):
@@ -206,39 +229,60 @@ def dash(name, sheets, note, header):
         else:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each}' x='{i*w_each}' y='8000' />"
     hdr = f"<zone h='8000' id='{nid()}' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontcolor='#0b0b0b' fontsize='18'>{esc(header)}</run></formatted-text></zone>"
-    links = " | ".join(f"{t}: {u}" for t, u in SRC_LINKS[name])
-    ann = (f"<zone h='18000' id='{nid()}' type-v2='text' w='100000' x='0' y='82000'><formatted-text>"
-           f"<run fontcolor='#1f1f1f' fontsize='11'>As of {esc(ASOF)}: {esc(note)}</run><run>&#10;</run>"
-           f"<run fontcolor='#2a62b8' fontsize='9'>Sources: {esc(links)}</run></formatted-text></zone>")
+    ann = (f"<zone h='28000' id='{nid()}' type-v2='text' w='64000' x='0' y='72000'><formatted-text>"
+           f"<run bold='true' fontcolor='#0b0b0b' fontsize='11'>What is going on (as of {esc(ASOF)}): </run>"
+           f"<run fontcolor='#1f1f1f' fontsize='11'>{esc(note)}</run></formatted-text></zone>"
+           f"<zone h='28000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='72000' />")
     return (f"<dashboard name='{esc(name)}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{hdr}{''.join(f for f in [inner])}{ann}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
-SRC_LINKS = {'D1 Market': [('Bowker via Publishers Weekly', 'https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html'), ('Circana BookScan via Publishers Weekly', 'https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html')], 'D2 Gross to Net': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('Lulu pricing', 'https://blog.chapter.pub/lulu-pricing/')], 'D3 Cost Variance': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator')], 'D4 Ebook': [('ScribeCount platform comparison', 'https://scribecount.com/tools/platform-comparison'), ('PublishDrive vs Draft2Digital', 'https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html'), ('IngramSpark', 'https://www.ingramspark.com/')], 'D5 Breakeven': [('USCO 2026 fee schedule (Hypebot)', 'https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/'), ('ISBN pricing (ScribeCount)', 'https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark'), ('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans')], 'D6 Scenarios': [('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales')], 'D7 Cash': [('B&N Press payments', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('IngramSpark', 'https://www.ingramspark.com/'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D8 Pool Volatility': [('Profitable.app KENP tracker', 'https://profitable.app/kdp/stats/kenp-rate'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D9 AB Test': [('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('Model and method on GitHub', 'https://github.com/ShamarRobinson/ip-distribution-decision-verticals')]}
 DASH = [
- ("D1 Market", ["01 Market ISBNs"], "Self-published ISBNs rose 38.7% to 3.53 million in 2025, while Circana BookScan reports print unit sales up only 0.3% to 762.4 million. Supply is outgrowing demand, so margin per sale matters more each year.", "Market context: more works are competing for the same buyers",
+ ("D1 Market", ["01 Market ISBNs"], "Every new book gets an ID number called an ISBN. The blue area is books people published on their own, and it jumped 38.7% in 2025 while printed-book sales barely moved (up 0.3%). More books are now competing for the same readers, so keeping more money from each sale matters.", "Market context: more works are competing for the same buyers",
   "Self-published ISBNs rose 38.7% in 2025."),
- ("D2 Gross to Net", ["02 Gross to Net"], "The gray channel share is the largest deduction on every wholesale route. On IngramSpark, the 55% bookstore discount takes $9.34 of each $16.99 before printing.", "Gross-to-net: where each $16.99 goes",
+ ("D2 Gross to Net", ["02 Gross to Net"], "Think of each $16.99 book as a pizza. The store takes the gray slice, printing takes the yellow slice and fees take the red slice. The blue slice is what the creator keeps: $6.79 on Amazon KDP, but only $3.33 when bookstores take a 55% discount through IngramSpark.", "Gross-to-net: where each $16.99 goes",
   "KDP nets $6.79 per paperback; IngramSpark nets $3.33."),
- ("D3 Cost Variance", ["03 Cost Variance"], "IngramSpark's $3.47 unfavorable variance to KDP breaks down into $2.55 of channel share, $0.60 of print cost and $0.32 of market access fee. The channel discount, not printing, is the main driver.", "Cost variance analysis vs the KDP baseline",
+ ("D3 Cost Variance", ["03 Cost Variance"], "We line every option up against Amazon KDP. Bars to the left mean you keep less money per book than on KDP, and each color shows a reason. For IngramSpark, the store's cut explains $2.55 of the $3.47 gap; printing adds $0.60 and fees add $0.32.", "Cost variance analysis vs the KDP baseline",
   "Retailer discounts drive most of the cost variance."),
- ("D4 Ebook", ["04 Ebook Net"], "Direct stores pay $3.49 on a $4.99 ebook. Aggregators trade $0.35 (Draft2Digital) to $0.52 (IngramSpark) per unit for one-upload reach.", "Ebook economics: direct uploads beat aggregators",
+ ("D4 Ebook", ["04 Ebook Net"], "For a $4.99 ebook, a longer bar means more money for the creator. Selling straight to a store like Apple keeps $3.49. Middlemen such as Draft2Digital keep a small piece (35 to 52 cents) in exchange for sending your book to many stores with one upload.", "Ebook economics: direct uploads beat aggregators",
   "Direct ebook uploads keep the most per sale."),
- ("D5 Breakeven", ["05 Breakeven Units", "06 Breakeven Curve"], "KDP recovers $1,585 of Year-1 fixed costs after 158 unit pairs; IngramSpark needs 272. Platform fees alone are recovered within 42 pairs on every route, so the real breakeven risk sits in production spend.", "Breakeven analysis",
+ ("D5 Breakeven", ["05 Breakeven Units", "06 Breakeven Curve"], "Starting costs are like a hole you have to fill, and every sale adds a scoop of money. KDP fills the hole after 158 sales (one print plus one ebook) and IngramSpark after 272. On the right, the spot where each line crosses zero is where that option has paid for itself; above zero is profit.", "Breakeven analysis",
   "KDP breaks even at 158 unit pairs; IngramSpark at 272."),
- ("D6 Scenarios", ["07 Scenarios"], "KDP leads in the bear, base and bull cases. PublishDrive moves ahead of IngramSpark once volume passes the 16.6-unit monthly crossover, which happens in the base and bull cases.", "Scenario analysis: the ranking is stable across volumes",
+ ("D6 Scenarios", ["07 Scenarios"], "We tried three 'what if' sales levels: slow (10 a month), normal (50) and great (250). Amazon KDP stays on top every time, so the choice does not depend on guessing sales exactly right. A flat monthly fee (PublishDrive) only beats a per-sale cut once you sell about 17 of each format a month.", "Scenario analysis: the ranking is stable across volumes",
   "Subscriptions win only above 16.6 units a month."),
- ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "At month 12, $948 of royalties has been earned but not yet received. IngramSpark pays about 60 days later than B&N Press, which raises days sales outstanding and the working-capital need.", "Accrual vs cash and days sales outstanding",
+ ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "The colored areas show money you have earned. Stores pay two to three months later, so at month 12 about $948 is earned but not yet in the bank. The bars show how long each store makes you wait: B&N about 45 days, IngramSpark about 105 days.", "Accrual vs cash and days sales outstanding",
   "Cash arrives two to three months after each sale."),
- ("D8 Pool Volatility", ["10 KENP Pool Rate"], "The per-page rate averaged $4.55 per 1,000 pages with a 6.1% coefficient of variation, ranging from $4.19 to $5.01. Pool-based income works like music-streaming royalties and should be forecast as a range.", "Pool-based payouts: exclusive ebook income varies monthly",
+ ("D8 Pool Volatility", ["10 KENP Pool Rate"], "Kindle Unlimited pays authors from one big shared pot each month, split by how many pages people read. The pot changes, so pay per page goes up and down like the weather: from $4.19 to $5.01 per 1,000 pages. Plan for a range, not one exact number.", "Pool-based payouts: exclusive ebook income varies monthly",
   "Kindle Unlimited payouts vary month to month."),
- ("D9 AB Test", ["11 AB Breakeven Lift"], "A $16.99 to $14.99 price cut needs a 21.4% unit lift just to break even, which takes about 18,467 visitors per arm to detect at a 2% conversion rate. Set the breakeven lift before the test starts.", "A/B test design: the breakeven lift sets the bar",
+ ("D9 AB Test", ["11 AB Breakeven Lift"], "Lowering the price means you earn less on each book, so you must sell more books just to stay even. A $2 print price cut needs 21% more sales to pay off. Keep the cheaper price only if a fair test, with about 18,467 shoppers in each group, shows sales jumped more than that.", "A/B test design: the breakeven lift sets the bar",
   "A $2 price cut needs a 21.4% sales lift to pay off."),
 ]
 dash_xml = [dash(n, s, note, hdr) for n, s, note, hdr, cap in DASH]
 
+PATHS = [
+ ("A. Independent creator", "#2a78d6", "Sell print and ebook on Amazon KDP. It keeps the biggest slice ($6.79 per $16.99 book) and pays back start-up costs after 158 sales. Test a lower price for 90 days and keep it only if sales rise more than 21%."),
+ ("B. Small press or imprint", "#eb6834", "Use KDP for Amazon and IngramSpark for bookstores and libraries. Start books as non-returnable, keep cash aside for the 90-day pay wait, and test a 40% discount against 55%."),
+ ("C. Catalog or backlist owner", "#e87ba4", "Keep KDP for Amazon and move wide distribution to a PublishDrive monthly plan once titles sell about 17 of each format a month. Move half the catalog first and compare."),
+ ("D. Brand, educator or corporate IP owner", "#eda100", "You already have buyers, so sell from your own site with print-on-demand (Lulu Direct) and keep the store's slice. Stay on KDP so new people can find you."),
+ ("E. Wide ebook strategist", "#1baf7a", "Publish Kindle on KDP and send other stores through Draft2Digital or go direct to Apple, Kobo and B&N. Try Kindle Unlimited on one title for 90 days before going exclusive."),
+]
+zones = f"<zone h='9000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>What should you do? Find your type and follow its path</run><run fontcolor='#52514e' fontsize='11'>&#10;Recommendations as of {esc(ASOF)}. Full walkthrough with decision trees: https://shamarrobinson.github.io/ip-distribution-decision-verticals/#tree-how</run></formatted-text></zone>"
+for i, (t, c, body) in enumerate(PATHS):
+    zones += (f"<zone h='17800' id='{20+i}' type-v2='text' w='100000' x='0' y='{9500 + i*18000}'><formatted-text>"
+              f"<run bold='true' fontcolor='{c}' fontsize='14'>{esc(t)}</run><run>&#10;</run><run fontcolor='#1f1f1f' fontsize='12'>{esc(body)}</run></formatted-text></zone>")
+dash_xml.append(f"<dashboard name='D10 Your Path'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
+                f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
+                f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
+
+ACTIONS = "".join(
+    f"<action caption='Open source: {esc(d[0])}' name='[Action_url_{i}]'><activation auto-clear='true' type='on-select' />"
+    f"<source dashboard='{esc(d[0])}' type='sheet' worksheet='Sources {esc(d[0][:2])}' />"
+    f"<link caption='' delimiter=',' escape='\\' expression='&lt;url&gt;' include-null='true' multi-select='false' url-escape='false' /></action>"
+    for i, d in enumerate(DASH))
+
 # ---------------- story
 points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' id='{i+1}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
+points += f"<story-point captured-sheet='D10 Your Path' caption='Find your business type and follow its path.' id='{len(DASH)+1}' />"
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='964' maxwidth='1366' minheight='964' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -249,7 +293,8 @@ story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard
          f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)
-windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
+windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1] + ['Sources ' + d[0][:2]])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
+windows += f"<window class='dashboard' name='D10 Your Path'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
 twb = ("<?xml version='1.0' encoding='utf-8' ?>\n"
@@ -257,6 +302,7 @@ twb = ("<?xml version='1.0' encoding='utf-8' ?>\n"
        "<document-format-change-manifest><_.fcp.MarkAnimation.true...MarkAnimation /><_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy /><SheetIdentifierTracking /><WindowsPersistSimpleIdentifiers /></document-format-change-manifest>"
        "<preferences><preference name='ui.encoding.shelf.height' value='24' /><preference name='ui.shelf.height' value='26' /></preferences>"
        f"<datasources>{''.join(dsx)}</datasources>"
+       f"<actions>{ACTIONS}</actions>"
        f"<worksheets>{''.join(x for _, x in SHEETS)}</worksheets>"
        f"<dashboards>{''.join(dash_xml)}{story}</dashboards>"
        f"<windows source-height='30'>{windows}</windows></workbook>")
