@@ -274,19 +274,46 @@ DASH = [
 dash_xml = [dash(n, s, note, hdr) for n, s, note, hdr, cap in DASH]
 
 PATHS = [
- ("A. Independent creator", "#2a78d6", "Sell print and ebook on Amazon KDP. It keeps the biggest slice ($6.79 per $16.99 book) and pays back start-up costs after 158 sales. Test a lower price for 90 days and keep it only if sales rise more than 21%."),
- ("B. Small press or imprint", "#eb6834", "Use KDP for Amazon and IngramSpark for bookstores and libraries. Start books as non-returnable, keep cash aside for the 90-day pay wait, and test a 40% discount against 55%."),
- ("C. Catalog or backlist owner", "#e87ba4", "Keep KDP for Amazon and move wide distribution to a PublishDrive monthly plan once titles sell about 17 of each format a month. Move half the catalog first and compare."),
- ("D. Brand, educator or corporate IP owner", "#eda100", "You already have buyers, so sell from your own site with print-on-demand (Lulu Direct) and keep the store's slice. Stay on KDP so new people can find you."),
- ("E. Wide ebook strategist", "#1baf7a", "Publish Kindle on KDP and send other stores through Draft2Digital or go direct to Apple, Kobo and B&N. Try Kindle Unlimited on one title for 90 days before going exclusive."),
+ ("A. Independent creator", "#2a78d6", [
+  ("Best choice", "Amazon KDP for both print and ebook."),
+  ("Choose this when", "you have one or two titles, most readers find you on Amazon, and your launch budget is tight."),
+  ("Why", "KDP keeps the most per print copy ($6.79 of a $16.99 book), costs nothing to start, and breaks even fastest (158 sales of a print book plus an ebook). Adding bookstore distribution now would roughly halve what you keep per copy without a plan to win shelf space."),
+  ("Next move", "Test $14.99 against $16.99 for 90 days and switch only if sales rise more than 21%. After breakeven, add a wide ebook route (Path E), or try KDP Select if your genre is popular in Kindle Unlimited.")]),
+ ("B. Small press or imprint", "#eb6834", [
+  ("Best choice", "KDP for Amazon plus IngramSpark for bookstores and libraries."),
+  ("Choose this when", "shelf placement, library orders or event sales matter, and each title sells fewer than about 17 copies of each format a month."),
+  ("Why", "Only IngramSpark reaches 45,000+ stores and libraries, and at this volume its per-sale fees cost less than a subscription. The trade-off: bookstores expect a 55% discount, so you keep $3.33 a copy versus $6.79 on KDP."),
+  ("Next move", "Start non-returnable, because returns can cost more than you earned and switching later leaves a 180-day tail. Test a 40% non-returnable discount ($5.87 a copy) against 55% returnable; returnable must sell 77% more to win. Plan for a 105-day wait to get paid.")]),
+ ("C. Catalog or backlist owner", "#e87ba4", [
+  ("Best choice", "KDP for Amazon plus a PublishDrive monthly plan for everywhere else."),
+  ("Choose this when", "you have many titles or steady sales above about 17 of each format a month."),
+  ("Why", "A flat fee replaces IngramSpark's 1.875% fee on every sale and its 15% ebook cut, while printing through the same Ingram network. At 50 sales a month, Year-1 earnings are $3,905 versus $3,568 on IngramSpark; at 250 a month, $21,038 versus $18,678."),
+  ("Next move", "Move half the catalog first and compare 90 days of results. Keep slow sellers on a per-sale route, and pick the plan tier ($13.99 to $83.99) by title count.")]),
+ ("D. Brand, educator or corporate IP owner", "#eda100", [
+  ("Best choice", "Your own online store with print-on-demand (Lulu Direct) plus KDP."),
+  ("Choose this when", "buyers come from you (clients, students, events, an email list or your website) rather than from browsing a store."),
+  ("Why", "No store takes a cut, so you keep about $9.59 or more per $16.99 copy versus $6.79 on KDP, and you keep the customer relationship. KDP still adds discovery and reviews."),
+  ("Next move", "Split one campaign's traffic between your store and Amazon and compare money kept per visitor. Watch printing, shipping and support costs as direct sales grow; use IngramSpark Share & Sell links for one-off campaigns.")]),
+ ("E. Wide ebook strategist", "#1baf7a", [
+  ("Best choice", "KDP for Kindle plus direct uploads to Apple, Kobo and B&N, or Draft2Digital to reach them all."),
+  ("Choose this when", "ebooks drive most of your income and you want readers outside Amazon, such as libraries, Apple users or international buyers."),
+  ("Why", "Direct uploads keep $3.49 per $4.99 ebook; Draft2Digital keeps $3.14 but saves time with one upload. Price between $2.99 and $9.99 to earn KDP's 70% rate."),
+  ("Next move", "Go direct if you can manage several dashboards; use Draft2Digital if your time is worth more than 35 cents a sale. Test Kindle Unlimited with one title for one 90-day term (pay swings $4.19 to $5.01 per 1,000 pages), and compare a PublishDrive plan above about 40 ebook sales a month.")]),
 ]
-zones = f"<zone h='9000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>What should you do? Find your type and follow its path</run><run fontcolor='#52514e' fontsize='11'>&#10;Recommendations as of {esc(ASOF)}. Full walkthrough with decision trees: https://shamarrobinson.github.io/ip-distribution-decision-verticals/#tree-how</run></formatted-text></zone>"
-for i, (t, c, body) in enumerate(PATHS):
-    zones += (f"<zone h='17800' id='{20+i}' type-v2='text' w='100000' x='0' y='{9500 + i*18000}'><formatted-text>"
-              f"<run bold='true' fontcolor='{c}' fontsize='14'>{esc(t)}</run><run>&#10;</run><run fontcolor='#1f1f1f' fontsize='12'>{esc(body)}</run></formatted-text></zone>")
-dash_xml.append(f"<dashboard name='D10 Your Path'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
-                f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
-                f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
+def path_dash(dname, items, heading):
+    zones = (f"<zone h='10000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
+             f"<run fontcolor='#52514e' fontsize='11'>&#10;Recommendations as of {esc(ASOF)}. Full walkthrough with decision trees on the slide deck: https://shamarrobinson.github.io/ip-distribution-decision-verticals/#tree-how</run></formatted-text></zone>")
+    h = (100000 - 10500) // len(items)
+    for i, (t, c, rows) in enumerate(items):
+        runs = f"<run bold='true' fontcolor='{c}' fontsize='17'>{esc(t)}</run>"
+        for lab, txt in rows:
+            runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='12'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='12'>{esc(txt)}</run>"
+        zones += f"<zone h='{h}' id='{20+i}' type-v2='text' w='100000' x='0' y='{10500 + i*h}'><formatted-text>{runs}</formatted-text></zone>"
+    return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
+            f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
+            f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
+dash_xml.append(path_dash("D10 Your Path", PATHS[:3], "What should you do? Paths A to C: selling through stores"))
+dash_xml.append(path_dash("D11 Your Path", PATHS[3:], "What should you do? Paths D and E: owned audiences and ebook-first"))
 
 ACTIONS = "".join(
     f"<action caption='Open source: {esc(d[0])}' name='[Action_url_{i}]'><activation auto-clear='true' type='on-select' />"
@@ -296,7 +323,8 @@ ACTIONS = "".join(
 
 # ---------------- story
 points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' id='{i+1}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
-points += f"<story-point captured-sheet='D10 Your Path' caption='Find your business type and follow its path.' id='{len(DASH)+1}' />"
+points += f"<story-point captured-sheet='D10 Your Path' caption='Paths A to C: find your type and its best choice.' id='{len(DASH)+1}' />"
+points += f"<story-point captured-sheet='D11 Your Path' caption='Paths D and E: owned audiences and ebook-first.' id='{len(DASH)+2}' />"
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='964' maxwidth='1366' minheight='964' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -309,6 +337,7 @@ story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)
 windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1] + ['Sources ' + d[0][:2]])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
 windows += f"<window class='dashboard' name='D10 Your Path'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D11 Your Path'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
 twb = ("<?xml version='1.0' encoding='utf-8' ?>\n"
