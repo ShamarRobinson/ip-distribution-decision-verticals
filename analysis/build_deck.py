@@ -79,25 +79,25 @@ slide("contents", "Navigate", "Contents", f"""<div class="toc">{cols}</div>
 
 # 3 Concepts -------------------------------------------------------------
 concepts = [
- ("Intellectual property (IP)", "Something you created that the law protects, like a book, song, course or design.", "Your idea is yours, like owning a house you built.", "Registering a copyright with the U.S. Copyright Office is what lets you enforce it in court."),
- ("Distribution channel", "A company that sells your work to buyers, such as Amazon KDP or IngramSpark.", "The stores and delivery trucks between you and your reader.", "Every industry picks channels: apps use app stores, bands use streaming."),
- ("Gross-to-net and unit economics", "The path from the price a buyer pays to the money you keep, one sale at a time.", "Cutting a pizza into slices and seeing which slice is yours.", "Pharma, consumer goods and music all track gross-to-net."),
- ("Contribution margin", "Money left from one sale after the costs of making that sale.", "Each sale's 'scoop' that helps pay back start-up costs.", "Restaurants and retailers price menus and products with it."),
- ("Cost variance analysis", "Explaining why one result costs more than another by splitting the gap into causes.", "Finding out which slice made your pizza smaller.", "Finance teams use it every month to compare plan vs actual."),
- ("Breakeven analysis", "How many sales it takes to earn back what you spent to start.", "Filling a hole one scoop at a time.", "Startups, factories and new product launches all use it."),
- ("Sensitivity and scenarios", "Changing one number, or a few at once, to see what moves the result.", "Asking 'what if' before you bet.", "Budget planning, investment cases and infrastructure finance."),
- ("A/B testing", "Comparing two versions fairly to see which one really works better.", "Trying two lemonade prices on two days and counting cups sold.", "Websites, apps and marketing teams run these daily."),
- ("Cash timing (DSO)", "How many days pass between a sale and the money reaching your bank.", "Waiting for allowance day after doing chores.", "Every business plans cash this way to pay its bills."),
- ("Pool-based payouts", "Getting paid a share of one shared pot, split by usage.", "Splitting one pizza by how many slices each friend ate.", "Music streaming royalties and ad networks pay this way."),
+ ("Intellectual property (IP)", "Something you created that the law protects, like a book, song, course or design.", "Like owning the rights to a song you wrote: others need your permission to copy or sell it.", "Registering a copyright with the U.S. Copyright Office is what lets you enforce it in court."),
+ ("Distribution channel", "A company that sells your work to buyers, such as Amazon KDP or IngramSpark.", "The stores and services between you and your buyer, the way an app store sits between developers and users.", "Every industry picks channels: apps use app stores, bands use streaming."),
+ ("Gross-to-net and unit economics", "The path from the price a buyer pays to the money you keep, one sale at a time.", "A receipt showing every cut taken out of the price before you get paid.", "Pharma, consumer goods and music all track gross-to-net."),
+ ("Contribution margin", "Money left from one sale after the costs of making that sale.", "What each sale adds toward paying off your launch costs.", "Restaurants and retailers price menus and products with it."),
+ ("Cost variance analysis", "Explaining why one result costs more than another by splitting the gap into causes.", "Pinpointing exactly which cost made your take-home smaller than another option's.", "Finance teams use it every month to compare plan vs actual."),
+ ("Breakeven analysis", "How many sales it takes to earn back what you spent to start.", "The sale that finally pays back everything you spent to launch.", "Startups, factories and new product launches all use it."),
+ ("Sensitivity and scenarios", "Changing one number, or a few at once, to see what moves the result.", "Asking 'what if?' before you commit money.", "Budget planning, investment cases and infrastructure finance."),
+ ("A/B testing", "Comparing two versions fairly to see which one really works better.", "Testing two video thumbnails and keeping the one more people click.", "Websites, apps and marketing teams run these daily."),
+ ("Cash timing (DSO)", "How many days pass between a sale and the money reaching your bank.", "A job that pays you a month after you work the shift.", "Every business plans cash this way to pay its bills."),
+ ("Pool-based payouts", "Getting paid a share of one shared pot, split by usage.", "Splitting a team's prize money by how many points each player scored.", "Music streaming royalties and ad networks pay this way."),
 ]
 cards = "".join(f'<div class="ccard"><h4>{a}</h4><p><b>What it is:</b> {b}</p><p><b>Think of it as:</b> {c}</p><p><b>How it is used:</b> {d}</p></div>' for a, b, c, d in concepts)
-slide("concepts", "Introduction", "Ten ideas you will see in this deck, in plain words", f'<div class="cgrid">{cards}</div>')
+slide("concepts", "Introduction", "Ten ideas you will see in this deck, explained simply", f'<div class="cgrid">{cards}</div>')
 
 # 4 Executive summary -----------------------------------------------------
 slide("summary", "Executive summary", "Three findings drive the decision", f"""
 <div class="grid3">
   <div class="card"><div class="big">$6.79 vs $3.33</div><h3>The store's cut drives the gap</h3><p>On a $16.99 paperback, Amazon KDP leaves the creator $6.79 and IngramSpark's bookstore route leaves $3.33. About $2.55 of that $3.47 gap is the store's discount. <a href="#variance">See the variance</a>.</p></div>
-  <div class="card"><div class="big">158 vs 272</div><h3>Payback depends on each sale's scoop</h3><p>KDP earns back Year-1 costs after 158 sales of one print plus one ebook; IngramSpark needs 272. Platform fees alone are earned back within 42. <a href="#breakeven">See breakeven</a>.</p></div>
+  <div class="card"><div class="big">158 vs 272</div><h3>Payback depends on contribution per sale</h3><p>KDP earns back Year-1 costs after 158 sales of one print plus one ebook; IngramSpark needs 272. Platform fees alone are earned back within 42. <a href="#breakeven">See breakeven</a>.</p></div>
   <div class="card"><div class="big">16.6 / month</div><h3>Flat fees only win at volume</h3><p>A $13.99 monthly plan beats per-sale fees only above about 17 sales of each format a month. <a href="#scale">See the crossover</a>.</p></div>
 </div>
 <p class="callout"><b>Decision ask:</b> launch on two channels (KDP plus one route picked from <a href="#tree-how">your decision path</a>), keep print non-returnable at launch, and run one 90-day A/B test per quarter. <a href="#recommendation">Go to the recommendation</a>.</p>""")
