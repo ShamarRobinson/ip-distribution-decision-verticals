@@ -123,7 +123,10 @@ def ci(key, field, kind):
 
 SHEETS = []
 SHEET_COLOR = {}
-def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle=""):
+HL = "#c2410c"
+def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle="", lines=(), bands=(), notes=()):
+    """lines: (axis_ref, value, label); bands: (axis_ref, from, to, label, fill); notes: (dim_value, measure_value, text, dx, dy).
+    axis_ref is a (field, kind) spec such as ("net_royalty", "sum") or ("month", "qk"). Notes work on single-dimension bar sheets."""
     ds = DS[key]["name"]
     used = {}
     def ref(spec):
@@ -155,6 +158,40 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         vals = list(dict.fromkeys(r[cf] for r in DS[key]["rows"]))
         maps = "".join(f"<map to='{COL.get(v, '#8a8984')}'><bucket>&quot;{esc(v)}&quot;</bucket></map>" for v in vals)
         tstyle = f"<style><style-rule element='mark'><encoding attr='color' field='[{ds}].[none:{esc(cf)}:nk]' type='palette'>{maps}</encoding></style-rule></style>"
+    rid = [0]; rl_xml = ""; band_rules = ""
+    def axref(spec):
+        f, kind = spec; r, x = ci(key, f, kind); used[r] = x; return f"[{ds}].{esc(r)}"
+    def one_line(spec, val, lab, extra="", z=3):
+        a = axref(spec); i = f"refline{rid[0]}"; rid[0] += 1
+        lt = f"label='{esc(lab)}' label-type='custom'" if lab else "label-type='none'"
+        return i, (f"<reference-line axis-column='{a}' enable-instant-analytics='true' formula='constant' id='{i}' {lt} "
+                   f"scope='per-table' {extra}value='{val if val != 0 else 0.001}' value-column='{a}' z-order='{z}' />")
+    for spec, v0, v1, lab, fill in bands:
+        a_id, b_id = f"refline{rid[0]}", f"refline{rid[0]+1}"
+        _, x0 = one_line(spec, v0, lab, f"paired-id='{b_id}' symmetric='false' ", z=1)
+        _, x1 = one_line(spec, v1, "", f"paired-id='{a_id}' symmetric='false' ", z=1)
+        rl_xml += x0 + x1
+        band_rules += f"<format attr='fill-color' id='{a_id}' value='{fill}' />"
+    for spec, val, lab in lines:
+        _, x = one_line(spec, val, lab); rl_xml += x
+    extra_rules = ""
+    if band_rules:
+        extra_rules += f"<style-rule element='refband'>{band_rules}</style-rule>"
+    if extra_rules:
+        tstyle = tstyle.replace("<style />", f"<style>{extra_rules}</style>") if tstyle == "<style />" else tstyle.replace("</style>", f"{extra_rules}</style>")
+    ann = ""
+    if notes:
+        dimf, measf = rows[0][0], cols[0][0]
+        dref, mref = f"[{ds}].[none:{esc(dimf)}:nk]", f"[{ds}].[sum:{esc(measf)}:qk]"
+        for k, (dv, mv, txt, dx, dy) in enumerate(notes):
+            ann += (f"<annotation class='point' id='{k}' mark-position='1' pullback='12' text-width='190'>"
+                    f"<formatted-text><run bold='true' fontcolor='{HL}'>{esc(txt)}</run></formatted-text>"
+                    f"<point><visual-coordinate class='mark'><tuple-reference><tuple-descriptor><pane-descriptor>"
+                    f"<x-fields><field>{mref}</field></x-fields><y-fields><field>{dref}</field></y-fields></pane-descriptor>"
+                    f"<columns><field>{dref}</field><field>{mref}</field></columns></tuple-descriptor>"
+                    f"<tuple><value>&quot;{esc(dv)}&quot;</value><value>{mv}</value></tuple></tuple-reference></visual-coordinate></point>"
+                    f"<body x='{dx}' y='{dy}' /></annotation>")
+        ann = f"<annotations>{ann}</annotations>"
     lbl_style = "<style><style-rule element='mark'><format attr='mark-labels-show' value='true' /><format attr='mark-labels-cull' value='true' />" + ("<format attr='mark-markers-mode' value='all' />" if mark == 'Line' else "") + "</style-rule></style>" if label else ("<style><style-rule element='mark'><format attr='mark-markers-mode' value='all' /></style-rule></style>" if mark == 'Line' else "")
     sub = f"<run fontcolor='#52514e' fontsize='10'>&#10;{esc(subtitle)}</run>" if subtitle else ""
     x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontsize='14'>{esc(title)}</run>{sub}</formatted-text></title></layout-options>"
@@ -162,8 +199,8 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
          f"<datasource-dependencies datasource='{ds}'>{deps}{''.join(used.values())}</datasource-dependencies>"
          f"{filt_xml}{sort_xml}<aggregation value='true' /></view>{tstyle}"
          f"<panes><pane selection-relaxation-option='selection-relaxation-allow'><view><breakdown value='auto' /></view>"
-         f"<mark class='{mark}' /><encodings>{enc}</encodings>{lbl_style}</pane></panes>"
-         f"<rows>{rref}</rows><cols>{cref}</cols></table><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></worksheet>")
+         f"<mark class='{mark}' /><encodings>{enc}</encodings>{rl_xml}{lbl_style}</pane></panes>"
+         f"<rows>{rref}</rows><cols>{cref}</cols>{ann}</table><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></worksheet>")
     SHEETS.append((name, x))
 
 SRC_LINKS = {'D1 Market': [('Bowker via Publishers Weekly', 'https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html'), ('Circana BookScan via Publishers Weekly', 'https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html')], 'D2 Gross to Net': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('Lulu pricing', 'https://blog.chapter.pub/lulu-pricing/')], 'D3 Cost Variance': [('IngramSpark 2026 pricing', 'https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator')], 'D4 Ebook': [('ScribeCount platform comparison', 'https://scribecount.com/tools/platform-comparison'), ('PublishDrive vs Draft2Digital', 'https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html'), ('IngramSpark', 'https://www.ingramspark.com/')], 'D5 Breakeven': [('USCO 2026 fee schedule (Hypebot)', 'https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/'), ('ISBN pricing (ScribeCount)', 'https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark'), ('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans')], 'D6 Scenarios': [('PublishDrive plans', 'https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans'), ('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('B&N Press royalties', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales')], 'D7 Cash': [('B&N Press payments', 'https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales'), ('IngramSpark', 'https://www.ingramspark.com/'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D8 Pool Volatility': [('Profitable.app KENP tracker', 'https://profitable.app/kdp/stats/kenp-rate'), ('Written Word Media 2025 survey', 'https://www.writtenwordmedia.com/2025-indie-author-survey-results/')], 'D9 AB Test': [('KDP royalty calculator', 'https://profitable.app/tools/kdp-royalty-calculator'), ('Model and method on GitHub', 'https://github.com/ShamarRobinson/ip-distribution-decision-verticals')]}
@@ -192,28 +229,66 @@ dsx = [
 ]
 
 # ---------------- worksheets
+# ---------------- in-graph highlights (all computed from the data files)
+_r = lambda k: DS[k]["rows"]
+_iso = {(int(r["year"]), r["segment"]): int(r["titles"]) for r in _r("isbn")}
+_yrs = sorted({y for y, _ in _iso}); _y0, _y1 = _yrs[-2], _yrs[-1]
+SP_GROWTH = _iso[(_y1, "Self-published")] / _iso[(_y0, "Self-published")] - 1
+_eb = {r["platform"]: r for r in _r("ebook")}
+KDP_NET = next(float(r["amount"]) for r in _r("gtn") if r["platform"] == "Amazon KDP" and r["format"] == "Print" and r["component"] == "Net royalty to IP owner")
+EB_TOP = max(float(r["net_royalty"]) for r in _r("ebook"))
+EB_AGG = ("Draft2Digital", "IngramSpark")
+EB_LO = min(float(_eb[p]["net_royalty"]) for p in EB_AGG); EB_HI = max(float(_eb[p]["net_royalty"]) for p in EB_AGG)
+_be = sorted(_r("be"), key=lambda r: int(r["breakeven_unit_pairs"]))
+BE_MIN, BE_MAX = _be[0], _be[-1]
+_cash = _r("cash")
+CASH_GAP12 = sum(float(r["cumulative_earned"]) - float(r["cumulative_cash"]) for r in _cash if int(r["month"]) == 12)
+_pay = sorted(_r("pay"), key=lambda r: int(r["avg_days_sale_to_cash"]))
+_kp = [float(r["per_page_rate"]) for r in _r("kenp")]
+_ab = _r("ab"); _ab_price = [r for r in _ab if r["test"].startswith(("Price", "Ebook"))]
+_ab_hard = max(_ab, key=lambda r: float(r["breakeven_lift_required"]))
+BAND = "#fff1de"
+
 sheet("01 Market ISBNs", "U.S. ISBN output by segment, 2022 to 2025 (stacked)", "isbn", [("titles","sum")], [("year","qk")], "Area", color=("segment","nk"),
-      subtitle="Source: Bowker via Publishers Weekly, March 2026")
+      subtitle="Source: Bowker via Publishers Weekly, March 2026",
+      bands=[(("year", "qk"), _y0, _y1, f"Self-published +{SP_GROWTH:.1%} in {_y1}", BAND)])
 sheet("02 Gross to Net", "Where each $16.99 of list price goes (print)", "gtn", [("platform","nk")], [("amount","sum")], "Bar", color=("component","nk"), label=("amount","sum"), filt=("format","Print"),
-      subtitle="Model in this repository; platform rates from IngramSpark, KDP, B&N Press, Lulu and PublishDrive")
+      subtitle="Model in this repository; platform rates from IngramSpark, KDP, B&N Press, Lulu and PublishDrive",
+      lines=[(("amount", "sum"), round(KDP_NET, 3), f"KDP keeps ${KDP_NET:.2f} per copy: teal bars short of this line keep less")])
 sheet("03 Cost Variance", "Cost variance vs Amazon KDP by driver, $ per print unit", "var", [("platform","nk")], [("variance","sum")], "Bar", color=("driver","nk"), label=("variance","sum"), filt=("format","Print"),
-      subtitle="Positive = favorable to the IP owner. Drivers sum to the total variance.")
+      subtitle="Positive = favorable to the IP owner. Drivers sum to the total variance.",
+      lines=[(("variance", "sum"), 0, "KDP baseline: bars left of this line keep less than KDP")])
 sheet("04 Ebook Net", "Net royalty per $4.99 ebook", "ebook", [("platform","nk")], [("net_royalty","sum")], "Bar", color=("platform","nk"), label=("net_royalty","sum"), sort=("platform","net_royalty"),
-      subtitle="Store payout rates from ScribeCount; fees from KDP, Draft2Digital and the IngramSpark agreement")
+      subtitle="Store payout rates from ScribeCount; fees from KDP, Draft2Digital and the IngramSpark agreement",
+      lines=[(("net_royalty", "sum"), EB_TOP, f"Best possible: ${EB_TOP:.2f} (70%)")],
+      bands=[(("net_royalty", "sum"), EB_LO, EB_TOP, "", BAND)],
+      notes=[("IngramSpark", _eb["IngramSpark"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale", 120, -18)])
 sheet("05 Breakeven Units", "Unit pairs needed to recover Year-1 fixed costs", "be", [("stack","nk")], [("breakeven_unit_pairs","sum")], "Bar", color=("stack","nk"), label=("breakeven_unit_pairs","sum"),
-      subtitle="Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions")
+      subtitle="Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions",
+      lines=[(("breakeven_unit_pairs", "sum"), int(BE_MIN["breakeven_unit_pairs"]), f"Fastest: {BE_MIN['stack']} at {BE_MIN['breakeven_unit_pairs']} pairs")],
+      notes=[(BE_MAX["stack"], BE_MAX["breakeven_unit_pairs"], f"{int(BE_MAX['breakeven_unit_pairs'])/int(BE_MIN['breakeven_unit_pairs']):.1f}x as many sales as the fastest route", -30, 42)])
 sheet("06 Breakeven Curve", "Cumulative profit by unit pairs sold", "curve", [("cumulative_profit","sum")], [("unit_pairs","qk")], "Line", color=("stack","nk"),
-      subtitle="Each line crosses zero at its breakeven point")
+      subtitle="Each line crosses zero at its breakeven point",
+      lines=[(("cumulative_profit", "sum"), 0, "Breakeven: below this line you are still paying back launch costs")],
+      bands=[(("unit_pairs", "qk"), int(BE_MIN["breakeven_unit_pairs"]), int(BE_MAX["breakeven_unit_pairs"]), f"Breakeven range: {BE_MIN['breakeven_unit_pairs']} to {BE_MAX['breakeven_unit_pairs']} pairs", BAND)])
 sheet("07 Scenarios", "Year-1 net by scenario (bear 10, base 50, bull 250 units per format per month)", "scen", [("stack","nk")], [("scenario","nk"), ("year1_net","sum")], "Bar", color=("stack","nk"), label=("year1_net","sum"),
       subtitle="Planning scenarios, not forecasts")
 sheet("08 Accrual vs Cash", "Cumulative royalties earned by channel (stacked), 24 months", "cash", [("cumulative_earned","sum")], [("month","qk")], "Area", color=("channel","nk"),
-      subtitle="Illustrative hybrid stack; launch curve and 65/35 channel mix are assumptions")
+      subtitle="Illustrative hybrid stack; launch curve and 65/35 channel mix are assumptions",
+      lines=[(("month", "qk"), 12, f"Month 12: ${CASH_GAP12:,.0f} earned but not yet paid")])
 sheet("09 Days to Cash", "Average days from sale to cash", "pay", [("platform","nk")], [("avg_days_sale_to_cash","sum")], "Bar", color=("platform","nk"), label=("avg_days_sale_to_cash","sum"),
-      subtitle="B&N Press Help Center; IngramSpark Agreement Sec. 9; The Book Designer; Books.by")
+      subtitle="B&N Press Help Center; IngramSpark Agreement Sec. 9; The Book Designer; Books.by",
+      bands=[(("avg_days_sale_to_cash", "sum"), int(_pay[0]["avg_days_sale_to_cash"]), int(_pay[-1]["avg_days_sale_to_cash"]),
+              f"{int(_pay[-1]['avg_days_sale_to_cash']) - int(_pay[0]['avg_days_sale_to_cash'])}-day difference between fastest and slowest payer", BAND)])
 sheet("10 KENP Pool Rate", "Kindle Unlimited per-page payout rate", "kenp", [("per_page_rate","sum")], [("month","ok")], "Line", label=("per_page_rate","sum"),
-      subtitle="Profitable.app KENP tracker (author-reported), May 2025 to April 2026")
+      subtitle="Profitable.app KENP tracker (author-reported), May 2025 to April 2026",
+      lines=[(("per_page_rate", "sum"), round(sum(_kp) / len(_kp), 6), f"Average ${sum(_kp)/len(_kp)*1000:.2f} per 1,000 pages")],
+      bands=[(("per_page_rate", "sum"), min(_kp), max(_kp), f"Range ${min(_kp)*1000:.2f} to ${max(_kp)*1000:.2f} per 1,000 pages", BAND)])
 sheet("11 AB Breakeven Lift", "Volume lift a challenger needs to match the control", "ab", [("test","nk")], [("breakeven_lift_required","sum")], "Bar", label=("breakeven_lift_required","sum"),
-      subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80")
+      subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80",
+      bands=[(("breakeven_lift_required", "sum"), min(float(r["breakeven_lift_required"]) for r in _ab_price), max(float(r["breakeven_lift_required"]) for r in _ab_price),
+              f"Price cuts need {min(float(r['breakeven_lift_required']) for r in _ab_price):.0%} to {max(float(r['breakeven_lift_required']) for r in _ab_price):.0%} more sales", BAND)],
+      notes=[(_ab_hard["test"], _ab_hard["breakeven_lift_required"], "Hardest bar to clear: returns eat the margin", -80, -40)])
 
 for _d in SRC_LINKS:
     sheet(f"Sources {_d[:2]}", "Sources (click a name to open it)", "src", [("n", "ok")], [], "Text", label=("source", "nk"), filt=("dashboard", _d))

@@ -4,3 +4,4 @@ __pycache__/
 tableau/*.twb
 tableau/_extracts/
 hyperd*.log
+tableau/zz_*

@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.patches
 from matplotlib import font_manager as fm
 from matplotlib.lines import Line2D
 from matplotlib.ticker import PercentFormatter, FuncFormatter
@@ -44,6 +45,13 @@ def rd(name):
             if k in r and r[k] in SHORT: r[k] = SHORT[r[k]]
     return rows
 def money(x, d=2): return f"-${abs(x):,.{d}f}" if x < 0 else f"${x:,.{d}f}"
+HL = "#c2410c"   # highlight ink for in-graph callouts
+def callout(ax, text, xy, xytext, color=HL, ha="left", va="center", coords="data", fs=9, arrow=True, **kw):
+    """Boxed in-graph note with an arrow pointing at the insight."""
+    ax.annotate(text, xy=xy, xytext=xytext, textcoords=coords, ha=ha, va=va, fontsize=fs, color=color, weight="semibold",
+                bbox=dict(boxstyle="round,pad=0.3", fc="#fffaf0", ec=color, lw=1),
+                arrowprops=dict(arrowstyle="->", color=color, lw=1.2, connectionstyle="arc3,rad=0.15") if arrow else None,
+                zorder=9, annotation_clip=False, **kw)
 
 # ------------------------------------------------------------------ chart definitions
 # Each function draws on the axes it is given (or a SubplotSpec for multi-axis charts)
@@ -75,7 +83,16 @@ def c_aap(ax):
     ax.barh([r["format"] for r in rows], [float(r["revenue_billions"]) for r in rows], color="#2a78d6", height=0.55)
     for i, r in enumerate(rows):
         ax.text(float(r["revenue_billions"])+0.1, i, f"${float(r['revenue_billions']):.1f}B ({float(r['yoy_change']):+.1%})", va="center", fontsize=10, color=INK)
-    ax.set_xlim(0, 11); ax.set_xlabel("2025 U.S. publisher revenue ($ billions)"); ax.grid(axis="y", visible=False)
+    total = float(next(r["value"] for r in rd("market_headlines.csv") if r["metric"].startswith("U.S. publisher revenue")).strip("$B"))
+    names = [r["format"] for r in rows]; vals = {r["format"]: float(r["revenue_billions"]) for r in rows}
+    pr = vals["Hardback"] + vals["Paperback"]; ih, ip = names.index("Hardback"), names.index("Paperback")
+    ax.axhspan(min(ih, ip) - 0.4, max(ih, ip) + 0.4, color="#2a78d6", alpha=0.07, zorder=0)
+    ax.annotate("", xy=(10.75, min(ih, ip) - 0.3), xytext=(10.75, max(ih, ip) + 0.3), arrowprops=dict(arrowstyle="-", color=HL, lw=2))
+    ax.text(10.95, (ih + ip) / 2, f"Print:\n${pr:.1f}B,\n{pr/total:.0%} of\n${total:.1f}B", ha="left", va="center", fontsize=9, color=HL, weight="semibold")
+    fast = max(rows, key=lambda r: float(r["yoy_change"])); fi = names.index(fast["format"])
+    ax.plot(float(fast["revenue_billions"]) + 2.75, fi, marker="*", ms=14, color=HL, zorder=6)
+    callout(ax, "Fastest growth", (float(fast["revenue_billions"]) + 2.95, fi), (float(fast["revenue_billions"]) + 4.3, fi - 0.55))
+    ax.set_xlim(0, 12.6); ax.set_xlabel("2025 U.S. publisher revenue ($ billions)"); ax.grid(axis="y", visible=False)
     ax.set_title("Print still earns the most; audio grows fastest")
     return ('This splits 2025 U.S. book revenue by format. Hardbacks and paperbacks still bring in about $16 billion of the $33.4 billion total, while audiobooks are smaller but grew fastest (+5.3%). That is why print distribution choices carry the most dollars.',
             "Association of American Publishers, StatShot Annual Report 2025")
@@ -112,6 +129,15 @@ def c_ebook(ax):
     ax.barh(names, [float(r["net_royalty"]) for r in eu], color=[COL.get(n, "#2a78d6") for n in names], height=0.6)
     for i, r in enumerate(eu):
         ax.text(float(r["net_royalty"])+0.04, i, f"{money(float(r['net_royalty']))} ({float(r['net_margin_pct']):.0%})", va="center", fontsize=9.5, color=INK)
+    top = max(float(r["net_royalty"]) for r in eu)
+    ax.axvline(top, color=HL, ls="--", lw=1.3, zorder=4)
+    ax.text(top + 0.04, -1.05, f"Best possible:\n{money(top)} (70%)", ha="left", va="center", fontsize=8.5, color=HL, weight="semibold")
+    agg = [r for r in eu if r["platform"] in ("Draft2Digital", "IngramSpark")]
+    lo_a = min(float(r["net_royalty"]) for r in agg); hi_a = max(float(r["net_royalty"]) for r in agg)
+    ia = [names.index(r["platform"]) for r in agg]
+    ax.fill_betweenx([min(ia) - 0.4, max(ia) + 0.4], lo_a, top, color=HL, alpha=0.10, zorder=0)
+    callout(ax, f"Middlemen cost {(top-hi_a)*100:.0f} to {(top-lo_a)*100:.0f} cents a sale", (lo_a + 0.1, min(ia) - 0.4), (0.1, -1.05))
+    ax.set_ylim(-1.5, len(eu) - 0.45)
     ax.set_xlim(0, 4.6); ax.grid(axis="y", visible=False); ax.set_xlabel("Creator keeps per $4.99 ebook")
     ax.set_title("Ebooks: selling direct keeps the most")
     return ('For a $4.99 ebook, each bar shows what the creator keeps after the store and any middleman are paid. Selling directly to Apple or B&N keeps $3.49. Aggregators like Draft2Digital keep 35 to 52 cents more per sale in exchange for sending your book to many stores with one upload.',
@@ -131,6 +157,12 @@ def c_variance(ax):
         ax.plot(tot, i, marker="D", color=INK, ms=7, zorder=5)
         ax.text(max(pos, 0)+0.2, i, f"{money(tot)}", va="center", fontsize=9.5, color=INK, weight="semibold")
     ax.axvline(0, color=INK2, lw=1)
+    ax.axvspan(0, 9.5, color="#1baf7a", alpha=0.05, zorder=0); ax.axvspan(-8, 0, color="#e34948", alpha=0.04, zorder=0)
+    ax.text(9.3, -0.75, "Better than KDP", ha="right", fontsize=8.5, color="#13795a", weight="semibold")
+    ax.text(-7.8, -0.75, "Worse than KDP", ha="left", fontsize=8.5, color="#b4232a", weight="semibold")
+    ii = others.index("IngramSpark"); ics = float(pu["IngramSpark"]["var_channel_share"]); itot = float(pu["IngramSpark"]["variance_vs_kdp"])
+    callout(ax, f"Store's cut = {money(abs(ics))} of the\n{money(abs(itot))} IngramSpark gap", (ics / 2, ii), (2.1, ii + 0.5))
+    ax.set_ylim(-1.1, len(others) - 0.4)
     ax.set_yticks(range(len(others))); ax.set_yticklabels(others); ax.grid(axis="y", visible=False)
     ax.set_xlim(-8, 9.5); ax.set_xlabel("$ per print copy vs Amazon KDP (right = better)")
     h, l = ax.get_legend_handles_labels(); h.append(Line2D([], [], marker="D", color=INK, ls="")); l.append("Total gap vs KDP")
@@ -151,6 +183,10 @@ def c_tornado(ax):
     ax.grid(axis="y", visible=False); ax.set_xlabel("Creator keeps per print copy ($)"); ax.legend(frameon=False, loc="lower left", fontsize=9)
     ax.plot([], [], marker="|", color=INK, ls="", ms=12, mew=2, label="Base case today")
     ax.legend(frameon=False, loc="lower left", fontsize=8.5)
+    top = rows[-1]; ti = len(rows) - 1
+    lo_t, hi_t = sorted((float(top["net_at_minus20"]), float(top["net_at_plus20"])))
+    ax.add_patch(matplotlib.patches.FancyBboxPatch((lo_t - 0.08, ti - 0.36), hi_t - lo_t + 0.16, 0.72, boxstyle="round,pad=0.02", fc="none", ec=HL, lw=2, zorder=6))
+    callout(ax, f"Biggest lever: price\nmoves earnings {money(hi_t - lo_t)} a copy", (hi_t + 0.08, ti - 0.3), (8.9, ti - 1.0), ha="left")
     ax.set_xlim(0, 13); ax.set_title("Sensitivity: which number matters most?")
     return ('Sensitivity analysis changes one input by 20% up or down while holding everything else steady. The wider the bar, the more that input moves your earnings. List price has the biggest effect, which is why price is the first thing worth testing.',
             "Model in this repository; each input flexed 20% with others held steady")
@@ -161,6 +197,12 @@ def c_be_units(ax):
     ax.barh(names, [int(r["breakeven_unit_pairs"]) for r in be], color=[COL[r["stack"]] for r in be], height=0.6)
     for i, r in enumerate(be):
         ax.text(int(r["breakeven_unit_pairs"])+6, i, f"{r['breakeven_unit_pairs']} pairs", va="center", fontsize=9.5, color=INK)
+    bmin = min(be, key=lambda r: int(r["breakeven_unit_pairs"])); bmax = max(be, key=lambda r: int(r["breakeven_unit_pairs"]))
+    vmin, vmax = int(bmin["breakeven_unit_pairs"]), int(bmax["breakeven_unit_pairs"])
+    ax.axvline(vmin, color=HL, ls="--", lw=1.3, zorder=4)
+    ax.text(vmin + 4, len(be) - 0.45, f"Fastest: {vmin} pairs", fontsize=8.5, color=HL, weight="semibold", va="bottom")
+    callout(ax, f"{vmax / vmin:.1f}x as many sales\nas the fastest route", (vmax, 0.25), (vmax - 40, 1.5), ha="right")
+    ax.set_ylim(-0.6, len(be) - 0.1)
     ax.set_xlim(0, 620); ax.grid(axis="y", visible=False); ax.set_xlabel("Sales (1 print + 1 ebook) to earn back Year-1 costs")
     ax.set_title("Breakeven: how many sales to earn back the start-up cost?")
     return ("Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. Each sale's contribution chips away at that total. KDP gets there after 158 sales of a print book plus an ebook; Draft2Digital alone needs 511.",
@@ -174,10 +216,13 @@ def c_be_curve(ax):
     for r in rd("breakeven.csv"):
         u = int(r["breakeven_unit_pairs"])
         if u <= 600: ax.plot(u, 0, marker="o", ms=8, color=COL[r["stack"]], markeredgecolor=INK, zorder=6)
+    bvals = [int(r["breakeven_unit_pairs"]) for r in rd("breakeven.csv")]
+    ax.axvspan(min(bvals), max(bvals), ymin=0, ymax=1, color="#eda100", alpha=0.08, zorder=0)
+    ax.text(min(bvals) + 6, -1850, f"Breakeven range: {min(bvals)} to {max(bvals)} pairs", ha="left", fontsize=8.5, color=HL, weight="semibold")
     ax.plot([], [], marker="o", ls="", color="#cccccc", markeredgecolor=INK, label="Breakeven point")
     ax.axhline(0, color=INK, lw=1.4)
     ax.fill_between([0, 600], -2000, 0, color="#e34948", alpha=0.05)
-    ax.text(590, -1850, "Below the line = still paying back costs", ha="right", fontsize=9, color=INK2)
+    ax.text(590, -1450, "Below the line = still paying back costs", ha="right", fontsize=9, color=INK2)
     ax.annotate("KDP crosses zero at 158 pairs", xy=(158, 0), xytext=(230, -1200), arrowprops=dict(arrowstyle="->", color=INK2), fontsize=9.5, color=INK)
     ax.set_xlim(0, 600); ax.set_ylim(-2000, 4600); ax.set_xlabel("Sales so far (pairs)"); ax.set_ylabel("Total profit so far ($)")
     ax.legend(frameon=False, fontsize=8.5, ncol=2, loc="upper left")
@@ -212,6 +257,11 @@ def c_scenarios(ax):
         for lab, mk in (("Bear", "o"), ("Base", "D"), ("Bull", "o")):
             ax.plot(v[lab], i, marker=mk, color=COL[s], ms=8 if lab == "Base" else 6, markeredgecolor="#fcfcfb")
         ax.text(v["Bull"]*1.15, i, f"base {money(v['Base'], 0)}", va="center", fontsize=9, color=INK)
+    base = {r["stack"]: float(r["year1_net"]) for r in sc if r["scenario"] == "Base"}
+    lead = sorted(base, key=base.get, reverse=True)
+    ki = len(stacks) - 1 - stacks.index(lead[0])
+    ax.add_patch(matplotlib.patches.FancyBboxPatch((300, ki - 0.38), 140000, 0.76, boxstyle="round,pad=0.02", fc="none", ec=HL, lw=1.6, zorder=6))
+    callout(ax, f"Leader at every level; {money(base[lead[0]] - base[lead[1]], 0)}\nahead of {lead[1]} at normal sales", (base[lead[0]], ki - 0.38), (1200, ki - 1.35), ha="left")
     ax.plot([], [], marker="o", color="#8a8984", ls="", label="Slow (10/month) or great (250/month)")
     ax.plot([], [], marker="D", color="#8a8984", ls="", ms=8, label="Normal (50/month)")
     ax.plot([], [], color="#8a8984", lw=3, alpha=0.35, label="Range of outcomes")
@@ -267,8 +317,8 @@ def c_kenp(ax):
     ax.annotate(f"Low ${min(vals):.2f}", (lo, min(vals)), xytext=(0, -16), textcoords="offset points", ha="center", fontsize=9.5)
     ax.text(0, mu+0.03, f"Average ${mu:.2f}", ha="left", fontsize=9.5, color=INK2)
     ax.annotate("", xy=(len(vals)-0.2, max(vals)), xytext=(len(vals)-0.2, min(vals)), arrowprops=dict(arrowstyle="<->", color="#e15759", lw=1.6), annotation_clip=False)
-    ax.text(len(vals)-0.05, (max(vals)+min(vals))/2, f"Range\n${max(vals)-min(vals):.2f}\n(+{max(vals)/min(vals)-1:.0%})", fontsize=9, color="#e15759", va="center", weight="semibold")
-    ax.set_xlim(-0.5, len(vals)+1.3)
+    ax.text(len(vals)+0.05, max(vals) - 0.02, f"Range\n${max(vals)-min(vals):.2f}\n(+{max(vals)/min(vals)-1:.0%})", fontsize=9, color="#e15759", va="top", weight="semibold")
+    ax.set_xlim(-0.5, len(vals)+1.6)
     ax.set_xticks(range(len(vals))); ax.set_xticklabels(mths, rotation=45, ha="right", fontsize=8.5)
     ax.set_ylim(3.9, 5.35); ax.set_ylabel("$ per 1,000 pages"); ax.legend(frameon=False, loc="upper left", fontsize=9)
     ax.set_title("Pool payouts: Kindle Unlimited pay changes monthly")
@@ -285,6 +335,11 @@ def c_ab(ax):
         ax.text(v+0.015, i, f"{v:.0%} more sales needed" + (f"\n~{int(n):,} shoppers per group" if n else "\ntrack monthly sales"), va="center", fontsize=9.5, color=INK)
     for i, v in enumerate(vals[::-1]):
         ax.plot(v, i, marker="|", ms=26, mew=3, color="#e15759", zorder=5)
+    pv = [vals[0], vals[2]]
+    ax.axvspan(min(pv), max(pv), color="#eda100", alpha=0.12, zorder=0)
+    ax.text((min(pv) + max(pv)) / 2, 2.62, f"Price cuts: {min(pv):.0%} to {max(pv):.0%}", ha="center", fontsize=8.5, color=HL, weight="semibold")
+    callout(ax, "Hardest bar to clear:\nreturns eat the margin", (vals[1], 1.28), (vals[1] + 0.05, 1.75), ha="left")
+    ax.set_ylim(-0.6, 2.75)
     ax.plot([], [], marker="|", ls="", ms=12, mew=3, color="#e15759", label="Breakeven line: the bar to beat")
     ax.legend(frameon=False, loc="lower right", fontsize=8.5)
     ax.xaxis.set_major_formatter(PercentFormatter(1.0)); ax.set_xlim(0, 1.35); ax.grid(axis="y", visible=False)
