@@ -26,7 +26,7 @@
 10. [Decision trees and choice options](#decision-trees-and-choice-options)
     - [Stakeholder decision paths](#stakeholder-decision-paths)
 11. [Tableau story](#tableau-story)
-12. [Repository structure and reproducibility](#repository-structure-and-reproducibility)
+12. [Repository structure and reproducibility](#repository-structure-and-reproducibility) (see also [MAINTENANCE.md](MAINTENANCE.md))
 13. [Methodology and assumptions](#methodology-and-assumptions)
 14. [Quarterly refresh](#quarterly-refresh)
 15. [Sources](#sources)
