@@ -1,0 +1,8 @@
+platform,format,channel,list_price,channel_share,production_cost,platform_fee,net_royalty,net_margin_pct,payout_lag_days,reach,source,variance_vs_kdp,var_channel_share,var_production,var_platform_fee,variance_pct
+Amazon KDP,Print,Amazon.com,16.99,6.796,3.4,0.0,6.794,0.3999,75,Amazon only,https://profitable.app/tools/kdp-royalty-calculator,0.0,0.0,0.0,0.0,0.0
+KDP Expanded Distribution,Print,Other retailers via KDP,16.99,10.194,3.4,0.0,3.396,0.1999,75,Limited wholesale,https://bestwriting.com/kdp-royalties,-3.398,-3.398,0.0,0.0,-0.5001
+IngramSpark,Print,"Bookstores, libraries, online",16.99,9.3445,4.0,0.3186,3.3269,0.1958,105,Widest wholesale,https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More,-3.4671,-2.5485,-0.6,-0.3186,-0.5103
+B&N Press,Print,BN.com (U.S.),16.99,7.6455,3.5,0.0,5.8445,0.344,45,Barnes & Noble only,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,-0.9495,-0.8495,-0.1,0.0,-0.1398
+Lulu Bookstore,Print,Lulu.com,16.99,0.0,5.0,2.398,9.592,0.5646,45,Own storefront,https://blog.chapter.pub/lulu-pricing/,2.798,6.796,-1.6,-2.398,0.4118
+Lulu Retail,Print,Retailers via Lulu,16.99,8.495,5.0,0.699,2.796,0.1646,45,Wholesale via partner,https://blog.chapter.pub/lulu-pricing/,-3.998,-1.699,-1.6,-0.699,-0.5885
+PublishDrive,Print,Bookstores via Ingram,16.99,9.3445,4.0,0.0,3.6455,0.2146,75,Widest wholesale,https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans,-3.1485,-2.5485,-0.6,0.0,-0.4634
