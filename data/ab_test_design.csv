@@ -1,4 +1,4 @@
-test,platform,metric,net_per_unit_A,net_per_unit_B,breakeven_lift_required,baseline_conversion,visitors_per_arm_80pct_power,decision_rule
-"Price elasticity: $16.99 (A, control) vs $14.99 (B)",Amazon KDP print,Net royalty per product-page visitor,6.794,5.594,0.2145,0.02,18467,Ship B only if unit conversion rises more than 21.5%; otherwise keep A.
-"Channel terms: 55% discount, returnable (A) vs 40% non-returnable (B)",IngramSpark print,Net royalty per month after returns,3.3269,5.8754,0.766,,,Here the lift applies to arm A: A must sell 1.77x the units of arm B (net of returns) to match B's contribution.
-"Ebook price: $4.99 (A, control) vs $3.99 (B)",Amazon KDP ebook,Net royalty per product-page visitor,3.283,2.583,0.271,0.03,7814,Ship B only if unit conversion rises more than 27.1%.
+test,platform,metric,net_per_unit_A,net_per_unit_B,breakeven_lift_required,baseline_conversion,visitors_per_arm_80pct_power,decision_rule,as_of
+"Price elasticity: $16.99 (A, control) vs $14.99 (B)",Amazon KDP print,Net royalty per product-page visitor,6.794,5.594,0.2145,0.02,18467,Ship B only if unit conversion rises more than 21.5%; otherwise keep A.,2026-10-11
+"Channel terms: 55% discount, returnable (A) vs 40% non-returnable (B)",IngramSpark print,Net royalty per month after returns,3.3269,5.8754,0.766,,,Here the lift applies to arm A: A must sell 1.77x the units of arm B (net of returns) to match B's contribution.,2026-10-11
+"Ebook price: $4.99 (A, control) vs $3.99 (B)",Amazon KDP ebook,Net royalty per product-page visitor,3.283,2.583,0.271,0.03,7814,Ship B only if unit conversion rises more than 27.1%.,2026-10-11

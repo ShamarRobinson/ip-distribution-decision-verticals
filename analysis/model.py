@@ -39,7 +39,10 @@ SRC = {
     "tortora": "https://danieljtortora.com/blog/self-publishing-royalties",
 }
 
+import json
+AS_OF = json.load(open(ROOT / "as_of.json"))["as_of"]
 def w(name, rows, fields=None):
+    rows = [dict(r, as_of=AS_OF) for r in rows]
     fields = fields or list(rows[0].keys())
     with open(DATA / name, "w", newline="") as f:
         wr = csv.DictWriter(f, fieldnames=fields); wr.writeheader(); wr.writerows(rows)

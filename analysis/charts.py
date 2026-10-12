@@ -26,6 +26,8 @@ COL = {"Amazon KDP": "#2a78d6", "IngramSpark": "#eb6834", "B&N Press": "#1baf7a"
 POS, NEG, NEU = "#2a78d6", "#e34948", "#b9b8b2"
 
 def rd(name): return list(csv.DictReader(open(D / name)))
+import json
+ASOF = json.load(open(ROOT / "as_of.json"))["as_of_label"]
 def save(fig, name, src):
     fig.canvas.draw()
     bb = fig.get_tightbbox(fig.canvas.get_renderer()).transformed(fig.dpi_scale_trans.inverted() + fig.transFigure.inverted()) if False else None
@@ -33,7 +35,7 @@ def save(fig, name, src):
     tb = fig.get_tightbbox(r)  # inches
     y = (tb.y0 * fig.dpi - 6) / (fig.get_figheight() * fig.dpi)
     x = tb.x0 / fig.get_figwidth()
-    fig.text(x, y, "Source: " + src, fontsize=8.5, color=MUTED, ha="left", va="top")
+    fig.text(x, y, f"Data as of {ASOF}. Source: " + src, fontsize=8.5, color=MUTED, ha="left", va="top")
     fig.savefig(C / f"{name}.svg", bbox_inches="tight", pad_inches=0.25)
     fig.savefig(C / f"{name}.png", dpi=200, bbox_inches="tight", pad_inches=0.25)
     plt.close(fig)

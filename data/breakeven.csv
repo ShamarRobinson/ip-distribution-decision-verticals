@@ -1,7 +1,7 @@
-stack,contribution_per_unit_pair,platform_fixed_costs,copyright_registration,illustrative_launch_budget,subscription_year1,total_fixed_year1,breakeven_unit_pairs,breakeven_platform_only,margin_of_safety_at_600
-Amazon KDP,10.077,0.0,85.0,1500.0,0.0,1585.0,158,0,0.7367
-IngramSpark,6.296,125.0,85.0,1500.0,0.0,1710.0,272,20,0.5467
-B&N Press,9.3375,125.0,85.0,1500.0,0.0,1710.0,184,14,0.6933
-Lulu,4.792,12.0,85.0,1500.0,0.0,1597.0,334,3,0.4433
-PublishDrive,7.1385,125.0,85.0,1500.0,167.88,1877.88,264,42,0.56
-Draft2Digital (ebook only),3.1437,20.0,85.0,1500.0,0.0,1605.0,511,7,0.1483
+stack,contribution_per_unit_pair,platform_fixed_costs,copyright_registration,illustrative_launch_budget,subscription_year1,total_fixed_year1,breakeven_unit_pairs,breakeven_platform_only,margin_of_safety_at_600,as_of
+Amazon KDP,10.077,0.0,85.0,1500.0,0.0,1585.0,158,0,0.7367,2026-10-11
+IngramSpark,6.296,125.0,85.0,1500.0,0.0,1710.0,272,20,0.5467,2026-10-11
+B&N Press,9.3375,125.0,85.0,1500.0,0.0,1710.0,184,14,0.6933,2026-10-11
+Lulu,4.792,12.0,85.0,1500.0,0.0,1597.0,334,3,0.4433,2026-10-11
+PublishDrive,7.1385,125.0,85.0,1500.0,167.88,1877.88,264,42,0.56,2026-10-11
+Draft2Digital (ebook only),3.1437,20.0,85.0,1500.0,0.0,1605.0,511,7,0.1483,2026-10-11

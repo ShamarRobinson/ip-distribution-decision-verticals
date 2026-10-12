@@ -1,367 +1,367 @@
-stack,unit_pairs,cumulative_profit
-Amazon KDP,0,-1585.0
-Amazon KDP,10,-1484.23
-Amazon KDP,20,-1383.46
-Amazon KDP,30,-1282.69
-Amazon KDP,40,-1181.92
-Amazon KDP,50,-1081.15
-Amazon KDP,60,-980.38
-Amazon KDP,70,-879.61
-Amazon KDP,80,-778.84
-Amazon KDP,90,-678.07
-Amazon KDP,100,-577.3
-Amazon KDP,110,-476.53
-Amazon KDP,120,-375.76
-Amazon KDP,130,-274.99
-Amazon KDP,140,-174.22
-Amazon KDP,150,-73.45
-Amazon KDP,160,27.32
-Amazon KDP,170,128.09
-Amazon KDP,180,228.86
-Amazon KDP,190,329.63
-Amazon KDP,200,430.4
-Amazon KDP,210,531.17
-Amazon KDP,220,631.94
-Amazon KDP,230,732.71
-Amazon KDP,240,833.48
-Amazon KDP,250,934.25
-Amazon KDP,260,1035.02
-Amazon KDP,270,1135.79
-Amazon KDP,280,1236.56
-Amazon KDP,290,1337.33
-Amazon KDP,300,1438.1
-Amazon KDP,310,1538.87
-Amazon KDP,320,1639.64
-Amazon KDP,330,1740.41
-Amazon KDP,340,1841.18
-Amazon KDP,350,1941.95
-Amazon KDP,360,2042.72
-Amazon KDP,370,2143.49
-Amazon KDP,380,2244.26
-Amazon KDP,390,2345.03
-Amazon KDP,400,2445.8
-Amazon KDP,410,2546.57
-Amazon KDP,420,2647.34
-Amazon KDP,430,2748.11
-Amazon KDP,440,2848.88
-Amazon KDP,450,2949.65
-Amazon KDP,460,3050.42
-Amazon KDP,470,3151.19
-Amazon KDP,480,3251.96
-Amazon KDP,490,3352.73
-Amazon KDP,500,3453.5
-Amazon KDP,510,3554.27
-Amazon KDP,520,3655.04
-Amazon KDP,530,3755.81
-Amazon KDP,540,3856.58
-Amazon KDP,550,3957.35
-Amazon KDP,560,4058.12
-Amazon KDP,570,4158.89
-Amazon KDP,580,4259.66
-Amazon KDP,590,4360.43
-Amazon KDP,600,4461.2
-IngramSpark,0,-1710.0
-IngramSpark,10,-1647.04
-IngramSpark,20,-1584.08
-IngramSpark,30,-1521.12
-IngramSpark,40,-1458.16
-IngramSpark,50,-1395.2
-IngramSpark,60,-1332.24
-IngramSpark,70,-1269.28
-IngramSpark,80,-1206.32
-IngramSpark,90,-1143.36
-IngramSpark,100,-1080.4
-IngramSpark,110,-1017.44
-IngramSpark,120,-954.48
-IngramSpark,130,-891.52
-IngramSpark,140,-828.56
-IngramSpark,150,-765.6
-IngramSpark,160,-702.64
-IngramSpark,170,-639.68
-IngramSpark,180,-576.72
-IngramSpark,190,-513.76
-IngramSpark,200,-450.8
-IngramSpark,210,-387.84
-IngramSpark,220,-324.88
-IngramSpark,230,-261.92
-IngramSpark,240,-198.96
-IngramSpark,250,-136.0
-IngramSpark,260,-73.04
-IngramSpark,270,-10.08
-IngramSpark,280,52.88
-IngramSpark,290,115.84
-IngramSpark,300,178.8
-IngramSpark,310,241.76
-IngramSpark,320,304.72
-IngramSpark,330,367.68
-IngramSpark,340,430.64
-IngramSpark,350,493.6
-IngramSpark,360,556.56
-IngramSpark,370,619.52
-IngramSpark,380,682.48
-IngramSpark,390,745.44
-IngramSpark,400,808.4
-IngramSpark,410,871.36
-IngramSpark,420,934.32
-IngramSpark,430,997.28
-IngramSpark,440,1060.24
-IngramSpark,450,1123.2
-IngramSpark,460,1186.16
-IngramSpark,470,1249.12
-IngramSpark,480,1312.08
-IngramSpark,490,1375.04
-IngramSpark,500,1438.0
-IngramSpark,510,1500.96
-IngramSpark,520,1563.92
-IngramSpark,530,1626.88
-IngramSpark,540,1689.84
-IngramSpark,550,1752.8
-IngramSpark,560,1815.76
-IngramSpark,570,1878.72
-IngramSpark,580,1941.68
-IngramSpark,590,2004.64
-IngramSpark,600,2067.6
-B&N Press,0,-1710.0
-B&N Press,10,-1616.625
-B&N Press,20,-1523.25
-B&N Press,30,-1429.875
-B&N Press,40,-1336.5
-B&N Press,50,-1243.125
-B&N Press,60,-1149.75
-B&N Press,70,-1056.375
-B&N Press,80,-963.0
-B&N Press,90,-869.625
-B&N Press,100,-776.25
-B&N Press,110,-682.875
-B&N Press,120,-589.5
-B&N Press,130,-496.125
-B&N Press,140,-402.75
-B&N Press,150,-309.375
-B&N Press,160,-216.0
-B&N Press,170,-122.625
-B&N Press,180,-29.25
-B&N Press,190,64.125
-B&N Press,200,157.5
-B&N Press,210,250.875
-B&N Press,220,344.25
-B&N Press,230,437.625
-B&N Press,240,531.0
-B&N Press,250,624.375
-B&N Press,260,717.75
-B&N Press,270,811.125
-B&N Press,280,904.5
-B&N Press,290,997.875
-B&N Press,300,1091.25
-B&N Press,310,1184.625
-B&N Press,320,1278.0
-B&N Press,330,1371.375
-B&N Press,340,1464.75
-B&N Press,350,1558.125
-B&N Press,360,1651.5
-B&N Press,370,1744.875
-B&N Press,380,1838.25
-B&N Press,390,1931.625
-B&N Press,400,2025.0
-B&N Press,410,2118.375
-B&N Press,420,2211.75
-B&N Press,430,2305.125
-B&N Press,440,2398.5
-B&N Press,450,2491.875
-B&N Press,460,2585.25
-B&N Press,470,2678.625
-B&N Press,480,2772.0
-B&N Press,490,2865.375
-B&N Press,500,2958.75
-B&N Press,510,3052.125
-B&N Press,520,3145.5
-B&N Press,530,3238.875
-B&N Press,540,3332.25
-B&N Press,550,3425.625
-B&N Press,560,3519.0
-B&N Press,570,3612.375
-B&N Press,580,3705.75
-B&N Press,590,3799.125
-B&N Press,600,3892.5
-Lulu,0,-1597.0
-Lulu,10,-1549.08
-Lulu,20,-1501.16
-Lulu,30,-1453.24
-Lulu,40,-1405.32
-Lulu,50,-1357.4
-Lulu,60,-1309.48
-Lulu,70,-1261.56
-Lulu,80,-1213.64
-Lulu,90,-1165.72
-Lulu,100,-1117.8
-Lulu,110,-1069.88
-Lulu,120,-1021.96
-Lulu,130,-974.04
-Lulu,140,-926.12
-Lulu,150,-878.2
-Lulu,160,-830.28
-Lulu,170,-782.36
-Lulu,180,-734.44
-Lulu,190,-686.52
-Lulu,200,-638.6
-Lulu,210,-590.68
-Lulu,220,-542.76
-Lulu,230,-494.84
-Lulu,240,-446.92
-Lulu,250,-399.0
-Lulu,260,-351.08
-Lulu,270,-303.16
-Lulu,280,-255.24
-Lulu,290,-207.32
-Lulu,300,-159.4
-Lulu,310,-111.48
-Lulu,320,-63.56
-Lulu,330,-15.64
-Lulu,340,32.28
-Lulu,350,80.2
-Lulu,360,128.12
-Lulu,370,176.04
-Lulu,380,223.96
-Lulu,390,271.88
-Lulu,400,319.8
-Lulu,410,367.72
-Lulu,420,415.64
-Lulu,430,463.56
-Lulu,440,511.48
-Lulu,450,559.4
-Lulu,460,607.32
-Lulu,470,655.24
-Lulu,480,703.16
-Lulu,490,751.08
-Lulu,500,799.0
-Lulu,510,846.92
-Lulu,520,894.84
-Lulu,530,942.76
-Lulu,540,990.68
-Lulu,550,1038.6
-Lulu,560,1086.52
-Lulu,570,1134.44
-Lulu,580,1182.36
-Lulu,590,1230.28
-Lulu,600,1278.2
-PublishDrive,0,-1877.88
-PublishDrive,10,-1806.495
-PublishDrive,20,-1735.11
-PublishDrive,30,-1663.725
-PublishDrive,40,-1592.34
-PublishDrive,50,-1520.955
-PublishDrive,60,-1449.57
-PublishDrive,70,-1378.185
-PublishDrive,80,-1306.8
-PublishDrive,90,-1235.415
-PublishDrive,100,-1164.03
-PublishDrive,110,-1092.645
-PublishDrive,120,-1021.26
-PublishDrive,130,-949.875
-PublishDrive,140,-878.49
-PublishDrive,150,-807.105
-PublishDrive,160,-735.72
-PublishDrive,170,-664.335
-PublishDrive,180,-592.95
-PublishDrive,190,-521.565
-PublishDrive,200,-450.18
-PublishDrive,210,-378.795
-PublishDrive,220,-307.41
-PublishDrive,230,-236.025
-PublishDrive,240,-164.64
-PublishDrive,250,-93.255
-PublishDrive,260,-21.87
-PublishDrive,270,49.515
-PublishDrive,280,120.9
-PublishDrive,290,192.285
-PublishDrive,300,263.67
-PublishDrive,310,335.055
-PublishDrive,320,406.44
-PublishDrive,330,477.825
-PublishDrive,340,549.21
-PublishDrive,350,620.595
-PublishDrive,360,691.98
-PublishDrive,370,763.365
-PublishDrive,380,834.75
-PublishDrive,390,906.135
-PublishDrive,400,977.52
-PublishDrive,410,1048.905
-PublishDrive,420,1120.29
-PublishDrive,430,1191.675
-PublishDrive,440,1263.06
-PublishDrive,450,1334.445
-PublishDrive,460,1405.83
-PublishDrive,470,1477.215
-PublishDrive,480,1548.6
-PublishDrive,490,1619.985
-PublishDrive,500,1691.37
-PublishDrive,510,1762.755
-PublishDrive,520,1834.14
-PublishDrive,530,1905.525
-PublishDrive,540,1976.91
-PublishDrive,550,2048.295
-PublishDrive,560,2119.68
-PublishDrive,570,2191.065
-PublishDrive,580,2262.45
-PublishDrive,590,2333.835
-PublishDrive,600,2405.22
-Draft2Digital (ebook only),0,-1605.0
-Draft2Digital (ebook only),10,-1573.563
-Draft2Digital (ebook only),20,-1542.126
-Draft2Digital (ebook only),30,-1510.689
-Draft2Digital (ebook only),40,-1479.252
-Draft2Digital (ebook only),50,-1447.815
-Draft2Digital (ebook only),60,-1416.378
-Draft2Digital (ebook only),70,-1384.941
-Draft2Digital (ebook only),80,-1353.504
-Draft2Digital (ebook only),90,-1322.067
-Draft2Digital (ebook only),100,-1290.63
-Draft2Digital (ebook only),110,-1259.193
-Draft2Digital (ebook only),120,-1227.756
-Draft2Digital (ebook only),130,-1196.319
-Draft2Digital (ebook only),140,-1164.882
-Draft2Digital (ebook only),150,-1133.445
-Draft2Digital (ebook only),160,-1102.008
-Draft2Digital (ebook only),170,-1070.571
-Draft2Digital (ebook only),180,-1039.134
-Draft2Digital (ebook only),190,-1007.697
-Draft2Digital (ebook only),200,-976.26
-Draft2Digital (ebook only),210,-944.823
-Draft2Digital (ebook only),220,-913.386
-Draft2Digital (ebook only),230,-881.949
-Draft2Digital (ebook only),240,-850.512
-Draft2Digital (ebook only),250,-819.075
-Draft2Digital (ebook only),260,-787.638
-Draft2Digital (ebook only),270,-756.201
-Draft2Digital (ebook only),280,-724.764
-Draft2Digital (ebook only),290,-693.327
-Draft2Digital (ebook only),300,-661.89
-Draft2Digital (ebook only),310,-630.453
-Draft2Digital (ebook only),320,-599.016
-Draft2Digital (ebook only),330,-567.579
-Draft2Digital (ebook only),340,-536.142
-Draft2Digital (ebook only),350,-504.705
-Draft2Digital (ebook only),360,-473.268
-Draft2Digital (ebook only),370,-441.831
-Draft2Digital (ebook only),380,-410.394
-Draft2Digital (ebook only),390,-378.957
-Draft2Digital (ebook only),400,-347.52
-Draft2Digital (ebook only),410,-316.083
-Draft2Digital (ebook only),420,-284.646
-Draft2Digital (ebook only),430,-253.209
-Draft2Digital (ebook only),440,-221.772
-Draft2Digital (ebook only),450,-190.335
-Draft2Digital (ebook only),460,-158.898
-Draft2Digital (ebook only),470,-127.461
-Draft2Digital (ebook only),480,-96.024
-Draft2Digital (ebook only),490,-64.587
-Draft2Digital (ebook only),500,-33.15
-Draft2Digital (ebook only),510,-1.713
-Draft2Digital (ebook only),520,29.724
-Draft2Digital (ebook only),530,61.161
-Draft2Digital (ebook only),540,92.598
-Draft2Digital (ebook only),550,124.035
-Draft2Digital (ebook only),560,155.472
-Draft2Digital (ebook only),570,186.909
-Draft2Digital (ebook only),580,218.346
-Draft2Digital (ebook only),590,249.783
-Draft2Digital (ebook only),600,281.22
+stack,unit_pairs,cumulative_profit,as_of
+Amazon KDP,0,-1585.0,2026-10-11
+Amazon KDP,10,-1484.23,2026-10-11
+Amazon KDP,20,-1383.46,2026-10-11
+Amazon KDP,30,-1282.69,2026-10-11
+Amazon KDP,40,-1181.92,2026-10-11
+Amazon KDP,50,-1081.15,2026-10-11
+Amazon KDP,60,-980.38,2026-10-11
+Amazon KDP,70,-879.61,2026-10-11
+Amazon KDP,80,-778.84,2026-10-11
+Amazon KDP,90,-678.07,2026-10-11
+Amazon KDP,100,-577.3,2026-10-11
+Amazon KDP,110,-476.53,2026-10-11
+Amazon KDP,120,-375.76,2026-10-11
+Amazon KDP,130,-274.99,2026-10-11
+Amazon KDP,140,-174.22,2026-10-11
+Amazon KDP,150,-73.45,2026-10-11
+Amazon KDP,160,27.32,2026-10-11
+Amazon KDP,170,128.09,2026-10-11
+Amazon KDP,180,228.86,2026-10-11
+Amazon KDP,190,329.63,2026-10-11
+Amazon KDP,200,430.4,2026-10-11
+Amazon KDP,210,531.17,2026-10-11
+Amazon KDP,220,631.94,2026-10-11
+Amazon KDP,230,732.71,2026-10-11
+Amazon KDP,240,833.48,2026-10-11
+Amazon KDP,250,934.25,2026-10-11
+Amazon KDP,260,1035.02,2026-10-11
+Amazon KDP,270,1135.79,2026-10-11
+Amazon KDP,280,1236.56,2026-10-11
+Amazon KDP,290,1337.33,2026-10-11
+Amazon KDP,300,1438.1,2026-10-11
+Amazon KDP,310,1538.87,2026-10-11
+Amazon KDP,320,1639.64,2026-10-11
+Amazon KDP,330,1740.41,2026-10-11
+Amazon KDP,340,1841.18,2026-10-11
+Amazon KDP,350,1941.95,2026-10-11
+Amazon KDP,360,2042.72,2026-10-11
+Amazon KDP,370,2143.49,2026-10-11
+Amazon KDP,380,2244.26,2026-10-11
+Amazon KDP,390,2345.03,2026-10-11
+Amazon KDP,400,2445.8,2026-10-11
+Amazon KDP,410,2546.57,2026-10-11
+Amazon KDP,420,2647.34,2026-10-11
+Amazon KDP,430,2748.11,2026-10-11
+Amazon KDP,440,2848.88,2026-10-11
+Amazon KDP,450,2949.65,2026-10-11
+Amazon KDP,460,3050.42,2026-10-11
+Amazon KDP,470,3151.19,2026-10-11
+Amazon KDP,480,3251.96,2026-10-11
+Amazon KDP,490,3352.73,2026-10-11
+Amazon KDP,500,3453.5,2026-10-11
+Amazon KDP,510,3554.27,2026-10-11
+Amazon KDP,520,3655.04,2026-10-11
+Amazon KDP,530,3755.81,2026-10-11
+Amazon KDP,540,3856.58,2026-10-11
+Amazon KDP,550,3957.35,2026-10-11
+Amazon KDP,560,4058.12,2026-10-11
+Amazon KDP,570,4158.89,2026-10-11
+Amazon KDP,580,4259.66,2026-10-11
+Amazon KDP,590,4360.43,2026-10-11
+Amazon KDP,600,4461.2,2026-10-11
+IngramSpark,0,-1710.0,2026-10-11
+IngramSpark,10,-1647.04,2026-10-11
+IngramSpark,20,-1584.08,2026-10-11
+IngramSpark,30,-1521.12,2026-10-11
+IngramSpark,40,-1458.16,2026-10-11
+IngramSpark,50,-1395.2,2026-10-11
+IngramSpark,60,-1332.24,2026-10-11
+IngramSpark,70,-1269.28,2026-10-11
+IngramSpark,80,-1206.32,2026-10-11
+IngramSpark,90,-1143.36,2026-10-11
+IngramSpark,100,-1080.4,2026-10-11
+IngramSpark,110,-1017.44,2026-10-11
+IngramSpark,120,-954.48,2026-10-11
+IngramSpark,130,-891.52,2026-10-11
+IngramSpark,140,-828.56,2026-10-11
+IngramSpark,150,-765.6,2026-10-11
+IngramSpark,160,-702.64,2026-10-11
+IngramSpark,170,-639.68,2026-10-11
+IngramSpark,180,-576.72,2026-10-11
+IngramSpark,190,-513.76,2026-10-11
+IngramSpark,200,-450.8,2026-10-11
+IngramSpark,210,-387.84,2026-10-11
+IngramSpark,220,-324.88,2026-10-11
+IngramSpark,230,-261.92,2026-10-11
+IngramSpark,240,-198.96,2026-10-11
+IngramSpark,250,-136.0,2026-10-11
+IngramSpark,260,-73.04,2026-10-11
+IngramSpark,270,-10.08,2026-10-11
+IngramSpark,280,52.88,2026-10-11
+IngramSpark,290,115.84,2026-10-11
+IngramSpark,300,178.8,2026-10-11
+IngramSpark,310,241.76,2026-10-11
+IngramSpark,320,304.72,2026-10-11
+IngramSpark,330,367.68,2026-10-11
+IngramSpark,340,430.64,2026-10-11
+IngramSpark,350,493.6,2026-10-11
+IngramSpark,360,556.56,2026-10-11
+IngramSpark,370,619.52,2026-10-11
+IngramSpark,380,682.48,2026-10-11
+IngramSpark,390,745.44,2026-10-11
+IngramSpark,400,808.4,2026-10-11
+IngramSpark,410,871.36,2026-10-11
+IngramSpark,420,934.32,2026-10-11
+IngramSpark,430,997.28,2026-10-11
+IngramSpark,440,1060.24,2026-10-11
+IngramSpark,450,1123.2,2026-10-11
+IngramSpark,460,1186.16,2026-10-11
+IngramSpark,470,1249.12,2026-10-11
+IngramSpark,480,1312.08,2026-10-11
+IngramSpark,490,1375.04,2026-10-11
+IngramSpark,500,1438.0,2026-10-11
+IngramSpark,510,1500.96,2026-10-11
+IngramSpark,520,1563.92,2026-10-11
+IngramSpark,530,1626.88,2026-10-11
+IngramSpark,540,1689.84,2026-10-11
+IngramSpark,550,1752.8,2026-10-11
+IngramSpark,560,1815.76,2026-10-11
+IngramSpark,570,1878.72,2026-10-11
+IngramSpark,580,1941.68,2026-10-11
+IngramSpark,590,2004.64,2026-10-11
+IngramSpark,600,2067.6,2026-10-11
+B&N Press,0,-1710.0,2026-10-11
+B&N Press,10,-1616.625,2026-10-11
+B&N Press,20,-1523.25,2026-10-11
+B&N Press,30,-1429.875,2026-10-11
+B&N Press,40,-1336.5,2026-10-11
+B&N Press,50,-1243.125,2026-10-11
+B&N Press,60,-1149.75,2026-10-11
+B&N Press,70,-1056.375,2026-10-11
+B&N Press,80,-963.0,2026-10-11
+B&N Press,90,-869.625,2026-10-11
+B&N Press,100,-776.25,2026-10-11
+B&N Press,110,-682.875,2026-10-11
+B&N Press,120,-589.5,2026-10-11
+B&N Press,130,-496.125,2026-10-11
+B&N Press,140,-402.75,2026-10-11
+B&N Press,150,-309.375,2026-10-11
+B&N Press,160,-216.0,2026-10-11
+B&N Press,170,-122.625,2026-10-11
+B&N Press,180,-29.25,2026-10-11
+B&N Press,190,64.125,2026-10-11
+B&N Press,200,157.5,2026-10-11
+B&N Press,210,250.875,2026-10-11
+B&N Press,220,344.25,2026-10-11
+B&N Press,230,437.625,2026-10-11
+B&N Press,240,531.0,2026-10-11
+B&N Press,250,624.375,2026-10-11
+B&N Press,260,717.75,2026-10-11
+B&N Press,270,811.125,2026-10-11
+B&N Press,280,904.5,2026-10-11
+B&N Press,290,997.875,2026-10-11
+B&N Press,300,1091.25,2026-10-11
+B&N Press,310,1184.625,2026-10-11
+B&N Press,320,1278.0,2026-10-11
+B&N Press,330,1371.375,2026-10-11
+B&N Press,340,1464.75,2026-10-11
+B&N Press,350,1558.125,2026-10-11
+B&N Press,360,1651.5,2026-10-11
+B&N Press,370,1744.875,2026-10-11
+B&N Press,380,1838.25,2026-10-11
+B&N Press,390,1931.625,2026-10-11
+B&N Press,400,2025.0,2026-10-11
+B&N Press,410,2118.375,2026-10-11
+B&N Press,420,2211.75,2026-10-11
+B&N Press,430,2305.125,2026-10-11
+B&N Press,440,2398.5,2026-10-11
+B&N Press,450,2491.875,2026-10-11
+B&N Press,460,2585.25,2026-10-11
+B&N Press,470,2678.625,2026-10-11
+B&N Press,480,2772.0,2026-10-11
+B&N Press,490,2865.375,2026-10-11
+B&N Press,500,2958.75,2026-10-11
+B&N Press,510,3052.125,2026-10-11
+B&N Press,520,3145.5,2026-10-11
+B&N Press,530,3238.875,2026-10-11
+B&N Press,540,3332.25,2026-10-11
+B&N Press,550,3425.625,2026-10-11
+B&N Press,560,3519.0,2026-10-11
+B&N Press,570,3612.375,2026-10-11
+B&N Press,580,3705.75,2026-10-11
+B&N Press,590,3799.125,2026-10-11
+B&N Press,600,3892.5,2026-10-11
+Lulu,0,-1597.0,2026-10-11
+Lulu,10,-1549.08,2026-10-11
+Lulu,20,-1501.16,2026-10-11
+Lulu,30,-1453.24,2026-10-11
+Lulu,40,-1405.32,2026-10-11
+Lulu,50,-1357.4,2026-10-11
+Lulu,60,-1309.48,2026-10-11
+Lulu,70,-1261.56,2026-10-11
+Lulu,80,-1213.64,2026-10-11
+Lulu,90,-1165.72,2026-10-11
+Lulu,100,-1117.8,2026-10-11
+Lulu,110,-1069.88,2026-10-11
+Lulu,120,-1021.96,2026-10-11
+Lulu,130,-974.04,2026-10-11
+Lulu,140,-926.12,2026-10-11
+Lulu,150,-878.2,2026-10-11
+Lulu,160,-830.28,2026-10-11
+Lulu,170,-782.36,2026-10-11
+Lulu,180,-734.44,2026-10-11
+Lulu,190,-686.52,2026-10-11
+Lulu,200,-638.6,2026-10-11
+Lulu,210,-590.68,2026-10-11
+Lulu,220,-542.76,2026-10-11
+Lulu,230,-494.84,2026-10-11
+Lulu,240,-446.92,2026-10-11
+Lulu,250,-399.0,2026-10-11
+Lulu,260,-351.08,2026-10-11
+Lulu,270,-303.16,2026-10-11
+Lulu,280,-255.24,2026-10-11
+Lulu,290,-207.32,2026-10-11
+Lulu,300,-159.4,2026-10-11
+Lulu,310,-111.48,2026-10-11
+Lulu,320,-63.56,2026-10-11
+Lulu,330,-15.64,2026-10-11
+Lulu,340,32.28,2026-10-11
+Lulu,350,80.2,2026-10-11
+Lulu,360,128.12,2026-10-11
+Lulu,370,176.04,2026-10-11
+Lulu,380,223.96,2026-10-11
+Lulu,390,271.88,2026-10-11
+Lulu,400,319.8,2026-10-11
+Lulu,410,367.72,2026-10-11
+Lulu,420,415.64,2026-10-11
+Lulu,430,463.56,2026-10-11
+Lulu,440,511.48,2026-10-11
+Lulu,450,559.4,2026-10-11
+Lulu,460,607.32,2026-10-11
+Lulu,470,655.24,2026-10-11
+Lulu,480,703.16,2026-10-11
+Lulu,490,751.08,2026-10-11
+Lulu,500,799.0,2026-10-11
+Lulu,510,846.92,2026-10-11
+Lulu,520,894.84,2026-10-11
+Lulu,530,942.76,2026-10-11
+Lulu,540,990.68,2026-10-11
+Lulu,550,1038.6,2026-10-11
+Lulu,560,1086.52,2026-10-11
+Lulu,570,1134.44,2026-10-11
+Lulu,580,1182.36,2026-10-11
+Lulu,590,1230.28,2026-10-11
+Lulu,600,1278.2,2026-10-11
+PublishDrive,0,-1877.88,2026-10-11
+PublishDrive,10,-1806.495,2026-10-11
+PublishDrive,20,-1735.11,2026-10-11
+PublishDrive,30,-1663.725,2026-10-11
+PublishDrive,40,-1592.34,2026-10-11
+PublishDrive,50,-1520.955,2026-10-11
+PublishDrive,60,-1449.57,2026-10-11
+PublishDrive,70,-1378.185,2026-10-11
+PublishDrive,80,-1306.8,2026-10-11
+PublishDrive,90,-1235.415,2026-10-11
+PublishDrive,100,-1164.03,2026-10-11
+PublishDrive,110,-1092.645,2026-10-11
+PublishDrive,120,-1021.26,2026-10-11
+PublishDrive,130,-949.875,2026-10-11
+PublishDrive,140,-878.49,2026-10-11
+PublishDrive,150,-807.105,2026-10-11
+PublishDrive,160,-735.72,2026-10-11
+PublishDrive,170,-664.335,2026-10-11
+PublishDrive,180,-592.95,2026-10-11
+PublishDrive,190,-521.565,2026-10-11
+PublishDrive,200,-450.18,2026-10-11
+PublishDrive,210,-378.795,2026-10-11
+PublishDrive,220,-307.41,2026-10-11
+PublishDrive,230,-236.025,2026-10-11
+PublishDrive,240,-164.64,2026-10-11
+PublishDrive,250,-93.255,2026-10-11
+PublishDrive,260,-21.87,2026-10-11
+PublishDrive,270,49.515,2026-10-11
+PublishDrive,280,120.9,2026-10-11
+PublishDrive,290,192.285,2026-10-11
+PublishDrive,300,263.67,2026-10-11
+PublishDrive,310,335.055,2026-10-11
+PublishDrive,320,406.44,2026-10-11
+PublishDrive,330,477.825,2026-10-11
+PublishDrive,340,549.21,2026-10-11
+PublishDrive,350,620.595,2026-10-11
+PublishDrive,360,691.98,2026-10-11
+PublishDrive,370,763.365,2026-10-11
+PublishDrive,380,834.75,2026-10-11
+PublishDrive,390,906.135,2026-10-11
+PublishDrive,400,977.52,2026-10-11
+PublishDrive,410,1048.905,2026-10-11
+PublishDrive,420,1120.29,2026-10-11
+PublishDrive,430,1191.675,2026-10-11
+PublishDrive,440,1263.06,2026-10-11
+PublishDrive,450,1334.445,2026-10-11
+PublishDrive,460,1405.83,2026-10-11
+PublishDrive,470,1477.215,2026-10-11
+PublishDrive,480,1548.6,2026-10-11
+PublishDrive,490,1619.985,2026-10-11
+PublishDrive,500,1691.37,2026-10-11
+PublishDrive,510,1762.755,2026-10-11
+PublishDrive,520,1834.14,2026-10-11
+PublishDrive,530,1905.525,2026-10-11
+PublishDrive,540,1976.91,2026-10-11
+PublishDrive,550,2048.295,2026-10-11
+PublishDrive,560,2119.68,2026-10-11
+PublishDrive,570,2191.065,2026-10-11
+PublishDrive,580,2262.45,2026-10-11
+PublishDrive,590,2333.835,2026-10-11
+PublishDrive,600,2405.22,2026-10-11
+Draft2Digital (ebook only),0,-1605.0,2026-10-11
+Draft2Digital (ebook only),10,-1573.563,2026-10-11
+Draft2Digital (ebook only),20,-1542.126,2026-10-11
+Draft2Digital (ebook only),30,-1510.689,2026-10-11
+Draft2Digital (ebook only),40,-1479.252,2026-10-11
+Draft2Digital (ebook only),50,-1447.815,2026-10-11
+Draft2Digital (ebook only),60,-1416.378,2026-10-11
+Draft2Digital (ebook only),70,-1384.941,2026-10-11
+Draft2Digital (ebook only),80,-1353.504,2026-10-11
+Draft2Digital (ebook only),90,-1322.067,2026-10-11
+Draft2Digital (ebook only),100,-1290.63,2026-10-11
+Draft2Digital (ebook only),110,-1259.193,2026-10-11
+Draft2Digital (ebook only),120,-1227.756,2026-10-11
+Draft2Digital (ebook only),130,-1196.319,2026-10-11
+Draft2Digital (ebook only),140,-1164.882,2026-10-11
+Draft2Digital (ebook only),150,-1133.445,2026-10-11
+Draft2Digital (ebook only),160,-1102.008,2026-10-11
+Draft2Digital (ebook only),170,-1070.571,2026-10-11
+Draft2Digital (ebook only),180,-1039.134,2026-10-11
+Draft2Digital (ebook only),190,-1007.697,2026-10-11
+Draft2Digital (ebook only),200,-976.26,2026-10-11
+Draft2Digital (ebook only),210,-944.823,2026-10-11
+Draft2Digital (ebook only),220,-913.386,2026-10-11
+Draft2Digital (ebook only),230,-881.949,2026-10-11
+Draft2Digital (ebook only),240,-850.512,2026-10-11
+Draft2Digital (ebook only),250,-819.075,2026-10-11
+Draft2Digital (ebook only),260,-787.638,2026-10-11
+Draft2Digital (ebook only),270,-756.201,2026-10-11
+Draft2Digital (ebook only),280,-724.764,2026-10-11
+Draft2Digital (ebook only),290,-693.327,2026-10-11
+Draft2Digital (ebook only),300,-661.89,2026-10-11
+Draft2Digital (ebook only),310,-630.453,2026-10-11
+Draft2Digital (ebook only),320,-599.016,2026-10-11
+Draft2Digital (ebook only),330,-567.579,2026-10-11
+Draft2Digital (ebook only),340,-536.142,2026-10-11
+Draft2Digital (ebook only),350,-504.705,2026-10-11
+Draft2Digital (ebook only),360,-473.268,2026-10-11
+Draft2Digital (ebook only),370,-441.831,2026-10-11
+Draft2Digital (ebook only),380,-410.394,2026-10-11
+Draft2Digital (ebook only),390,-378.957,2026-10-11
+Draft2Digital (ebook only),400,-347.52,2026-10-11
+Draft2Digital (ebook only),410,-316.083,2026-10-11
+Draft2Digital (ebook only),420,-284.646,2026-10-11
+Draft2Digital (ebook only),430,-253.209,2026-10-11
+Draft2Digital (ebook only),440,-221.772,2026-10-11
+Draft2Digital (ebook only),450,-190.335,2026-10-11
+Draft2Digital (ebook only),460,-158.898,2026-10-11
+Draft2Digital (ebook only),470,-127.461,2026-10-11
+Draft2Digital (ebook only),480,-96.024,2026-10-11
+Draft2Digital (ebook only),490,-64.587,2026-10-11
+Draft2Digital (ebook only),500,-33.15,2026-10-11
+Draft2Digital (ebook only),510,-1.713,2026-10-11
+Draft2Digital (ebook only),520,29.724,2026-10-11
+Draft2Digital (ebook only),530,61.161,2026-10-11
+Draft2Digital (ebook only),540,92.598,2026-10-11
+Draft2Digital (ebook only),550,124.035,2026-10-11
+Draft2Digital (ebook only),560,155.472,2026-10-11
+Draft2Digital (ebook only),570,186.909,2026-10-11
+Draft2Digital (ebook only),580,218.346,2026-10-11
+Draft2Digital (ebook only),590,249.783,2026-10-11
+Draft2Digital (ebook only),600,281.22,2026-10-11

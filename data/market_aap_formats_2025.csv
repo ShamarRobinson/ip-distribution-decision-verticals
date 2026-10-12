@@ -1,5 +1,5 @@
-format,revenue_billions,yoy_change,source,url
-Hardback,8.2,0.039,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/
-Paperback,8.0,0.021,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/
-Digital audio,2.5,0.053,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/
-Ebook,2.2,0.032,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/
+format,revenue_billions,yoy_change,source,url,as_of
+Hardback,8.2,0.039,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/,2026-10-11
+Paperback,8.0,0.021,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/,2026-10-11
+Digital audio,2.5,0.053,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/,2026-10-11
+Ebook,2.2,0.032,Association of American Publishers StatShot Annual 2025,https://publishers.org/news/aap-statshot-annual-report-publishing-revenues-totaled-33-4-billion-for-calendar-year-2025/,2026-10-11
