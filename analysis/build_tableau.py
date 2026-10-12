@@ -69,6 +69,20 @@ def datasource(key, fname, color_field=None):
             rate = c == "per_page_rate"
             fmt = "p0.0%" if pct else ("n#,##0" if cnt else ("c&quot;$&quot;#,##0.00000" if rate else ("c&quot;$&quot;#,##0" if c in ("year1_net","cumulative_earned","cumulative_cash","cumulative_profit","total_fixed_year1") else "c&quot;$&quot;#,##0.00")))
             fields += f"<column datatype='{t}' default-format='{fmt}' name='[{esc(c)}]' role='measure' type='quantitative' />"
+    ALIAS = {"component": {"Channel share": "Store's cut (channel share)", "Net royalty to IP owner": "What the creator keeps (net royalty)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
+             "driver": {"Channel share": "Store's cut (channel share)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
+             "segment": {"Self-published": "Self-published (authors on their own)", "Traditional": "Traditional (publishing houses)"},
+             "channel": {"Amazon KDP (print + ebook)": "Earned through Amazon KDP (print + ebook)", "IngramSpark (print)": "Earned through IngramSpark (print)", "Draft2Digital (ebook)": "Earned through Draft2Digital (ebook)"}}
+    for fld, amap in ALIAS.items():
+        tag = f"<column datatype='string' name='[{fld}]' role='dimension' type='nominal' />"
+        if tag in fields:
+            al = "".join(f"<alias key='&quot;{esc(k)}&quot;' value='{esc(v)}' />" for k, v in amap.items())
+            fields = fields.replace(tag, f"<column datatype='string' name='[{fld}]' role='dimension' type='nominal'><aliases>{al}</aliases></column>")
+    CAP = {"component": "Where the $16.99 goes", "driver": "Cause of the gap vs KDP", "segment": "Who published", "channel": "Sales channel",
+           "platform": "Platform", "stack": "Platform", "test": "Test", "scenario": "Scenario", "month": "Month", "year": "Year"}
+    for fld, cap in CAP.items():
+        fields = fields.replace(f"<column datatype='string' name='[{fld}]'", f"<column caption='{esc(cap)}' datatype='string' name='[{fld}]'")
+        fields = fields.replace(f"<column datatype='integer' name='[{fld}]'", f"<column caption='{esc(cap)}' datatype='integer' name='[{fld}]'")
     style = ""
     if color_field:
         vals = list(dict.fromkeys(r[color_field] for r in rows))
@@ -141,7 +155,7 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         vals = list(dict.fromkeys(r[cf] for r in DS[key]["rows"]))
         maps = "".join(f"<map to='{COL.get(v, '#8a8984')}'><bucket>&quot;{esc(v)}&quot;</bucket></map>" for v in vals)
         tstyle = f"<style><style-rule element='mark'><encoding attr='color' field='[{ds}].[none:{esc(cf)}:nk]' type='palette'>{maps}</encoding></style-rule></style>"
-    lbl_style = "<style><style-rule element='mark'><format attr='mark-labels-show' value='true' /><format attr='mark-labels-cull' value='true' /></style-rule></style>" if label else ""
+    lbl_style = "<style><style-rule element='mark'><format attr='mark-labels-show' value='true' /><format attr='mark-labels-cull' value='true' />" + ("<format attr='mark-markers-mode' value='all' />" if mark == 'Line' else "") + "</style-rule></style>" if label else ("<style><style-rule element='mark'><format attr='mark-markers-mode' value='all' /></style-rule></style>" if mark == 'Line' else "")
     sub = f"<run fontcolor='#52514e' fontsize='10'>&#10;{esc(subtitle)}</run>" if subtitle else ""
     x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontsize='14'>{esc(title)}</run>{sub}</formatted-text></title></layout-options>"
          f"<table><view><datasources><datasource caption='{esc(DS[key]['caption'])}' name='{ds}' /></datasources>"
@@ -223,14 +237,14 @@ def dash(name, sheets, note, header):
     w_each = 100000 // n
     inner = ""
     for i, s in enumerate(sheets):
-        if s in SHEET_COLOR and not s.startswith(("09", "05", "04", "07")):
+        if s in SHEET_COLOR:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each-15000}' x='{i*w_each}' y='8000' />"
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' pane-specification-id='0' param='{SHEET_COLOR[s]}' type-v2='color' w='15000' x='{i*w_each + w_each - 15000}' y='8000' />"
         else:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each}' x='{i*w_each}' y='8000' />"
     hdr = f"<zone h='8000' id='{nid()}' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontcolor='#0b0b0b' fontsize='18'>{esc(header)}</run></formatted-text></zone>"
     ann = (f"<zone h='28000' id='{nid()}' type-v2='text' w='64000' x='0' y='72000'><formatted-text>"
-           f"<run bold='true' fontcolor='#0b0b0b' fontsize='11'>What is going on (as of {esc(ASOF)}): </run>"
+           f"<run bold='true' fontcolor='#0b0b0b' fontsize='11'>As of {esc(ASOF)}: </run>"
            f"<run fontcolor='#1f1f1f' fontsize='11'>{esc(note)}</run></formatted-text></zone>"
            f"<zone h='28000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='72000' />")
     return (f"<dashboard name='{esc(name)}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
@@ -238,23 +252,23 @@ def dash(name, sheets, note, header):
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
 DASH = [
- ("D1 Market", ["01 Market ISBNs"], "Every new book gets an ID number called an ISBN. The blue area is books people published on their own, and it jumped 38.7% in 2025 while printed-book sales barely moved (up 0.3%). More books are now competing for the same readers, so keeping more money from each sale matters.", "Market context: more works are competing for the same buyers",
+ ("D1 Market", ["01 Market ISBNs"], "Every book edition gets an ID number called an ISBN, so counting ISBNs shows how many new books come out. Self-published titles (blue area) jumped 38.7% in 2025 while printed-book sales rose only 0.3%. More books are competing for the same buyers, which makes the share of each sale you keep more important.", "Market context: more works are competing for the same buyers",
   "Self-published ISBNs rose 38.7% in 2025."),
- ("D2 Gross to Net", ["02 Gross to Net"], "Think of each $16.99 book as a pizza. The store takes the gray slice, printing takes the yellow slice and fees take the red slice. The blue slice is what the creator keeps: $6.79 on Amazon KDP, but only $3.33 when bookstores take a 55% discount through IngramSpark.", "Gross-to-net: where each $16.99 goes",
+ ("D2 Gross to Net", ["02 Gross to Net"], "Each bar is one $16.99 book split by who gets paid. Red is the store's cut, orange is printing, blue is platform fees, and teal is what the creator keeps. KDP leaves the creator $6.79, while IngramSpark's bookstore route leaves $3.33. Finance teams call this breakdown gross-to-net.", "Gross-to-net: where each $16.99 goes",
   "KDP nets $6.79 per paperback; IngramSpark nets $3.33."),
- ("D3 Cost Variance", ["03 Cost Variance"], "We line every option up against Amazon KDP. Bars to the left mean you keep less money per book than on KDP, and each color shows a reason. For IngramSpark, the store's cut explains $2.55 of the $3.47 gap; printing adds $0.60 and fees add $0.32.", "Cost variance analysis vs the KDP baseline",
+ ("D3 Cost Variance", ["03 Cost Variance"], "This is a cost variance analysis: every option is compared with Amazon KDP. Bars left of zero mean you keep less per book than on KDP, and each color is one cause (red = store's cut, orange = printing, blue = platform fees). For IngramSpark, the store's cut explains $2.55 of the $3.47 gap.", "Cost variance analysis vs the KDP baseline",
   "Retailer discounts drive most of the cost variance."),
- ("D4 Ebook", ["04 Ebook Net"], "For a $4.99 ebook, a longer bar means more money for the creator. Selling straight to a store like Apple keeps $3.49. Middlemen such as Draft2Digital keep a small piece (35 to 52 cents) in exchange for sending your book to many stores with one upload.", "Ebook economics: direct uploads beat aggregators",
+ ("D4 Ebook", ["04 Ebook Net"], "For a $4.99 ebook, each bar shows what the creator keeps after the store and any middleman are paid. Selling directly to Apple or B&N keeps $3.49. Aggregators like Draft2Digital keep 35 to 52 cents more per sale in exchange for sending your book to many stores with one upload.", "Ebook economics: direct uploads beat aggregators",
   "Direct ebook uploads keep the most per sale."),
- ("D5 Breakeven", ["05 Breakeven Units", "06 Breakeven Curve"], "Starting costs are like a hole you have to fill, and every sale adds a scoop of money. KDP fills the hole after 158 sales (one print plus one ebook) and IngramSpark after 272. On the right, the spot where each line crosses zero is where that option has paid for itself; above zero is profit.", "Breakeven analysis",
+ ("D5 Breakeven", ["05 Breakeven Units", "06 Breakeven Curve"], "Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272. On the right, the point where each line crosses $0 is breakeven; steeper lines get there sooner.", "Breakeven analysis",
   "KDP breaks even at 158 unit pairs; IngramSpark at 272."),
- ("D6 Scenarios", ["07 Scenarios"], "We tried three 'what if' sales levels: slow (10 a month), normal (50) and great (250). Amazon KDP stays on top every time, so the choice does not depend on guessing sales exactly right. A flat monthly fee (PublishDrive) only beats a per-sale cut once you sell about 17 of each format a month.", "Scenario analysis: the ranking is stable across volumes",
+ ("D6 Scenarios", ["07 Scenarios"], "Scenario analysis asks 'what if?' at three sales levels: slow (10 a month), normal (50) and great (250). KDP finishes first in every case, so the decision holds up even if the sales forecast is off. A flat monthly fee (PublishDrive) only beats a per-sale fee once you sell about 17 of each format a month.", "Scenario analysis: the ranking is stable across volumes",
   "Subscriptions win only above 16.6 units a month."),
- ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "The colored areas show money you have earned. Stores pay two to three months later, so at month 12 about $948 is earned but not yet in the bank. The bars show how long each store makes you wait: B&N about 45 days, IngramSpark about 105 days.", "Accrual vs cash and days sales outstanding",
+ ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding: B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.", "Accrual vs cash and days sales outstanding",
   "Cash arrives two to three months after each sale."),
- ("D8 Pool Volatility", ["10 KENP Pool Rate"], "Kindle Unlimited pays authors from one big shared pot each month, split by how many pages people read. The pot changes, so pay per page goes up and down like the weather: from $4.19 to $5.01 per 1,000 pages. Plan for a range, not one exact number.", "Pool-based payouts: exclusive ebook income varies monthly",
+ ("D8 Pool Volatility", ["10 KENP Pool Rate"], "Kindle Unlimited pays authors from one shared monthly pot, split by pages read, so the rate per page changes every month. Over the past year it ranged from $4.19 to $5.01 per 1,000 pages, averaging $4.55. Treat this income as a range, not a fixed number.", "Pool-based payouts: exclusive ebook income varies monthly",
   "Kindle Unlimited payouts vary month to month."),
- ("D9 AB Test", ["11 AB Breakeven Lift"], "Lowering the price means you earn less on each book, so you must sell more books just to stay even. A $2 print price cut needs 21% more sales to pay off. Keep the cheaper price only if a fair test, with about 18,467 shoppers in each group, shows sales jumped more than that.", "A/B test design: the breakeven lift sets the bar",
+ ("D9 AB Test", ["11 AB Breakeven Lift"], "A cheaper price earns less per book, so it only helps if it sells enough extra copies. Each bar shows that minimum boost, called the breakeven lift: a $2 print price cut needs 21% more sales. In an A/B test, switch only if sales rise by more than the bar, measured with enough shoppers (about 18,467 per group) to trust the result.", "A/B test design: the breakeven lift sets the bar",
   "A $2 price cut needs a 21.4% sales lift to pay off."),
 ]
 dash_xml = [dash(n, s, note, hdr) for n, s, note, hdr, cap in DASH]
