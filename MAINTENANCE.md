@@ -55,7 +55,7 @@ To restore the Tableau story, open `tableau/IP_Distribution_Decision_Verticals.t
 ## Plain-language and style rules
 
 - Notes are written for readers about 14 to 15 years old, start with "As of <date>:", and name the colors exactly as drawn.
-- No em dashes in body text; never use the word "project" in any material.
+- No em dashes in body text; keep the established naming (IP Distribution Decision Verticals, "verticals", "stakeholders").
 - Every figure carries a source, shown by name, with the name as the clickable link.
 
 ## Quarterly refresh
