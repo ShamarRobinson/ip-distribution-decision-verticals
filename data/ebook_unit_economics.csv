@@ -1,0 +1,8 @@
+platform,format,channel,list_price,channel_share,delivery_fee,platform_fee,net_royalty,net_margin_pct,payout_lag_days,source,variance_vs_kdp,var_channel_share,var_delivery,var_platform_fee
+Amazon KDP,Ebook,Kindle,4.99,1.407,0.3,0.0,3.283,0.6579,75,https://profitable.app/tools/kdp-royalty-calculator,0.0,0.0,0.0,0.0
+Apple Books direct,Ebook,Apple Books,4.99,1.497,0,0.0,3.493,0.7,45,https://scribecount.com/tools/platform-comparison,0.21,-0.09,0.3,0.0
+B&N Press,Ebook,Nook,4.99,1.497,0,0.0,3.493,0.7,45,https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales,0.21,-0.09,0.3,0.0
+Draft2Digital,Ebook,"Apple, Kobo, Google, libraries",4.99,1.497,0,0.3493,3.1437,0.63,75,https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html,-0.1393,-0.09,0.3,-0.3493
+IngramSpark,Ebook,Ingram ebook network,4.99,1.497,0,0.5239,2.9691,0.595,105,https://www.ingramspark.com/,-0.3139,-0.09,0.3,-0.5239
+PublishDrive,Ebook,400+ stores,4.99,1.497,0,0.0,3.493,0.7,75,https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans,0.21,-0.09,0.3,0.0
+Lulu Retail,Ebook,Retailers via Lulu,4.99,2.495,0,0.499,1.996,0.4,45,https://blog.chapter.pub/lulu-pricing/,-1.287,-1.088,0.3,-0.499

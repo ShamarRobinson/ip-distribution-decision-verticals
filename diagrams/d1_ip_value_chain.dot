@@ -1,0 +1,21 @@
+digraph G { rankdir=TB; newrank=true;   bgcolor="#fcfcfb"; pad=0.3; nodesep=0.35; ranksep=0.45;
+  node [shape=box, style="rounded,filled", fontname="Inter", fontsize=12, color="#c9c8c2", fillcolor="#ffffff", fontcolor="#0b0b0b", penwidth=1.2, margin="0.18,0.10"];
+  edge [fontname="Inter", fontsize=10.5, color="#8a8984", fontcolor="#52514e", penwidth=1.3, arrowsize=0.7];
+
+  labelloc=t; label=<<b>From creative work to cash: the IP value chain</b>>; fontname="Inter"; fontsize=16;
+  a [label="1. Create the work\n(manuscript, art, course)"];
+  b [label="2. Protect the IP\nU.S. Copyright Office registration\n(pre-publication stage)", fillcolor="#e8f0fb", color="#2a78d6"];
+  c [label="3. Identify the asset\nISBN + metadata\n(one per format)"];
+  d [label="4. Choose formats\nprint, ebook, audio"];
+  e [label="5. Choose channels\nKDP, IngramSpark, B&N,\nLulu, PublishDrive, D2D", fillcolor="#fdeee7", color="#eb6834"];
+  f [label="6. Consumer sale\nlist price"];
+  g [label="7. Gross-to-net\nchannel share, production,\nplatform fees, returns"];
+  h [label="8. Net royalty\n(contribution per unit)", fillcolor="#e8f0fb", color="#2a78d6"];
+  i [label="9. Cash receipt\n45 to 105 days later"];
+  j [label="10. Reconcile & report\nstatements vs. bank,\nvariance to plan"];
+  {rank=same; a; b; c; d; e;}
+  {rank=same; f; g; h; i; j;}
+  a->b->c->d->e; e->f [constraint=true]; f->g->h->i->j;
+  a->f [style=invis];
+  j->e [label="feedback loop:\nA/B tests, re-pricing", style=dashed, constraint=false];
+}
