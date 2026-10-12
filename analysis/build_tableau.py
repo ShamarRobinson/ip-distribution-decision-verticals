@@ -300,20 +300,55 @@ PATHS = [
   ("Why", "Direct uploads keep $3.49 per $4.99 ebook; Draft2Digital keeps $3.14 but saves time with one upload. Price between $2.99 and $9.99 to earn KDP's 70% rate."),
   ("Next move", "Go direct if you can manage several dashboards; use Draft2Digital if your time is worth more than 35 cents a sale. Test Kindle Unlimited with one title for one 90-day term (pay swings $4.19 to $5.01 per 1,000 pages), and compare a PublishDrive plan above about 40 ebook sales a month.")]),
 ]
-def path_dash(dname, items, heading):
-    zones = (f"<zone h='10000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
-             f"<run fontcolor='#52514e' fontsize='11'>&#10;Recommendations as of {esc(ASOF)}. Full walkthrough with decision trees on the slide deck: https://shamarrobinson.github.io/ip-distribution-decision-verticals/#tree-how</run></formatted-text></zone>")
-    h = (100000 - 10500) // len(items)
-    for i, (t, c, rows) in enumerate(items):
-        runs = f"<run bold='true' fontcolor='{c}' fontsize='17'>{esc(t)}</run>"
-        for lab, txt in rows:
-            runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='12'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='12'>{esc(txt)}</run>"
-        zones += f"<zone h='{h}' id='{20+i}' type-v2='text' w='100000' x='0' y='{10500 + i*h}'><formatted-text>{runs}</formatted-text></zone>"
+def rec_dash(dname, items, heading):
+    zones = (f"<zone h='8500' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
+             f"<run fontcolor='#52514e' fontsize='11'>&#10;Find your type, then read its best choice. As of {esc(ASOF)}. Decision trees for each path are in the slide deck linked from the GitHub page.</run></formatted-text></zone>")
+    cols = [items[:3], items[3:]]
+    zid = 20
+    for ci_, col in enumerate(cols):
+        h = (100000 - 9000) // 3
+        for ri, (t, c, rows) in enumerate(col):
+            runs = f"<run bold='true' fontcolor='{c}' fontsize='14'>{esc(t)}</run>"
+            for lab, txt in rows:
+                runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(txt)}</run>"
+            zones += f"<zone h='{h}' id='{zid}' type-v2='text' w='49000' x='{ci_*51000}' y='{9000 + ri*h}'><formatted-text>{runs}</formatted-text></zone>"
+            zid += 1
     return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
-dash_xml.append(path_dash("D10 Your Path", PATHS[:3], "What should you do? Paths A to C: selling through stores"))
-dash_xml.append(path_dash("D11 Your Path", PATHS[3:], "What should you do? Paths D and E: owned audiences and ebook-first"))
+INTRO = [
+ ("Purpose", "#2a78d6", [
+  ("The question", "Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with?"),
+  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The last point turns the findings into a recommendation for each type of owner.")]),
+ ("Scope", "#eb6834", [
+  ("Platforms", "Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital."),
+  ("Base case", "A $16.99 paperback (200 pages) and a $4.99 ebook sold in the United States."),
+  ("Measures", "What the creator keeps per sale, cost variance against KDP, breakeven, slow, normal and strong sales scenarios, time from sale to cash, Kindle Unlimited payouts and A/B test sizing."),
+  ("Not covered", "Tax or legal advice, audiobooks and traditional publishing contracts. Figures are planning estimates, not forecasts, and are refreshed every quarter.")]),
+ ("Stakeholders", "#1baf7a", [
+  ("A. Independent creator", "one or two titles, Amazon-led discovery and a tight budget."),
+  ("B. Small press or imprint", "needs bookstore and library placement."),
+  ("C. Catalog or backlist owner", "many titles with steady sales."),
+  ("D. Brand, educator or corporate IP owner", "has its own audience and sells direct."),
+  ("E. Wide ebook strategist", "digital-first, selling through many stores."),
+  ("Also useful for", "finance, operations and marketing teams at any business that sells through middlemen.")]),
+]
+def intro_dash(dname, items, heading):
+    zones = (f"<zone h='10000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
+             f"<run fontcolor='#52514e' fontsize='11'>&#10;Prices, fees and rates as of {esc(ASOF)}. Use the arrows or the cards above to move through the story.</run></formatted-text></zone>")
+    hs = [26000, 32000, 31500]
+    y = 10500
+    for i, ((t, c, rows), h) in enumerate(zip(items, hs)):
+        runs = f"<run bold='true' fontcolor='{c}' fontsize='17'>{esc(t)}</run>"
+        for lab, txt in rows:
+            runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='12'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='12'>{esc(txt)}</run>"
+        zones += f"<zone h='{h}' id='{20+i}' type-v2='text' w='100000' x='0' y='{y}'><formatted-text>{runs}</formatted-text></zone>"
+        y += h
+    return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
+            f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
+            f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
+dash_xml.insert(0, intro_dash("D0 Introduction", INTRO, "Introduction: purpose, scope and stakeholders"))
+dash_xml.append(rec_dash("D10 Recommendations", PATHS, "Recommendations: the best route for each type of owner"))
 
 ACTIONS = "".join(
     f"<action caption='Open source: {esc(d[0])}' name='[Action_url_{i}]'><activation auto-clear='true' type='on-select' />"
@@ -322,9 +357,9 @@ ACTIONS = "".join(
     for i, d in enumerate(DASH))
 
 # ---------------- story
-points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' id='{i+1}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
-points += f"<story-point captured-sheet='D10 Your Path' caption='Paths A to C: find your type and its best choice.' id='{len(DASH)+1}' />"
-points += f"<story-point captured-sheet='D11 Your Path' caption='Paths D and E: owned audiences and ebook-first.' id='{len(DASH)+2}' />"
+points = "<story-point captured-sheet='D0 Introduction' caption='Start here: purpose, scope and who this is for.' id='1' />"
+points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' id='{i+2}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
+points += f"<story-point captured-sheet='D10 Recommendations' caption='Recommendations: find your type and its best choice.' id='{len(DASH)+2}' />"
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='964' maxwidth='1366' minheight='964' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -336,8 +371,8 @@ story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard
 
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)
 windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1] + ['Sources ' + d[0][:2]])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
-windows += f"<window class='dashboard' name='D10 Your Path'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' name='D11 Your Path'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 Introduction'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D10 Recommendations'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
 twb = ("<?xml version='1.0' encoding='utf-8' ?>\n"
@@ -362,6 +397,13 @@ with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
 # story caption export for README
 with open(OUT / "story_captions.md", "w") as f:
     f.write("# Tableau story captions\n\n")
-    for i, (n, s, note, hdr, cap) in enumerate(DASH, 1):
+    f.write("**Story point 1.** Start here: purpose, scope and who this is for.\n\n")
+    for _t, _c, _rows in INTRO:
+        f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+    for i, (n, s, note, hdr, cap) in enumerate(DASH, 2):
         f.write(f"**Story point {i}.** {cap}\n\n{note}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
+with open(OUT / "story_captions.md", "a") as f:
+    f.write(f"**Story point {len(DASH)+2}.** Recommendations: find your type and its best choice.\n\n")
+    for _t, _c, _rows in PATHS:
+        f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
 print("ok", len(twb))

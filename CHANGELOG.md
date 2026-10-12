@@ -5,6 +5,7 @@ Each quarterly refresh records what changed in prices, fees, rates and market fi
 ## October 12, 2026
 - Added plain-language notes to every chart, two-chart slide pages, an introduction to key concepts, and a decision-tree walkthrough for each stakeholder type.
 - Tableau story: plain-language notes, numbered clickable source names, and a final "what should you do" story point. No rates changed.
+- Tableau story: added an introduction point covering purpose, scope and stakeholders, renamed the closing pages to "Recommendations" and merged Paths A to E onto one page, and set the story as the default view on Tableau Public. No rates changed.
 
 ## October 11, 2026
 - Initial release. Rates reflect IngramSpark's February 1, 2026 pricing (1.875% market access fee, free setup and revisions), KDP 2026 print-cost formula, B&N Press, Lulu, PublishDrive and Draft2Digital published terms, and the U.S. Copyright Office fee schedule taking effect mid-November 2026.
