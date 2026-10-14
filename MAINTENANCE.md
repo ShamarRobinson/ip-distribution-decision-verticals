@@ -52,6 +52,9 @@ To restore the Tableau story, open `tableau/IP_Distribution_Decision_Verticals.t
 - **Clickable source names** use a URL action whose link expression is `<url>` with `url-escape='false'`. With escaping on, Tableau URL-encodes the whole address and the link breaks.
 - **Tableau caches workbooks by file name.** When testing a changed `.twbx`, open it under a new file name or Tableau may show the old version.
 - **Theme:** `TH` in `build_tableau.py` mirrors the deck's CSS variables in `build_deck.py` (`--bg`, `--panel`, `--line`, `--ink`, `--accent`, `--accent2`). Change both together. `theme_dash()` applies it to every dashboard; the story navigator color is the `story-point-caption` style rule.
+- **Story infographics** (`diag_sheet` in `build_tableau.py`, data in `data/story_diagrams.csv`): each box is a Bar mark on a hidden 0 to 1 axis, one pane per column, so boxes stretch to fill their cell (Square marks stay square and cannot). Hiding discrete headers needs both a `header` and a `label` style rule; centered labels need a `cell` rule with `text-align` and `vertical-align`; bar thickness is `mark-sizing` off plus a `size` value.
+- **Annotation line styles** (colour, weight, dot or arrow end) live in the worksheet style as `<style-rule element='annotation'>` with `id='annotation_N'`, not inside the annotation itself.
+- **Tableau Desktop caches extracts by file name**, so test a changed build under a new name or old data may show.
 - **Custom shapes are dropped on load** when injected through `<external><shapes>`; the calculator's faces are emoji text marks instead, which render on Tableau Public.
 - **A reference line on a parameter** needs a calculated field equal to the parameter placed on Detail, with the line using `min` of that field.
 - **Text-box line breaks:** start a run with `&#10;` followed by text; a run that holds only a line break is dropped.

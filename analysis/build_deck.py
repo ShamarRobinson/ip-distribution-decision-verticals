@@ -270,14 +270,14 @@ slide("method", "Methodology", "How the numbers were built", f"""
 <li>Status note: certain works referenced are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office.</li></ul></div>
 </div>""")
 
-def kpi_table(rows):
+def kpi_table(rows, start=1):
     return ('<table class="tbl xs"><thead><tr><th>KPI</th><th>What it tells you</th><th>Formula</th><th>Worked example</th></tr></thead><tbody>'
-            + "".join(f"<tr><td><b>{r['kpi']}</b><br><span class='muted'>{r['full']}</span></td><td>{r['meaning']}</td><td>{r['formula']}</td><td>{r['worked']}</td></tr>" for r in rows)
+            + "".join(f"<tr><td><b>KPI {n}. {r['kpi']}</b><br><span class='muted'>{r['full']}</span></td><td>{r['meaning']}</td><td>{r['formula']}</td><td>{r['worked']}</td></tr>" for n, r in enumerate(rows, start))
             + "</tbody></table>")
 slide("kpis-1", "How the numbers work", "KPI (key performance indicator) definitions, part 1: money kept per sale",
       kpi_table(KPIS[:7]) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["kdp", "ingram", "bn", "lulu", "pd", "uscofee", "isbn", "model"]) + "</div>")
 slide("kpis-2", "How the numbers work", "KPI definitions, part 2: scale, cash timing and testing",
-      kpi_table(KPIS[7:]) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["pd", "ingram", "d2d", "bn", "ingramtc", "bd", "booksby", "wwm", "kenp", "kdp", "model"]) + "</div>")
+      kpi_table(KPIS[7:], 8) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["pd", "ingram", "d2d", "bn", "ingramtc", "bd", "booksby", "wwm", "kenp", "kdp", "model"]) + "</div>")
 slide("numbers", "How the numbers work", "Where each number in the story comes from",
       '<table class="tbl xs"><thead><tr><th>Story point</th><th>Numbers shown</th><th>How they are calculated</th><th>Sources</th></tr></thead><tbody>'
       + "".join((f"<tr><td><b>{MT.PAGE_NO[r['dash']]}. {r['page']}</b></td><td>{r['numbers']}</td><td>{r['calc']}</td><td>{msrc(r['sources'])}</td></tr>"

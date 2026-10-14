@@ -1,0 +1,42 @@
+diagram,col,row,tone,title,line1,line2,w
+KPI strip 1,1,1,blue,KPI 1  Net royalty per copy,$6.79,KDP paperback; IngramSpark $3.33,1
+KPI strip 1,2,1,blue,KPI 2  Net margin,40.0%,KDP paperback; ebook 65.8%,1
+KPI strip 1,3,1,blue,KPI 3  Store's cut,40%,Amazon's cut; bookstores take 55%,1
+KPI strip 1,4,1,blue,KPI 4  Cost variance,-$3.47,"IngramSpark vs KDP, per copy",1
+KPI strip 1,5,1,orange,KPI 5  Contribution per pair,$10.08,KDP pair; IngramSpark $6.30,1
+KPI strip 1,6,1,orange,KPI 6  Breakeven point,158,KDP pairs; IngramSpark 272,1
+KPI strip 1,7,1,orange,KPI 7  Margin of safety,73.7%,KDP at 600 planned pairs,1
+KPI strip 2,1,1,purple,KPI 8  Switch point,16.6,sales of each format a month,1
+KPI strip 2,2,1,purple,KPI 9  Year-1 net,"$5,961",KDP at 50 sales a month,1
+KPI strip 2,3,1,teal,KPI 10  Days to cash,45 to 105,days from sale to cash,1
+KPI strip 2,4,1,teal,KPI 11  Working capital gap,$948,"earned, not yet paid, month 12",1
+KPI strip 2,5,1,gray,KPI 12  Kindle Unlimited rate,$4.55,"average per 1,000 pages",1
+KPI strip 2,6,1,red,KPI 13  Breakeven lift,21.4%,more sales for a $2 price cut,1
+KPI strip 2,7,1,red,KPI 14  Test sample size,"18,467",shoppers per test group,1
+Launch flow,1,1,gray,Point 2: the market,More books chase the same buyers, ,1
+Launch flow,1,2,purple,Points 3 and 4: the KPIs,"14 measures, each with a formula", ,1
+Launch flow,1,3,blue,Points 5 to 7: money kept,What each store leaves you per sale, ,1
+Launch flow,1,4,orange,Points 8 and 9: breakeven,When launch costs are earned back, ,1
+Launch flow,1,5,green,Point 10: profit calculator,Try your own sales and budget, ,1
+Launch flow,1,6,teal,Points 11 and 12: getting paid,Cash timing and Kindle Unlimited swings, ,1
+Launch flow,1,7,red,Point 13: price testing,The sales lift a price cut needs, ,1
+Launch flow,1,8,pink,Points 14 and 15: decide,"Best route per owner, and every source", ,1
+Decision tree,1,1,gray light,Buyers come to you directly?, , ,1
+Decision tree,2,1,arrow,Yes  →, , ,1
+Decision tree,3,1,yellow,D. Own store + KDP, , ,1
+Decision tree,1,2,gray light,Ebooks are most of your income?, , ,1
+Decision tree,2,2,arrow,Yes  →, , ,1
+Decision tree,3,2,green,E. KDP + direct ebooks, , ,1
+Decision tree,1,3,gray light,Need bookstores or libraries?, , ,1
+Decision tree,2,3,arrow,No  →, , ,1
+Decision tree,3,3,blue,A. Amazon KDP, , ,1
+Decision tree,1,4,gray light,17+ sales of each format a month?, , ,1
+Decision tree,2,4,arrow,No  →, , ,1
+Decision tree,3,4,orange,B. KDP + IngramSpark, , ,1
+Decision tree,2,5,arrow,Yes  →, , ,1
+Decision tree,3,5,pink,C. KDP + PublishDrive, , ,1
+Pipeline,1,1,gray,1. Published sources  →,"Rates, fees and payout terms",as of each refresh,1
+Pipeline,2,1,purple,2. One assumptions list  →,Every input written down once,estimates marked,1
+Pipeline,3,1,blue,3. analysis/model.py  →,Runs every calculation,in one place,1
+Pipeline,4,1,teal,4. Data files in /data  →,One CSV per result,dated as of the refresh,1
+Pipeline,5,1,green,"5. Charts, deck, Excel and this story",All read the same files,so numbers always agree,1

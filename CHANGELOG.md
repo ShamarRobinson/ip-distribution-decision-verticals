@@ -3,6 +3,8 @@
 Each quarterly refresh records what changed in prices, fees, rates and market figures.
 
 ## October 14, 2026
+- Tableau story: infographics on every text-only card, built from data/story_diagrams.csv: a launch-flow diagram on the introduction, KPI scorecard tiles (headline value plus one line of context) on both KPI cards, a decision tree on the recommendations card and a five-step pipeline on the sources card. KPIs are numbered 1 to 14 in the story, deck and README. No rates changed.
+- Tableau story: the market chart's year axis now runs 2022 to 2025 with no empty margins, and a call-out with a marker explains the shaded 2024 to 2025 range. Text boxes are sized by how much text they hold so nothing is clipped. No rates changed.
 - Tableau story restyled to match the slide deck: navy page, dark panel cards for text, white cards for charts, orange section kickers, serif headings and a blue story navigator. Deck and story both moved to a slightly brighter navy. No rates changed.
 - Tableau story: reordered the cards to follow a real launch (market, KPIs, money kept per sale, cost variance, ebooks, breakeven, scenarios, profit calculator, getting paid, Kindle Unlimited, price testing, recommendations, sources), now 15 points. The deck's "Where each number comes from" slide and the README use the same numbering. No rates changed.
 - Tableau story: new point 10, an interactive profit calculator with sliders for books sold and launch budget, a route picker, four scorecards, a donut of costs earned back, smiley faces for every route, a profit curve with your books-sold marker and a ranked leaderboard. No rates changed.
