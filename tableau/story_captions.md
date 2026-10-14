@@ -2,7 +2,7 @@
 
 **Story point 1.** Start here: purpose, scope and who this is for.
 
-*Purpose.* The question: Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with? What you get: Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The last point turns the findings into a recommendation for each type of owner.
+*Purpose.* The question: Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with? What you get: Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. Points 2 and 3 define each KPI (key performance indicator) with its formula, point 13 gives a recommendation for each type of owner, and point 14 shows where every number comes from.
 
 *Scope.* Platforms: Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital. Base case: A $16.99 paperback (200 pages) and a $4.99 ebook sold in the United States. Measures: What the creator keeps per sale, cost variance against KDP, breakeven, slow, normal and strong sales scenarios, time from sale to cash, Kindle Unlimited payouts and A/B test sizing. Not covered: Tax or legal advice, audiobooks and traditional publishing contracts. Figures are planning estimates, not forecasts, and are refreshed every quarter.
 
@@ -10,61 +10,81 @@
 
 *Key terms.* KDP (Kindle Direct Publishing): Amazon's self-publishing service for print books and ebooks B&N (Barnes & Noble): the U.S. bookstore chain; B&N Press is its self-publishing service IP (intellectual property): a creative work you own, such as a book, guide or course ISBN (International Standard Book Number): the ID code every book edition gets
 
-**Story point 2.** Self-published ISBNs rose 38.7% in 2025.
+**Story points 2 and 3.** KPI definitions with formulas and worked examples. See the How the numbers work section of the README.
+
+**Story point 4.** Self-published ISBNs rose 38.7% in 2025.
 
 Every book edition gets an ID number called an ISBN, so counting ISBNs shows how many new books come out. Self-published titles (blue area) jumped 38.7% in 2025 while printed-book sales rose only 0.3%. More books are competing for the same buyers, which makes the share of each sale you keep more important.
 
+How it is calculated: Growth = 2025 count / 2024 count - 1 = 3,529,980 / 2,545,885 - 1 = 38.7%. Print share of revenue = (hardback $8.2B + paperback $8.0B) / $33.4B = 49%.
+
 Sources: [Bowker via Publishers Weekly](https://www.publishersweekly.com/pw/print/20260323/99943-book-output-topped-4-million-in-2025.html) | [Circana BookScan via Publishers Weekly](https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html)
 
-**Story point 3.** KDP nets $6.79 per paperback; IngramSpark nets $3.33.
+**Story point 5.** KDP nets $6.79 per paperback; IngramSpark nets $3.33.
 
 Each bar is one $16.99 book split by who gets paid. Red is the store's cut, orange is printing, blue is platform fees, and teal is what the creator keeps. KDP leaves the creator $6.79, while IngramSpark's bookstore route leaves $3.33. Finance teams call this breakdown gross-to-net.
 
+How it is calculated: KDP printing = $1.00 + 200 pages x $0.012 = $3.40. IngramSpark fee = 1.875% market access fee x $16.99 = $0.32. Print costs for IngramSpark ($4.00), B&N Press ($3.50) and Lulu ($5.00) are planning estimates.
+
 Sources: [IngramSpark 2026 pricing](https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More) | [KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator) | [B&N Press royalties](https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales) | [Lulu pricing](https://blog.chapter.pub/lulu-pricing/)
 
-**Story point 4.** Retailer discounts drive most of the cost variance.
+**Story point 6.** Retailer discounts drive most of the cost variance.
 
 This is a cost variance analysis: every option is compared with Amazon KDP. Bars left of zero mean you keep less per book than on KDP, and each color is one cause (red = store's cut, orange = printing, blue = platform fees). For IngramSpark, the store's cut explains $2.55 of the $3.47 gap.
 
+How it is calculated: Store-cut driver = KDP $6.80 - IngramSpark $9.34 = -$2.55; printing = $3.40 - $4.00 = -$0.60; fee = $0.00 - $0.32 = -$0.32. The three add up to -$3.47.
+
 Sources: [IngramSpark 2026 pricing](https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More) | [KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator)
 
-**Story point 5.** Direct ebook uploads keep the most per sale.
+**Story point 7.** Direct ebook uploads keep the most per sale.
 
 For a $4.99 ebook, each bar shows what the creator keeps after the store and any middleman are paid. Selling directly to Apple or B&N keeps $3.49. Aggregators like Draft2Digital keep 35 to 52 cents more per sale in exchange for sending your book to many stores with one upload.
 
+How it is calculated: Direct: $4.99 x 70% = $3.49. KDP: ($4.99 - $0.30 delivery fee) x 70% = $3.28. Draft2Digital: $3.49 x 90% = $3.14. IngramSpark: $3.49 x 85% = $2.97.
+
 Sources: [ScribeCount platform comparison](https://scribecount.com/tools/platform-comparison) | [PublishDrive vs Draft2Digital](https://publishdrive.com/comparison-guide-publishdrive-vs-draft2digital.html) | [IngramSpark](https://www.ingramspark.com/)
 
-**Story point 6.** KDP breaks even at 158 unit pairs; IngramSpark at 272.
+**Story point 8.** KDP breaks even at 158 unit pairs; IngramSpark at 272.
 
 Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272.
 
+How it is calculated: Year-1 fixed costs = platform setup (ISBN, or International Standard Book Number, $125 where you buy your own) + $85 copyright registration + $1,500 illustrative launch budget + subscription. KDP: $1,585 / $10.08 per pair, rounded up = 158.
+
 Sources: [USCO 2026 fee schedule (Hypebot)](https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/) | [ISBN pricing (ScribeCount)](https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark) | [PublishDrive plans](https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans)
 
-**Story point 7.** Subscriptions win only above 16.6 units a month.
+**Story point 9.** Subscriptions win only above 16.6 units a month.
 
 Scenario analysis asks 'what if?' at three sales levels: slow (10 a month), normal (50) and great (250). KDP finishes first in every case, so the decision holds up even if the sales forecast is off. A flat monthly fee (PublishDrive) only beats a per-sale fee once you sell about 17 of each format a month.
 
+How it is calculated: 12 x (monthly sales x contribution per pair - monthly fee) - platform setup - $85 copyright. Switch point = $13.99 PublishDrive fee / ($7.14 - $6.30) = 16.6.
+
 Sources: [PublishDrive plans](https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans) | [KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator) | [B&N Press royalties](https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales)
 
-**Story point 8.** Cash arrives two to three months after each sale.
+**Story point 10.** Cash arrives two to three months after each sale.
 
 The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding (DSO): B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.
 
+How it is calculated: Illustrative launch: 120 sales of each format in month 1, falling 8% a month to 40; 65% on Amazon, 35% elsewhere. KDP and Draft2Digital pay 2 months later, IngramSpark 3. Days to cash = payment terms + about 15 days.
+
 Sources: [B&N Press payments](https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales) | [IngramSpark](https://www.ingramspark.com/) | [Written Word Media 2025 survey](https://www.writtenwordmedia.com/2025-indie-author-survey-results/)
 
-**Story point 9.** Kindle Unlimited payouts vary month to month.
+**Story point 11.** Kindle Unlimited payouts vary month to month.
 
 Kindle Unlimited pays authors from one shared monthly pot, split by pages read, so the rate per page changes every month. Over the past year it ranged from $4.19 to $5.01 per 1,000 pages, averaging $4.55. Treat this income as a range, not a fixed number.
 
+How it is calculated: Author-reported monthly KENP (Kindle Edition Normalized Pages) rates from May 2025 to April 2026, multiplied by 1,000. Average = sum of 12 months / 12.
+
 Sources: [Profitable.app KENP tracker](https://profitable.app/kdp/stats/kenp-rate) | [Written Word Media 2025 survey](https://www.writtenwordmedia.com/2025-indie-author-survey-results/)
 
-**Story point 10.** A $2 price cut needs a 21.4% sales lift to pay off.
+**Story point 12.** A $2 price cut needs a 21.4% sales lift to pay off.
 
 A cheaper price earns less per book, so it only helps if it sells enough extra copies. Each bar shows that minimum boost, called the breakeven lift: a $2 print price cut needs 21% more sales. In an A/B test, switch only if sales rise by more than the bar, measured with enough shoppers (about 18,467 per group) to trust the result.
 
+How it is calculated: Ebook: KDP net at $4.99 = $3.28, at $3.99 = $2.58, lift = 27.1%. Store terms: IngramSpark net at a 40% non-returnable discount ($5.88) / at 55% returnable ($3.33) - 1 = 76.6%.
+
 Sources: [KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator) | [Model and method on GitHub](https://github.com/ShamarRobinson/ip-distribution-decision-verticals)
 
-**Story point 11.** Recommendations: find your type and its best choice.
+**Story point 13.** Recommendations: find your type and its best choice.
 
 *A. Independent creator.* Best choice: Amazon KDP for both print and ebook. Choose this when: you have one or two titles, most readers find you on Amazon, and your launch budget is tight. Why: KDP keeps the most per print copy ($6.79 of a $16.99 book), costs nothing to start, and breaks even fastest (158 sales of a print book plus an ebook). Adding bookstore distribution now would roughly halve what you keep per copy without a plan to win shelf space. Next move: Test $14.99 against $16.99 for 90 days and switch only if sales rise more than 21%. After breakeven, add a wide ebook route (Path E), or try KDP Select if your genre is popular in Kindle Unlimited.
 
@@ -76,3 +96,4 @@ Sources: [KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calcu
 
 *E. Wide ebook strategist.* Best choice: KDP for Kindle plus direct uploads to Apple, Kobo and B&N, or Draft2Digital to reach them all. Choose this when: ebooks drive most of your income and you want readers outside Amazon, such as libraries, Apple users or international buyers. Why: Direct uploads keep $3.49 per $4.99 ebook; Draft2Digital keeps $3.14 but saves time with one upload. Price between $2.99 and $9.99 to earn KDP's 70% rate. Next move: Go direct if you can manage several dashboards; use Draft2Digital if your time is worth more than 35 cents a sale. Test Kindle Unlimited with one title for one 90-day term (pay swings $4.19 to $5.01 per 1,000 pages), and compare a PublishDrive plan above about 40 ebook sales a month.
 
+**Story point 14.** Where the numbers come from. See the How the numbers work section of the README.

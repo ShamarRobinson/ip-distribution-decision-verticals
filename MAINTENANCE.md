@@ -20,6 +20,7 @@ Backups: the GitHub repository (with dated restore-point tags), a git clone on t
 ```bash
 pip install matplotlib tableauhyperapi openpyxl playwright
 python analysis/model.py
+python analysis/methods.py      # rewrites the How the numbers work section of the README
 python analysis/charts.py
 python analysis/diagrams.py
 cp charts/*.svg charts/*.png docs/assets/charts/ && cp charts/pages/* docs/assets/charts/pages/ && cp diagrams/*.svg diagrams/*.png docs/assets/diagrams/

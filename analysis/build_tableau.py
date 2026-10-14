@@ -4,6 +4,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 import json
 ASOF = json.load(open(ROOT / "as_of.json"))["as_of_label"]
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import methods as MT
+KPIS, MPAGES = MT.build()
+CALC = {r["dash"]: r for r in MPAGES}
 OUT = ROOT / "tableau"
 esc = lambda s: html.escape(str(s), quote=True)
 COL = {"Amazon KDP": "#2a78d6", "IngramSpark": "#eb6834", "B&N Press": "#1baf7a", "Lulu Retail": "#eda100", "Lulu Bookstore": "#c98500",
@@ -335,7 +340,7 @@ def dash(name, sheets, note, header):
     zid = [10]
     def nid(): zid[0] += 1; return zid[0]
     n = len(sheets)
-    chart_h = 60000
+    chart_h = 56000
     w_each = 100000 // n
     inner = ""
     for i, s in enumerate(sheets):
@@ -348,14 +353,15 @@ def dash(name, sheets, note, header):
     ctype, tech, plain, terms = GUIDE[name]
     term_runs = "".join(f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>{'&#10;Terms: ' if k == 0 else '; '}{esc(a)} ({esc(full)}): </run>"
                         f"<run fontcolor='#1f1f1f' fontsize='10'>{esc(desc)}</run>" for k, (a, full, desc) in enumerate(terms))
-    ann = (f"<zone h='32000' id='{nid()}' type-v2='text' w='64000' x='0' y='68000'><formatted-text>"
+    ann = (f"<zone h='36000' id='{nid()}' type-v2='text' w='64000' x='0' y='64000'><formatted-text>"
            f"<run bold='true' fontcolor='#0b0b0b' fontsize='10'>As of {esc(ASOF)}: </run>"
            f"<run fontcolor='#1f1f1f' fontsize='10'>{esc(note)}</run>"
            f"<run bold='true' fontcolor='#52514e' fontsize='10'>&#10;Chart type: </run><run fontcolor='#52514e' fontsize='10'>{esc(ctype)}. </run>"
            f"<run bold='true' fontcolor='#52514e' fontsize='10'>For analysts: </run><run fontcolor='#52514e' fontsize='10'>{esc(tech[0].upper() + tech[1:])} </run>"
            f"<run bold='true' fontcolor='#52514e' fontsize='10'>In plain terms: </run><run fontcolor='#52514e' fontsize='10'>{esc(plain)}</run>"
+           f"<run bold='true' fontcolor='#c2410c' fontsize='10'>&#10;How it is calculated: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(CALC[name]['calc'])}</run>"
            f"{term_runs}</formatted-text></zone>"
-           f"<zone h='32000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='68000' />")
+           f"<zone h='36000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='64000' />")
     return (f"<dashboard name='{esc(name)}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{hdr}{''.join(f for f in [inner])}{ann}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
@@ -457,7 +463,7 @@ def rec_dash(dname, items, heading):
 INTRO = [
  ("Purpose", "#2a78d6", [
   ("The question", "Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with?"),
-  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The last point turns the findings into a recommendation for each type of owner.")]),
+  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. Points 2 and 3 define each KPI (key performance indicator) with its formula, point 13 gives a recommendation for each type of owner, and point 14 shows where every number comes from.")]),
  ("Scope", "#eb6834", [
   ("Platforms", "Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital."),
   ("Base case", "A $16.99 paperback (200 pages) and a $4.99 ebook sold in the United States."),
@@ -487,7 +493,35 @@ def intro_dash(dname, items, heading):
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 dash_xml.insert(0, intro_dash("D0 Introduction", INTRO, "Introduction: purpose, scope and stakeholders"))
+
+def text_page(dname, heading, sub, items, cols=2, top=10000):
+    """items: list of (title, [(label, text), ...]) laid out in columns."""
+    zones = (f"<zone h='{top}' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
+             f"<run fontcolor='#52514e' fontsize='10'>&#10;{esc(sub)}</run></formatted-text></zone>")
+    per = math.ceil(len(items) / cols); h = (100000 - top - 500) // per; zid = 20
+    for c in range(cols):
+        for r, (t, rows) in enumerate(items[c*per:(c+1)*per]):
+            runs = f"<run bold='true' fontcolor='#2a78d6' fontsize='11'>{esc(t)}</run>"
+            for lab, txt in rows:
+                runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='9'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='9'>{esc(txt)}</run>"
+            zones += f"<zone h='{h}' id='{zid}' type-v2='text' w='{100000//cols - 1000}' x='{c*(100000//cols)}' y='{top + 500 + r*h}'><formatted-text>{runs}</formatted-text></zone>"
+            zid += 1
+    return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
+            f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
+            f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
+import math
+KPI_ITEMS = [(f"{r['kpi']} ({r['full']})", [("What it tells you", r["meaning"]), ("Formula", r["formula"]), ("Example", r["worked"])]) for r in KPIS]
+dash_xml.insert(1, text_page("D0 KPIs", "KPI (key performance indicator) definitions, part 1: money kept per sale",
+    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[:7]))
+dash_xml.insert(2, text_page("D0 KPIs 2", "KPI definitions, part 2: scale, cash timing and testing",
+    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[7:]))
+SRC_ITEMS = [(f"{n}. {r['page']}", [("Numbers shown", r["numbers"]), ("Sources", "; ".join(MT.SOURCES[k][0] for k in r["sources"]))]) for n, r in enumerate(MPAGES, MT.FIRST_PAGE)]
+SRC_ITEMS.append(("How the model works", [("Pipeline", "analysis/model.py turns one documented list of prices, fees and rates into every data file; the charts, deck, Excel model and this story all read those files."),
+    ("Estimates", "Print costs for IngramSpark, B&N Press and Lulu, the $1,500 launch budget, the 65/35 channel mix and the launch curve are planning assumptions, not published rates."),
+    ("Clickable sources", "Each analysis page lists its sources by name; click a name to open it. The GitHub page lists every formula in its How the numbers work section.")]))
 dash_xml.append(rec_dash("D10 Recommendations", PATHS, "Recommendations: the best route for each type of owner"))
+dash_xml.append(text_page("D11 Number Sources", "Where the numbers come from",
+    f"Prices, fees and rates as of {ASOF}; refreshed quarterly. Each analysis page also shows its calculation under How it is calculated.", SRC_ITEMS))
 
 ACTIONS = "".join(
     f"<action caption='Open source: {esc(d[0])}' name='[Action_url_{i}]'><activation auto-clear='true' type='on-select' />"
@@ -497,8 +531,11 @@ ACTIONS = "".join(
 
 # ---------------- story
 points = "<story-point captured-sheet='D0 Introduction' caption='1. Start here: purpose, scope and who this is for.' id='1' />"
-points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i+2}. {esc(cap)}' id='{i+2}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
-points += f"<story-point captured-sheet='D10 Recommendations' caption='{len(DASH)+2}. Recommendations: find your type and its best choice.' id='{len(DASH)+2}' />"
+points += "<story-point captured-sheet='D0 KPIs' caption='2. KPIs, part 1: money kept per sale and breakeven.' id='2' />"
+points += "<story-point captured-sheet='D0 KPIs 2' caption='3. KPIs, part 2: scale, cash timing and testing.' id='3' />"
+points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i+MT.FIRST_PAGE}. {esc(cap)}' id='{i+MT.FIRST_PAGE}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
+points += f"<story-point captured-sheet='D10 Recommendations' caption='{len(DASH)+MT.FIRST_PAGE}. Recommendations: find your type and its best choice.' id='{len(DASH)+MT.FIRST_PAGE}' />"
+points += f"<story-point captured-sheet='D11 Number Sources' caption='{len(DASH)+MT.FIRST_PAGE+1}. Where the numbers come from.' id='{len(DASH)+MT.FIRST_PAGE+1}' />"
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -511,6 +548,9 @@ story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)
 windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1] + ['Sources ' + d[0][:2]])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
 windows += f"<window class='dashboard' name='D0 Introduction'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 KPIs 2'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 KPIs'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D11 Number Sources'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' name='D10 Recommendations'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
@@ -539,10 +579,13 @@ with open(OUT / "story_captions.md", "w") as f:
     f.write("**Story point 1.** Start here: purpose, scope and who this is for.\n\n")
     for _t, _c, _rows in INTRO:
         f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
-    for i, (n, s, note, hdr, cap) in enumerate(DASH, 2):
-        f.write(f"**Story point {i}.** {cap}\n\n{note}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
+    f.write("**Story points 2 and 3.** KPI definitions with formulas and worked examples. See the How the numbers work section of the README.\n\n")
+    for i, (n, s, note, hdr, cap) in enumerate(DASH, MT.FIRST_PAGE):
+        f.write(f"**Story point {i}.** {cap}\n\n{note}\n\nHow it is calculated: {CALC[n]['calc']}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
 with open(OUT / "story_captions.md", "a") as f:
-    f.write(f"**Story point {len(DASH)+2}.** Recommendations: find your type and its best choice.\n\n")
+    f.write(f"**Story point {len(DASH)+MT.FIRST_PAGE}.** Recommendations: find your type and its best choice.\n\n")
     for _t, _c, _rows in PATHS:
         f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+with open(OUT / "story_captions.md", "a") as f:
+    f.write(f"**Story point {len(DASH)+MT.FIRST_PAGE+1}.** Where the numbers come from. See the How the numbers work section of the README.\n")
 print("ok", len(twb))

@@ -44,6 +44,12 @@ def slide(sid, kicker, title, body, cls=""):
 def pageimg(name, alt):
     return f'<figure class="viz page"><img src="assets/charts/pages/{name}.svg" alt="{alt}" loading="lazy"></figure>'
 XLSX = f"{GH}/raw/main/workbook/IP_Distribution_Cost_Variance_Model.xlsx"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import methods as MT
+KPIS, MPAGES = MT.build()
+def msrc(keys):
+    return "; ".join(f'<a href="{MT.SOURCES[k][1]}" target="_blank" rel="noopener">{MT.SOURCES[k][0]}</a>' for k in keys)
 
 # 1 Title -----------------------------------------------------------------
 slide("title", "", "", f"""
@@ -70,7 +76,7 @@ toc = [("concepts", "Concepts you will see"), ("summary", "Executive summary"), 
        ("tree-how", "How to read the decision tree"), ("v-a", "Path A: Independent creator"), ("v-b", "Path B: Small press or imprint"),
        ("v-c", "Path C: Catalog or backlist owner"), ("v-d", "Path D: Brand, educator or corporate IP owner"), ("v-e", "Path E: Wide ebook strategist"),
        ("tree-terms", "Follow-on decisions"), ("roles", "What each team should do"), ("choices", "Options at a glance"),
-       ("recommendation", "Decision request"), ("method", "Methodology"), ("glossary", "Glossary"), ("sources", "Sources")]
+       ("recommendation", "Decision request"), ("method", "Methodology"), ("kpis-1", "KPI definitions"), ("numbers", "Where each number comes from"), ("glossary", "Glossary"), ("sources", "Sources")]
 half = (len(toc)+1)//2
 cols = "".join('<ol start="%d">%s</ol>' % (st+1, "".join(f'<li><a href="#{a}">{t}</a></li>' for a, t in part)) for st, part in ((0, toc[:half]), (half, toc[half:])))
 slide("contents", "Navigate", "Contents", f"""<div class="toc">{cols}</div>
@@ -264,6 +270,19 @@ slide("method", "Methodology", "How the numbers were built", f"""
 <li>Status note: certain works referenced are in the initial stage of pre-publication copyright registration with the U.S. Copyright Office.</li></ul></div>
 </div>""")
 
+def kpi_table(rows):
+    return ('<table class="tbl xs"><thead><tr><th>KPI</th><th>What it tells you</th><th>Formula</th><th>Worked example</th></tr></thead><tbody>'
+            + "".join(f"<tr><td><b>{r['kpi']}</b><br><span class='muted'>{r['full']}</span></td><td>{r['meaning']}</td><td>{r['formula']}</td><td>{r['worked']}</td></tr>" for r in rows)
+            + "</tbody></table>")
+slide("kpis-1", "How the numbers work", "KPI (key performance indicator) definitions, part 1: money kept per sale",
+      kpi_table(KPIS[:7]) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["kdp", "ingram", "bn", "lulu", "pd", "uscofee", "isbn", "model"]) + "</div>")
+slide("kpis-2", "How the numbers work", "KPI definitions, part 2: scale, cash timing and testing",
+      kpi_table(KPIS[7:]) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["pd", "ingram", "d2d", "bn", "ingramtc", "bd", "booksby", "wwm", "kenp", "kdp", "model"]) + "</div>")
+slide("numbers", "How the numbers work", "Where each number in the story comes from",
+      '<table class="tbl xs"><thead><tr><th>Story point</th><th>Numbers shown</th><th>How they are calculated</th><th>Sources</th></tr></thead><tbody>'
+      + "".join(f"<tr><td><b>{n}. {r['page']}</b></td><td>{r['numbers']}</td><td>{r['calc']}</td><td>{msrc(r['sources'])}</td></tr>" for n, r in enumerate(MPAGES, MT.FIRST_PAGE))
+      + f'</tbody></table><div class="src">Story point numbers match the <a href="{TABLEAU}" target="_blank" rel="noopener">Tableau story</a>. Every formula is also listed in the <a href="{GH}#how-the-numbers-work-kpis-and-calculations" target="_blank" rel="noopener">How the numbers work</a> section on GitHub.</div>')
+
 gl = [("A/B test", "A fair comparison of two versions on one measure, run long enough to trust the result."),
 ("Breakeven lift", "How many more sales a cheaper option needs just to match the original."),
 ("Breakeven point", "Sales at which total money kept equals start-up costs."),
@@ -362,6 +381,7 @@ a.vcard {{ text-decoration:none; }} a.vcard:hover {{ border-color:var(--accent);
 .callout {{ margin-top:18px; background:rgba(90,162,255,.08); border:1px solid rgba(90,162,255,.35); border-radius:10px; padding:14px 16px; color:var(--ink); }}
 .tbl {{ width:100%; border-collapse:collapse; font-size:14.5px; background:var(--panel); border-radius:10px; overflow:hidden; }}
 .tbl.sm {{ font-size:13.5px; }}
+.tbl.xs {{ font-size:11.5px; line-height:1.3; }} .tbl.xs td, .tbl.xs th {{ padding:5px 8px; }}
 .tbl th {{ text-align:left; background:#16243f; color:var(--ink); padding:9px 12px; font-weight:600; }}
 .tbl td {{ padding:8px 12px; border-top:1px solid var(--line); color:var(--ink2); vertical-align:top; }}
 .tbl td b {{ color:var(--ink); }}
