@@ -583,6 +583,62 @@ ACTIONS = "".join(
     f"<link caption='' delimiter=',' escape='\\' expression='&lt;url&gt;' include-null='true' multi-select='false' url-escape='false' /></action>"
     for i, d in enumerate(DASH))
 
+# ---------------- theme: match the slide deck (docs/index.html)
+# navy page, dark panel cards for text, white cards for charts, orange kickers, serif headings
+TH = dict(bg="#1b2a47", panel="#253759", line="#3a5079", ink="#eef2f8", ink2="#b7c2d6", muted="#8392ad",
+          accent="#5aa2ff", accent2="#f0894f", card="#ffffff", serif="Georgia")
+KICKER = {"D0 Introduction": "Introduction", "D1 Market": "Market context", "D0 KPIs": "How the numbers work",
+          "D0 KPIs 2": "How the numbers work", "D2 Gross to Net": "Unit economics", "D3 Cost Variance": "Cost variance analysis",
+          "D4 Ebook": "Unit economics", "D5 Breakeven": "Breakeven analysis", "D6 Scenarios": "Breakeven analysis",
+          "D12 Calculator": "Try it yourself", "D7 Cash": "Working capital", "D8 Pool Volatility": "Uncertainty and experiments",
+          "D9 AB Test": "Uncertainty and experiments", "D10 Recommendations": "Recommendation", "D11 Number Sources": "How the numbers work"}
+_RECOLOR = {"#0b0b0b": TH["ink"], "#1f1f1f": "#dfe6f2", "#52514e": TH["ink2"], "#5b6475": TH["ink2"], CALC_INK: TH["ink"],
+            "#c2410c": TH["accent2"], "#2a78d6": TH["accent"], "#eb6834": TH["accent2"], "#6250d6": "#a99bf5"}
+def _zstyle(bg, border=None, margin=4, padding=8):
+    b = f"<format attr='border-color' value='{border}' /><format attr='border-style' value='solid' /><format attr='border-width' value='1' />" if border else ""
+    return f"<zone-style>{b}<format attr='margin' value='{margin}' /><format attr='padding' value='{padding}' /><format attr='background-color' value='{bg}' /></zone-style>"
+def theme_dash(x):
+    dname = _re.search(r"<dashboard name='([^']+)'", x).group(1)
+    root_open = "<zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
+    i0 = x.index(root_open) + len(root_open); i1 = x.rindex("</zones>")
+    body = x[i0:i1]
+    body = _re.sub(r"<zone-style><format attr='background-color' value='#f6f4ef' /></zone-style></zone>$", "</zone>", body)
+    body = body[:-len("</zone>")]
+    # recolor text runs for the dark theme
+    for a, b in _RECOLOR.items():
+        body = body.replace(f"fontcolor='{a}'", f"fontcolor='{b}'")
+    body = _re.sub(r"<run bold='true' fontsize='18'>", f"<run bold='true' fontcolor='{TH['ink']}' fontsize='18'>", body)
+    # existing tiles (calculator): swap the light border for the deck's line color
+    body = body.replace("<format attr='border-color' value='#e3e0d8' />", f"<format attr='border-color' value='{TH['line']}' />")
+    tight = dname == "D12 Calculator"
+    out = []
+    for m in _re.finditer(r"<zone [^>]*?(?:/>|>.*?</zone>)", body, flags=_re.S):
+        z = m.group(0)
+        is_text = "type-v2='text'" in z
+        if "<zone-style>" in z or "type-v2='paramctrl'" in z:
+            out.append(z); continue
+        if is_text and "fontsize='18'" in z:
+            # page heading: kicker + serif title on the page background, like a deck slide header
+            k = KICKER.get(dname, "")
+            z = z.replace("<formatted-text><run bold='true' fontcolor='" + TH['ink'] + "' fontsize='18'>",
+                          f"<formatted-text><run bold='true' fontcolor='{TH['accent2']}' fontsize='9'>{esc(k.upper())}</run>"
+                          f"<run bold='true' fontcolor='{TH['ink']}' fontname='{TH['serif']}' fontsize='19'>&#10;", 1)
+            z = z.replace("</formatted-text></zone>", "</formatted-text>" + _zstyle(TH["bg"], margin=0, padding=4) + "</zone>")
+        elif is_text and "YOUR NUMBERS" in z:
+            z = z.replace("</formatted-text></zone>", "</formatted-text>" + _zstyle(TH["bg"], margin=0, padding=4) + "</zone>")
+        elif is_text:
+            z = z.replace("</formatted-text></zone>", "</formatted-text>" + _zstyle(TH["panel"], TH["line"], padding=4 if tight else 8) + "</zone>")
+        elif "name='Calc Donut Center'" in z:
+            pass
+        else:
+            st = _zstyle(TH["card"], TH["line"], margin=4, padding=6)
+            z = z[:-2] + ">" + st + "</zone>" if z.endswith("/>") else z.replace("</zone>", st + "</zone>")
+        out.append(z)
+    body = "".join(out) + _zstyle(TH["bg"], margin=0, padding=0 if tight else 10) + "</zone>"
+    return x[:i0] + body + x[i1:]
+import re as _re
+dash_xml = [theme_dash(d) for d in dash_xml]
+
 # ---------------- story
 # story order follows a launch: market, KPI definitions, money kept per sale, breakeven, scenarios, the calculator, getting paid, testing
 _order = [("D0 Introduction", "Start here: purpose, scope and who this is for."),
@@ -597,13 +653,13 @@ _order = [("D0 Introduction", "Start here: purpose, scope and who this is for.")
 _caps = {n: cap for n, s_, note, hdr, cap in DASH}
 STORY_ORDER = [(i, n, c or _caps[n]) for i, (n, c) in enumerate(_order, 1)]
 points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i}. {esc(c)}' id='{i}' />" for i, n, c in STORY_ORDER)
-story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
+story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style><style-rule element='story-point-caption'><format attr='background-color' value='{TH['accent']}' /><format attr='color' value='#06101f' /></style-rule></style><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
-         f"<zone h='4000' id='3' type-v2='text' w='98800' x='600' y='800'><formatted-text><run bold='true' fontsize='18'>IP Distribution Decision Verticals</run><run fontcolor='#52514e' fontsize='11'>   Prices, fees and rates as of {esc(ASOF)}; refreshed quarterly</run></formatted-text></zone>"
+         f"<zone h='4000' id='3' type-v2='text' w='98800' x='600' y='800'><formatted-text><run bold='true' fontcolor='{TH['ink']}' fontname='{TH['serif']}' fontsize='20'>IP Distribution Decision Verticals</run><run fontcolor='{TH['ink2']}' fontsize='11'>   Prices, fees and rates as of {esc(ASOF)}; refreshed quarterly</run></formatted-text>{_zstyle(TH['bg'], margin=0, padding=2)}</zone>"
          f"<zone h='13500' id='4' is-fixed='true' paired-zone-id='5' removable='false' type-v2='flipboard-nav' w='98800' x='600' y='4800' />"
          f"<zone h='81200' id='5' paired-zone-id='4' removable='false' type-v2='flipboard' w='98800' x='600' y='18300'><flipboard active-id='1' nav-type='caption' show-nav-arrows='true'>"
-         f"<story-points>{points}</story-points></flipboard></zone></zone></zone></zones>"
+         f"<story-points>{points}</story-points></flipboard></zone></zone>{_zstyle(TH['bg'], margin=0, padding=0)}</zone></zones>"
          f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)

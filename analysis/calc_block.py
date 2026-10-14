@@ -230,11 +230,11 @@ def calc_dash(dname):
     z.append(_tile(f"<zone h='9500' id='13' mode='slider' param='{P_UNITS}' type-v2='paramctrl' w='22000' x='0' y='14500' />"))
     z.append(_tile(f"<zone h='9500' id='14' mode='slider' param='{P_BUDGET}' type-v2='paramctrl' w='22000' x='0' y='24500' />"))
     z.append(_tile(f"<zone h='9500' id='15' mode='compact' param='{P_ROUTE}' type-v2='paramctrl' w='22000' x='0' y='34500' />"))
-    z.append(f"<zone h='30000' id='16' type-v2='text' w='22000' x='0' y='45000'><formatted-text>"
+    z.append(f"<zone h='31500' id='16' type-v2='text' w='22000' x='0' y='44500'><formatted-text>"
              f"<run bold='true' fontcolor='{CALC_INK}' fontsize='10'>How it is calculated</run>"
              f"<run fontcolor='#1f1f1f' fontsize='9'>&#10;Money kept = books sold x what you keep per print + ebook pair.&#10;Launch costs = platform fees + $85 copyright + launch budget + any subscription.&#10;Profit = money kept - launch costs.&#10;Breakeven = launch costs / money kept per pair, rounded up.</run>"
              f"<run bold='true' fontcolor='{CALC_INK}' fontsize='10'>&#10;&#10;Try this</run>"
-             f"<run fontcolor='#1f1f1f' fontsize='9'>&#10;Set the budget to $0: KDP is in profit after its first sale. Raise it to $5,000 and watch the faces turn from green to red.</run></formatted-text></zone>")
+             f"<run fontcolor='#1f1f1f' fontsize='9'>&#10;Set the budget to $0 and KDP is in profit after its first sale. Raise it to $5,000 and watch the faces turn red.</run></formatted-text></zone>")
     # BAN row
     for i, n in enumerate(CALC_SHEETS[:4]):
         z.append(_tile(f"<zone h='15500' id='{20+i}' name='{n}' show-title='true' w='19000' x='{23500 + i*19200}' y='10000' />"))

@@ -3,6 +3,7 @@
 Each quarterly refresh records what changed in prices, fees, rates and market figures.
 
 ## October 14, 2026
+- Tableau story restyled to match the slide deck: navy page, dark panel cards for text, white cards for charts, orange section kickers, serif headings and a blue story navigator. Deck and story both moved to a slightly brighter navy. No rates changed.
 - Tableau story: reordered the cards to follow a real launch (market, KPIs, money kept per sale, cost variance, ebooks, breakeven, scenarios, profit calculator, getting paid, Kindle Unlimited, price testing, recommendations, sources), now 15 points. The deck's "Where each number comes from" slide and the README use the same numbering. No rates changed.
 - Tableau story: new point 10, an interactive profit calculator with sliders for books sold and launch budget, a route picker, four scorecards, a donut of costs earned back, smiley faces for every route, a profit curve with your books-sold marker and a ranked leaderboard. No rates changed.
 - Tableau story: platform and cost colors are now fixed in the workbook (they no longer depend on legend order); sentence case in every title; plain-language axis titles on every chart; scenario panels use their own scales so the bars fill the width; Kindle Unlimited chart has labeled points and call-outs for the peak, the low, the January dip and the latest month; A/B test shading and call-out no longer overlap. No rates changed.
