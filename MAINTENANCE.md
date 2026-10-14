@@ -48,9 +48,11 @@ To restore the Tableau story, open `tableau/IP_Distribution_Decision_Verticals.t
 - **Schema order matters.** Inside a datasource the order is connection, aliases, columns, extract, layout, style. `<layout>` needs `dim-percentage` and `measure-percentage`.
 - **Font sizes must be whole numbers** (`fontsize='12'`, never `12.5`), or the workbook will not load.
 - **Dashboards need viewpoints.** Each dashboard window lists its sheets in `<viewpoints>`; otherwise Tableau reports "no visual representation".
-- **Colors come from legend order, not from the palette XML.** Tableau assigns its default palette by the alphabetical order of the legend labels (the aliases). Current mapping on the cost charts: blue = platform fees, orange = printing, red = store's cut, teal = what the creator keeps. The static charts in `analysis/charts.py` use the same colors on purpose, and the plain-language notes name them. If you rename a legend label, re-check the colors and the notes.
+- **Colors are pinned with custom palettes.** A color map only sticks when (1) the datasource has a `<column-instance>` for the colored field, placed after the calculated columns and before `<extract>`, (2) the encoding names `palette='NAME'` and a matching `<color-palette custom='true' name='NAME'>` sits in `<preferences>` with colors in alphabetical order of the values, and (3) the style rules in each `<style>` are sorted by element name. `build_tableau.py` handles all three (`make_palette`, `_sort_rules`). Current mapping on the cost charts: blue = platform fees, orange = printing, red = store's cut, teal = what the creator keeps; the static charts in `analysis/charts.py` match. If you rename a value, re-check the palette and the notes.
 - **Clickable source names** use a URL action whose link expression is `<url>` with `url-escape='false'`. With escaping on, Tableau URL-encodes the whole address and the link breaks.
 - **Tableau caches workbooks by file name.** When testing a changed `.twbx`, open it under a new file name or Tableau may show the old version.
+- **Custom shapes are dropped on load** when injected through `<external><shapes>`; the calculator's faces are emoji text marks instead, which render on Tableau Public.
+- **A reference line on a parameter** needs a calculated field equal to the parameter placed on Detail, with the line using `min` of that field.
 - **Text-box line breaks:** start a run with `&#10;` followed by text; a run that holds only a line break is dropped.
 
 ## Plain-language and style rules

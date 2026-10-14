@@ -15,9 +15,14 @@ COL = {"Amazon KDP": "#2a78d6", "IngramSpark": "#eb6834", "B&N Press": "#1baf7a"
        "Lulu": "#eda100", "PublishDrive": "#e87ba4", "Draft2Digital": "#008300", "Draft2Digital (ebook only)": "#008300",
        "Apple Books direct": "#6250d6", "KDP Expanded Distribution": "#e34948",
        "Self-published": "#2a78d6", "Traditional": "#6250d6",
-       "Channel share": "#b9b8b2", "Production cost": "#eda100", "Platform fee": "#e34948", "Net royalty to IP owner": "#2a78d6",
+       "Channel share": "#e15759", "Production cost": "#f28e2b", "Platform fee": "#4e79a7", "Net royalty to IP owner": "#76b7b2",
        "Amazon KDP (print + ebook)": "#2a78d6", "IngramSpark (print)": "#eb6834", "Draft2Digital (ebook)": "#008300",
        "Bear": "#e34948", "Base": "#8a8984", "Bull": "#2a78d6"}
+
+PALETTES = {}  # named workbook palettes; colors listed in the alphabetical order of the values they color
+def make_palette(name, mapping):
+    PALETTES[name] = [mapping[k] for k in sorted(mapping)]
+    return name
 
 def sniff(fname):
     rows = list(csv.DictReader(open(ROOT / "data" / fname)))
@@ -76,7 +81,7 @@ def datasource(key, fname, color_field=None):
             fields += f"<column datatype='{t}' default-format='{fmt}' name='[{esc(c)}]' role='measure' type='quantitative' />"
     ALIAS = {"component": {"Channel share": "Store's cut (channel share)", "Net royalty to IP owner": "What the creator keeps (net royalty)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
              "driver": {"Channel share": "Store's cut (channel share)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
-             "segment": {"Self-published": "Self-published (authors on their own)", "Traditional": "Traditional (publishing houses)"},
+             "segment": {"Self-published": "Self-published (by authors)", "Traditional": "Traditional (by publishers)"},
              "test": {"Price elasticity: $16.99 (A, control) vs $14.99 (B)": "Print price: $16.99 vs $14.99",
                       "Channel terms: 55% discount, returnable (A) vs 40% non-returnable (B)": "Store terms: 55% returnable vs 40% non-returnable",
                       "Ebook price: $4.99 (A, control) vs $3.99 (B)": "Ebook price: $4.99 vs $3.99"},
@@ -95,8 +100,11 @@ def datasource(key, fname, color_field=None):
     if color_field:
         vals = list(dict.fromkeys(r[color_field] for r in rows))
         maps = "".join(f"<map to='{COL.get(v, '#8a8984')}'><bucket>&quot;{esc(v)}&quot;</bucket></map>" for v in vals)
-        style = (f"<style><style-rule element='mark'><encoding attr='color' field='[none:{esc(color_field)}:nk]' type='palette'>{maps}</encoding>"
+        pn = make_palette(f"IPDDV {key} {color_field}", {v: COL.get(v, "#8a8984") for v in vals})
+        style = (f"<style><style-rule element='mark'><encoding attr='color' field='[none:{esc(color_field)}:nk]' palette='{esc(pn)}' type='palette'>{maps}</encoding>"
                  f"</style-rule></style>")
+    # a datasource-level color map only binds when the colored field also has a column-instance here
+    ci_xml = (f"<column-instance column='[{esc(color_field)}]' derivation='None' name='[none:{esc(color_field)}:nk]' pivot='key' type='nominal' />" if color_field else "")
     DS[key] = dict(name=name, cols=dict(cols), caption=fname.replace(".csv", ""), rows=rows)
     write_hyper(fname, cols, rows)
     hyp = fname.replace(".csv", ".hyper")
@@ -117,7 +125,7 @@ def datasource(key, fname, color_field=None):
             f"<relation connection='{conn}' name='{fname}' table='[{fname.replace('.csv','#csv')}]' type='table'>"
             f"<columns character-set='UTF-8' header='yes' locale='en_US' separator=','>{colxml}</columns></relation>"
             f"<metadata-records>{meta}</metadata-records></connection>"
-            f"<aliases enabled='yes' />{fields}{extract}<layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.4' show-structure='true' />{style}</datasource>")
+            f"<aliases enabled='yes' />{fields}{ci_xml}{extract}<layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.4' show-structure='true' />{style}</datasource>")
 
 def ci(key, field, kind):
     """kind: nk (nominal dim), ok (ordinal dim), qk (continuous dim), sum/avg (measure)"""
@@ -132,7 +140,7 @@ def ci(key, field, kind):
 SHEETS = []
 SHEET_COLOR = {}
 HL = "#c2410c"
-def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle="", lines=(), bands=(), notes=(), no_zero=None, axis_title=None):
+def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle="", lines=(), bands=(), notes=(), no_zero=None, axis_title=None, independent=None, note_width=190):
     """lines: (axis_ref, value, label); bands: (axis_ref, from, to, label, fill); notes: (dim_value, measure_value, text, dx, dy).
     axis_ref is a (field, kind) spec such as ("net_royalty", "sum") or ("month", "qk"). Notes work on single-dimension bar sheets."""
     ds = DS[key]["name"]
@@ -165,7 +173,8 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         cf = color[0]
         vals = list(dict.fromkeys(r[cf] for r in DS[key]["rows"]))
         maps = "".join(f"<map to='{COL.get(v, '#8a8984')}'><bucket>&quot;{esc(v)}&quot;</bucket></map>" for v in vals)
-        tstyle = f"<style><style-rule element='mark'><encoding attr='color' field='[{ds}].[none:{esc(cf)}:nk]' type='palette'>{maps}</encoding></style-rule></style>"
+        pn = make_palette(f"IPDDV {key} {cf}", {v: COL.get(v, "#8a8984") for v in vals})
+        tstyle = f"<style><style-rule element='mark'><encoding attr='color' field='[{ds}].[none:{esc(cf)}:nk]' palette='{esc(pn)}' type='palette'>{maps}</encoding></style-rule></style>"
     rid = [0]; rl_xml = ""; band_rules = ""
     def axref(spec):
         f, kind = spec; r, x = ci(key, f, kind); used[r] = x; return f"[{ds}].{esc(r)}"
@@ -187,19 +196,38 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         extra_rules += f"<style-rule element='refband'>{band_rules}</style-rule>"
     if no_zero:
         f0, k0, sc = no_zero; r0, _ = ci(key, f0, k0)
-        extra_rules += (f"<style-rule element='axis'><encoding attr='space' class='0' domain-expand='false' field='[{ds}].{esc(r0)}' "
-                        f"field-type='quantitative' scope='{sc}' type='space' /></style-rule>")
+        axis_inner = (f"<encoding attr='space' class='0' domain-expand='false' field='[{ds}].{esc(r0)}' "
+                        f"field-type='quantitative' scope='{sc}' type='space' />")
+    else:
+        axis_inner = ""
+    if axis_title or independent:
+        # axis_title: (field, kind, scope, text); independent: (field, kind, scope)
+        ax_rules = ""
+        if axis_title:
+            fa, ka, sa, ta = axis_title; ra, _ = ci(key, fa, ka)
+            ax_rules += f"<format attr='title' class='0' field='[{ds}].{esc(ra)}' scope='{sa}' value='{esc(ta)}' />"
+        if independent:
+            fi, ki, si = independent; ri, _ = ci(key, fi, ki)
+            ax_rules += (f"<encoding attr='space' class='0' field='[{ds}].{esc(ri)}' field-type='quantitative' "
+                         f"range-type='independent' scope='{si}' type='space' />")
+        axis_inner += ax_rules
+    if axis_inner:
+        extra_rules += f"<style-rule element='axis'>{axis_inner}</style-rule>"
     if extra_rules:
         tstyle = tstyle.replace("<style />", f"<style>{extra_rules}</style>") if tstyle == "<style />" else tstyle.replace("</style>", f"{extra_rules}</style>")
     ann = ""
     if notes:
-        dimf, measf = rows[0][0], cols[0][0]
-        dref, mref = f"[{ds}].[none:{esc(dimf)}:nk]", f"[{ds}].[sum:{esc(measf)}:qk]"
+        if rows[0][1] in ("nk", "ok"):
+            dimf, dk, measf = rows[0][0], rows[0][1], cols[0][0]
+        else:
+            dimf, dk, measf = cols[0][0], cols[0][1], rows[0][0]
+        dref, mref = f"[{ds}].[none:{esc(dimf)}:{dk}]", f"[{ds}].[sum:{esc(measf)}:qk]"
+        xf, yf = (mref, dref) if rows[0][1] in ("nk", "ok") else (dref, mref)
         for k, (dv, mv, txt, dx, dy) in enumerate(notes):
-            ann += (f"<annotation class='point' id='{k}' mark-position='1' pullback='12' text-width='190'>"
+            ann += (f"<annotation class='point' id='{k}' mark-position='1' pullback='12' text-width='{note_width}'>"
                     f"<formatted-text><run bold='true' fontcolor='{HL}'>{esc(txt)}</run></formatted-text>"
                     f"<point><visual-coordinate class='mark'><tuple-reference><tuple-descriptor><pane-descriptor>"
-                    f"<x-fields><field>{mref}</field></x-fields><y-fields><field>{dref}</field></y-fields></pane-descriptor>"
+                    f"<x-fields><field>{xf}</field></x-fields><y-fields><field>{yf}</field></y-fields></pane-descriptor>"
                     f"<columns><field>{dref}</field><field>{mref}</field></columns></tuple-descriptor>"
                     f"<tuple><value>&quot;{esc(dv)}&quot;</value><value>{mv}</value></tuple></tuple-reference></visual-coordinate></point>"
                     f"<body x='{dx}' y='{dy}' /></annotation>")
@@ -277,50 +305,72 @@ _mname = lambda m: _dt.date(int(m[:4]), int(m[5:7]), 1).strftime("%b %Y")
 _kp_hi = _mname(_r("kenp")[_kp.index(max(_kp))]["month"]); _kp_lo = _mname(_r("kenp")[_kp.index(min(_kp))]["month"])
 _ab = _r("ab"); _ab_price = [r for r in _ab if r["test"].startswith(("Price", "Ebook"))]
 _ab_hard = max(_ab, key=lambda r: float(r["breakeven_lift_required"]))
-BAND = "#fff1de"
+BAND = "#fde2b6"  # amber highlight: strong enough to read as a range, light enough to keep labels legible
+_kmon = [r["month"] for r in _r("kenp")]
+_kv = {r["month"]: float(r["per_page_rate"]) * 1000 for r in _r("kenp")}
+_k_hi_m = max(_kv, key=_kv.get); _k_lo_m = min(_kv, key=_kv.get); _k_last = _kmon[-1]
+_k_avg = sum(_kv.values()) / len(_kv)
+_k_dip = min((m for m in _kmon if m > _k_hi_m), key=_kv.get)  # lowest month after the peak
 
 sheet("01 Market ISBNs", "U.S. ISBN output by segment, 2022 to 2025 (stacked)", "isbn", [("titles","sum")], [("year","qk")], "Area", color=("segment","nk"),
-      subtitle="Source: Bowker via Publishers Weekly, March 2026",
-      bands=[(("year", "qk"), _y0, _y1, f"Self-published +{SP_GROWTH:.1%} in {_y1}", BAND)])
+      subtitle=f"Source: Bowker via Publishers Weekly, March 2026. Shaded: {_y0} to {_y1}, when self-published ISBNs rose {SP_GROWTH:.1%}",
+      bands=[(("year", "qk"), _y0, _y1, "", "#fff1de")],
+      axis_title=("titles", "sum", "rows", "New ISBNs issued"))
 sheet("02 Gross to Net", "Where each $16.99 of list price goes (print)", "gtn", [("platform","nk")], [("amount","sum")], "Bar", color=("component","nk"), label=("keep_label","sum"), filt=("format","Print"),
-      subtitle="Model in this repository; platform rates from IngramSpark, KDP, B&N Press, Lulu and PublishDrive",
-      lines=[(("amount", "sum"), round(KDP_NET, 3), f"KDP keeps ${KDP_NET:.2f}")])
-sheet("03 Cost Variance", "Cost variance vs Amazon KDP by driver, $ per print unit", "var", [("platform","nk")], [("variance","sum")], "Bar", color=("driver","nk"), label=("store_cut_label","sum"), filt=("format","Print"),
+      subtitle=f"Model in this repository; rates from IngramSpark, KDP, B&N Press, Lulu and PublishDrive. Black line: what KDP leaves the creator (${KDP_NET:.2f})",
+      lines=[(("amount", "sum"), round(KDP_NET, 3), "")],
+      axis_title=("amount", "sum", "cols", "Dollars of the $16.99 list price"))
+sheet("03 Cost Variance", "Cost variance vs Amazon KDP by driver, $ per print copy", "var", [("platform","nk")], [("variance","sum")], "Bar", color=("driver","nk"), label=("store_cut_label","sum"), filt=("format","Print"),
       subtitle="Positive = favorable to the IP owner. Drivers sum to the total variance.",
-      lines=[(("variance", "sum"), 0, "KDP baseline")])
+      lines=[(("variance", "sum"), 0, "KDP baseline")],
+      axis_title=("variance", "sum", "cols", "Dollars per print copy compared with Amazon KDP"))
 sheet("04 Ebook Net", "Net royalty per $4.99 ebook", "ebook", [("platform","nk")], [("net_royalty","sum")], "Bar", color=("platform","nk"), label=("net_royalty","sum"), sort=("platform","net_royalty"),
       subtitle="Store payout rates from ScribeCount; fees from KDP, Draft2Digital and the IngramSpark agreement",
       lines=[(("net_royalty", "sum"), EB_TOP, f"Best possible: ${EB_TOP:.2f} (70%)")],
       bands=[(("net_royalty", "sum"), EB_LO, EB_TOP, "", BAND)],
-      notes=[("IngramSpark", _eb["IngramSpark"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale", -170, 40)])
-sheet("05 Breakeven Units", "Unit pairs needed to recover Year-1 fixed costs", "be", [("stack","nk")], [("breakeven_unit_pairs","sum")], "Bar", color=("stack","nk"), label=("breakeven_unit_pairs","sum"),
-      subtitle="Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions",
-      lines=[(("breakeven_unit_pairs", "sum"), int(BE_MIN["breakeven_unit_pairs"]), f"Fastest: {BE_MIN['stack']} at {BE_MIN['breakeven_unit_pairs']} pairs")],
-      notes=[(BE_MAX["stack"], BE_MAX["breakeven_unit_pairs"], f"{int(BE_MAX['breakeven_unit_pairs'])/int(BE_MIN['breakeven_unit_pairs']):.1f}x as many sales as the fastest route", -30, 42)])
+      notes=[("Lulu Retail", _eb["Lulu Retail"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale (shaded strip)", 100, 8)],
+      note_width=150,
+      axis_title=("net_royalty", "sum", "cols", "Creator keeps per $4.99 ebook"))
+sheet("05 Breakeven Units", "Unit pairs needed to recover year-1 fixed costs", "be", [("stack","nk")], [("breakeven_unit_pairs","sum")], "Bar", color=("stack","nk"), label=("breakeven_unit_pairs","sum"),
+      subtitle=f"Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions. Black line: fastest route, {BE_MIN['stack']} at {BE_MIN['breakeven_unit_pairs']} pairs",
+      lines=[(("breakeven_unit_pairs", "sum"), int(BE_MIN["breakeven_unit_pairs"]), "")],
+      notes=[(BE_MAX["stack"], BE_MAX["breakeven_unit_pairs"], f"{int(BE_MAX['breakeven_unit_pairs'])/int(BE_MIN['breakeven_unit_pairs']):.1f}x as many sales as the fastest route", 0, -40)],
+      note_width=165,
+      axis_title=("breakeven_unit_pairs", "sum", "cols", "Unit pairs sold (one print book plus one ebook)"))
 sheet("06 Breakeven Curve", "Cumulative profit by unit pairs sold", "curve", [("cumulative_profit","sum")], [("unit_pairs","qk")], "Line", color=("stack","nk"),
       subtitle="Each line crosses zero at its breakeven point",
       lines=[(("cumulative_profit", "sum"), 0, "Breakeven ($0)")],
       bands=[(("unit_pairs", "qk"), int(BE_MIN["breakeven_unit_pairs"]), int(BE_MAX["breakeven_unit_pairs"]), f"Breakeven range: {BE_MIN['breakeven_unit_pairs']} to {BE_MAX['breakeven_unit_pairs']} pairs", BAND)])
 sheet("07 Scenarios", "Year-1 net by sales level (10, 50 and 250 sales of each format a month)", "scen", [("stack","nk")], [("sales_level","nk"), ("year1_net","sum")], "Bar", color=("stack","nk"), label=("year1_net","sum"),
-      subtitle="Planning scenarios, not forecasts")
+      subtitle="Planning scenarios, not forecasts. Each panel has its own scale so every bar is readable; compare ranks across panels, and dollars within a panel",
+      axis_title=("year1_net", "sum", "cols", "Year-1 net (each panel has its own scale)"),
+      independent=("year1_net", "sum", "cols"))
 sheet("08 Accrual vs Cash", "Cumulative royalties earned by channel (stacked), 24 months", "cash", [("cumulative_earned","sum")], [("month","qk")], "Area", color=("channel","nk"),
-      subtitle="Illustrative hybrid stack; launch curve and 65/35 channel mix are assumptions",
-      lines=[(("month", "qk"), 12, f"Month 12: ${CASH_GAP12:,.0f} not yet paid")])
+      subtitle=f"Illustrative hybrid stack; launch curve and 65/35 channel mix are assumptions. Line at month 12: ${CASH_GAP12:,.0f} earned but not yet paid",
+      lines=[(("month", "qk"), 12, "Month 12")],
+      axis_title=("cumulative_earned", "sum", "rows", "Royalties earned to date"))
 sheet("09 Days to Cash", "Average days from sale to cash", "pay", [("platform","nk")], [("avg_days_sale_to_cash","sum")], "Bar", color=("platform","nk"), label=("avg_days_sale_to_cash","sum"),
-      subtitle="B&N Press Help Center; IngramSpark Agreement Sec. 9; The Book Designer; Books.by",
-      bands=[(("avg_days_sale_to_cash", "sum"), int(_pay[0]["avg_days_sale_to_cash"]), int(_pay[-1]["avg_days_sale_to_cash"]),
-              f"{int(_pay[-1]['avg_days_sale_to_cash']) - int(_pay[0]['avg_days_sale_to_cash'])}-day gap", BAND)])
-sheet("10 KENP Pool Rate", "Kindle Unlimited pay per 1,000 pages read", "kenp", [("pay_per_1000_pages","sum")], [("month","ok")], "Line",
-      subtitle="Profitable.app KENP tracker (author-reported), May 2025 to April 2026",
-      lines=[(("pay_per_1000_pages", "sum"), round(max(_kp) * 1000, 2), f"High: ${max(_kp)*1000:.2f} ({_kp_hi})"),
-             (("pay_per_1000_pages", "sum"), round(sum(_kp) / len(_kp) * 1000, 2), f"Average: ${sum(_kp)/len(_kp)*1000:.2f}"),
-             (("pay_per_1000_pages", "sum"), round(min(_kp) * 1000, 2), f"Low: ${min(_kp)*1000:.2f} ({_kp_lo})")],
-      no_zero=("pay_per_1000_pages", "sum", "rows"))
+      subtitle=f"B&N Press Help Center; IngramSpark Agreement Sec. 9; The Book Designer; Books.by. Shaded: the {int(_pay[-1]['avg_days_sale_to_cash']) - int(_pay[0]['avg_days_sale_to_cash'])}-day gap between the fastest and slowest payer",
+      bands=[(("avg_days_sale_to_cash", "sum"), int(_pay[0]["avg_days_sale_to_cash"]), int(_pay[-1]["avg_days_sale_to_cash"]), "", BAND)],
+      axis_title=("avg_days_sale_to_cash", "sum", "cols", "Days from sale to cash"))
+sheet("10 KENP Pool Rate", "Kindle Unlimited pay per 1,000 pages read", "kenp", [("pay_per_1000_pages","sum")], [("month","ok")], "Line", label=("pay_per_1000_pages","sum"),
+      subtitle=f"Profitable.app KENP tracker (author-reported), May 2025 to April 2026. Each dot is one month; the flat line is the 12-month average (${_k_avg:.2f})",
+      lines=[(("pay_per_1000_pages", "sum"), round(_k_avg, 2), f"Average: ${_k_avg:.2f}")],
+      notes=[(_k_hi_m, round(_kv[_k_hi_m], 2), f"Peak: ${_kv[_k_hi_m]:.2f} in {_mname(_k_hi_m)}, the best month of the year", -160, 0),
+             (_k_lo_m, round(_kv[_k_lo_m], 2), f"Low: ${_kv[_k_lo_m]:.2f} in {_mname(_k_lo_m)}, {1-_kv[_k_lo_m]/_kv[_k_hi_m]:.0%} less than the peak", -10, -150),
+             (_k_dip, round(_kv[_k_dip], 2), f"{_mname(_k_dip)}: dropped to ${_kv[_k_dip]:.2f}, almost back to the low, then recovered", 200, -35),
+             (_k_last, round(_kv[_k_last], 2), f"Latest: ${_kv[_k_last]:.2f} in {_mname(_k_last)}, above the average", -230, -40)],
+      note_width=170,
+      no_zero=("pay_per_1000_pages", "sum", "rows"),
+      axis_title=("pay_per_1000_pages", "sum", "rows", "Dollars paid per 1,000 pages read"))
 sheet("11 AB Breakeven Lift", "Volume lift a challenger needs to match the control", "ab", [("test","nk")], [("breakeven_lift_required","sum")], "Bar", label=("breakeven_lift_required","sum"),
-      subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80",
+      sort=("test", "breakeven_lift_required"),
+      subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80. Shaded strip: the range the two price tests must beat",
       bands=[(("breakeven_lift_required", "sum"), min(float(r["breakeven_lift_required"]) for r in _ab_price), max(float(r["breakeven_lift_required"]) for r in _ab_price),
               f"Price cuts need {min(float(r['breakeven_lift_required']) for r in _ab_price):.0%} to {max(float(r['breakeven_lift_required']) for r in _ab_price):.0%} more sales", BAND)],
-      notes=[(_ab_hard["test"], _ab_hard["breakeven_lift_required"], "Hardest bar to clear: returns eat the margin", -80, -40)])
+      notes=[(_ab_hard["test"], _ab_hard["breakeven_lift_required"], "Hardest bar to clear: returns eat the margin", -220, 72)],
+      note_width=170,
+      axis_title=("breakeven_lift_required", "sum", "cols", "Extra sales needed just to tie (breakeven lift)"))
 
 for _d in SRC_LINKS:
     sheet(f"Sources {_d[:2]}", "Sources (click a name to open it)", "src", [("n", "ok")], [], "Text", label=("source", "nk"), filt=("dashboard", _d))
@@ -335,6 +385,8 @@ for _i, (_n, _x) in enumerate(SHEETS):
         _x = _x.replace("<column datatype='string' name='[source]'", "<column datatype='string' name='[url]' role='dimension' type='nominal' /><column datatype='string' name='[source]'", 1)
         SHEETS[_i] = (_n, _x)
 
+exec(open(Path(__file__).resolve().parent / 'calc_block.py').read())
+
 # ---------------- dashboards with annotation text boxes
 def dash(name, sheets, note, header):
     zid = [10]
@@ -345,8 +397,8 @@ def dash(name, sheets, note, header):
     inner = ""
     for i, s in enumerate(sheets):
         if s in SHEET_COLOR:
-            inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each-15000}' x='{i*w_each}' y='8000' />"
-            inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' pane-specification-id='0' param='{SHEET_COLOR[s]}' type-v2='color' w='15000' x='{i*w_each + w_each - 15000}' y='8000' />"
+            inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each-19000}' x='{i*w_each}' y='8000' />"
+            inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' pane-specification-id='0' param='{SHEET_COLOR[s]}' type-v2='color' w='19000' x='{i*w_each + w_each - 19000}' y='8000' />"
         else:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each}' x='{i*w_each}' y='8000' />"
     hdr = f"<zone h='8000' id='{nid()}' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontcolor='#0b0b0b' fontsize='18'>{esc(header)}</run></formatted-text></zone>"
@@ -390,7 +442,7 @@ GUIDE = {
  "D7 Cash": ("Stacked area chart and horizontal bar chart with a shaded range", "left: cumulative accrued royalties by channel with a month-12 marker; right: average DSO by platform.",
                "Left: money earned piles up, but it arrives months later. Right: how long each store takes to pay you.", [T_DSO, T_KDP, T_BN]),
  "D8 Pool Volatility": ("Line chart with reference lines", "monthly KENP rate shown as dollars per 1,000 pages; the axis starts near the lowest value so changes are visible.",
-               "The line shows what Kindle Unlimited paid each month; the three flat lines mark the best month, the average and the worst month.", [T_KENP, T_KDP]),
+               "The line shows what Kindle Unlimited paid each month; the flat line is the average, and the call-outs point to the peak, the low, the January dip and the latest month.", [T_KENP, T_KDP]),
  "D9 AB Test": ("Horizontal bar chart with a shaded range", "breakeven lift = net per unit of A divided by net per unit of B, minus 1; sample sizes use a two-proportion z-test at 95% confidence and 80% power.",
                "Each bar is how many more sales a cheaper option needs just to tie; beat the bar or keep the original.", [T_AB]),
 }
@@ -463,7 +515,7 @@ def rec_dash(dname, items, heading):
 INTRO = [
  ("Purpose", "#2a78d6", [
   ("The question", "Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with?"),
-  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. Points 2 and 3 define each KPI (key performance indicator) with its formula, point 13 gives a recommendation for each type of owner, and point 14 shows where every number comes from.")]),
+  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The points follow the order of a real launch: point 2 shows the market, points 3 and 4 define each KPI (key performance indicator) with its formula, points 5 to 9 compare money kept and breakeven, point 10 is a profit calculator you can try, points 11 to 13 cover getting paid and testing prices, point 14 gives a recommendation for each type of owner, and point 15 shows where every number comes from.")]),
  ("Scope", "#eb6834", [
   ("Platforms", "Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital."),
   ("Base case", "A $16.99 paperback (200 pages) and a $4.99 ebook sold in the United States."),
@@ -481,7 +533,7 @@ INTRO = [
 def intro_dash(dname, items, heading):
     zones = (f"<zone h='10000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
              f"<run fontcolor='#52514e' fontsize='11'>&#10;Prices, fees and rates as of {esc(ASOF)}. Use the arrows or the cards above to move through the story.</run></formatted-text></zone>")
-    hs = [18000, 25000, 26000, 20500]
+    hs = [21000, 24500, 24000, 20000]
     y = 10500
     for i, ((t, c, rows), h) in enumerate(zip(items, hs)):
         runs = f"<run bold='true' fontcolor='{c}' fontsize='17'>{esc(t)}</run>"
@@ -515,10 +567,12 @@ dash_xml.insert(1, text_page("D0 KPIs", "KPI (key performance indicator) definit
     f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[:7]))
 dash_xml.insert(2, text_page("D0 KPIs 2", "KPI definitions, part 2: scale, cash timing and testing",
     f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[7:]))
-SRC_ITEMS = [(f"{n}. {r['page']}", [("Numbers shown", r["numbers"]), ("Sources", "; ".join(MT.SOURCES[k][0] for k in r["sources"]))]) for n, r in enumerate(MPAGES, MT.FIRST_PAGE)]
+SRC_ITEMS = [(f"{MT.PAGE_NO[r['dash']]}. {r['page']}", [("Numbers shown", r["numbers"]), ("Sources", "; ".join(MT.SOURCES[k][0] for k in r["sources"]))]) for r in sorted(MPAGES, key=lambda r: MT.PAGE_NO[r["dash"]])]
+SRC_ITEMS.insert(6, ("10. Profit calculator", [("Numbers shown", "Profit, breakeven point, books still needed and share of launch costs earned back, for the books sold and launch budget you choose"), ("Sources", "Contribution per unit pair and fixed costs from the Breakeven page; same sources as points 5 to 9")]))
 SRC_ITEMS.append(("How the model works", [("Pipeline", "analysis/model.py turns one documented list of prices, fees and rates into every data file; the charts, deck, Excel model and this story all read those files."),
     ("Estimates", "Print costs for IngramSpark, B&N Press and Lulu, the $1,500 launch budget, the 65/35 channel mix and the launch curve are planning assumptions, not published rates."),
     ("Clickable sources", "Each analysis page lists its sources by name; click a name to open it. The GitHub page lists every formula in its How the numbers work section.")]))
+dash_xml.append(calc_dash("D12 Calculator"))
 dash_xml.append(rec_dash("D10 Recommendations", PATHS, "Recommendations: the best route for each type of owner"))
 dash_xml.append(text_page("D11 Number Sources", "Where the numbers come from",
     f"Prices, fees and rates as of {ASOF}; refreshed quarterly. Each analysis page also shows its calculation under How it is calculated.", SRC_ITEMS))
@@ -530,12 +584,19 @@ ACTIONS = "".join(
     for i, d in enumerate(DASH))
 
 # ---------------- story
-points = "<story-point captured-sheet='D0 Introduction' caption='1. Start here: purpose, scope and who this is for.' id='1' />"
-points += "<story-point captured-sheet='D0 KPIs' caption='2. KPIs, part 1: money kept per sale and breakeven.' id='2' />"
-points += "<story-point captured-sheet='D0 KPIs 2' caption='3. KPIs, part 2: scale, cash timing and testing.' id='3' />"
-points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i+MT.FIRST_PAGE}. {esc(cap)}' id='{i+MT.FIRST_PAGE}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
-points += f"<story-point captured-sheet='D10 Recommendations' caption='{len(DASH)+MT.FIRST_PAGE}. Recommendations: find your type and its best choice.' id='{len(DASH)+MT.FIRST_PAGE}' />"
-points += f"<story-point captured-sheet='D11 Number Sources' caption='{len(DASH)+MT.FIRST_PAGE+1}. Where the numbers come from.' id='{len(DASH)+MT.FIRST_PAGE+1}' />"
+# story order follows a launch: market, KPI definitions, money kept per sale, breakeven, scenarios, the calculator, getting paid, testing
+_order = [("D0 Introduction", "Start here: purpose, scope and who this is for."),
+          ("D1 Market", None),
+          ("D0 KPIs", "KPIs, part 1: money kept per sale and breakeven."),
+          ("D0 KPIs 2", "KPIs, part 2: scale, cash timing and testing."),
+          ("D2 Gross to Net", None), ("D3 Cost Variance", None), ("D4 Ebook", None), ("D5 Breakeven", None), ("D6 Scenarios", None),
+          ("D12 Calculator", "Profit calculator: slide to see when each route turns a profit."),
+          ("D7 Cash", None), ("D8 Pool Volatility", None), ("D9 AB Test", None),
+          ("D10 Recommendations", "Recommendations: find your type and its best choice."),
+          ("D11 Number Sources", "Where the numbers come from.")]
+_caps = {n: cap for n, s_, note, hdr, cap in DASH}
+STORY_ORDER = [(i, n, c or _caps[n]) for i, (n, c) in enumerate(_order, 1)]
+points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i}. {esc(c)}' id='{i}' />" for i, n, c in STORY_ORDER)
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -552,19 +613,34 @@ windows += f"<window class='dashboard' name='D0 KPIs 2'><viewpoints /><active id
 windows += f"<window class='dashboard' name='D0 KPIs'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' name='D11 Number Sources'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' name='D10 Recommendations'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D12 Calculator'><viewpoints>{''.join(f"<viewpoint name='{x}'><zoom type='entire-view' /></viewpoint>" for x in CALC_SHEETS)}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
+PAL_XML = ''.join("<color-palette name='" + esc(n) + "' type='regular'>" + ''.join('<color>' + c + '</color>' for c in cs) + '</color-palette>' for n, cs in list(PALETTES.items()) + list(CALC_PALETTES.items()))
+PREFS = "<preferences><preference name='ui.encoding.shelf.height' value='24' /><preference name='ui.shelf.height' value='26' />" + PAL_XML + "</preferences>"
 twb = ("<?xml version='1.0' encoding='utf-8' ?>\n"
        "<workbook original-version='18.1' source-build='2024.1.0 (20241.24.0312.0830)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>"
        "<document-format-change-manifest><_.fcp.MarkAnimation.true...MarkAnimation /><_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy /><SheetIdentifierTracking /><WindowsPersistSimpleIdentifiers /></document-format-change-manifest>"
-       "<preferences><preference name='ui.encoding.shelf.height' value='24' /><preference name='ui.shelf.height' value='26' /></preferences>"
+       + PREFS +
        f"<datasources>{''.join(dsx)}</datasources>"
        f"<actions>{ACTIONS}</actions>"
        f"<worksheets>{''.join(x for _, x in SHEETS)}</worksheets>"
        f"<dashboards>{''.join(dash_xml)}{story}</dashboards>"
-       f"<windows source-height='30'>{windows}</windows></workbook>")
+       f"<windows source-height='30'>{windows}</windows>{EXTERNAL}</workbook>")
 twb = twb.replace("<document-format-change-manifest><_.fcp.MarkAnimation.true...MarkAnimation /><_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy /><SheetIdentifierTracking /><WindowsPersistSimpleIdentifiers /></document-format-change-manifest>",
                   "<document-format-change-manifest><SheetIdentifierTracking /><WindowsPersistSimpleIdentifiers /></document-format-change-manifest>")
+# Tableau reads style rules in schema (alphabetical) order and silently drops rules that come out of order,
+# which is why hand-written color maps used to be ignored. Sort every <style> block's rules by element name.
+import re as _re2
+def _sort_rules(m):
+    body = m.group(1)
+    rules = _re2.findall(r"<style-rule element='[^']+'>.*?</style-rule>", body)
+    if "".join(rules) != body:
+        return m.group(0)
+    rules.sort(key=lambda r: _re2.match(r"<style-rule element='([^']+)'", r).group(1))
+    return "<style>" + "".join(rules) + "</style>"
+twb = _re2.sub(r"<style>((?:<style-rule element='[^']+'>.*?</style-rule>)+)</style>", _sort_rules, twb)
+twb = twb.replace("<color-palette name=", "<color-palette custom='true' name=")
 name = "IP_Distribution_Decision_Verticals"
 (OUT / f"{name}.twb").write_text(twb)
 with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
@@ -573,19 +649,27 @@ with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
         z.write(f, f"Data/data/{f.name}")
     for f in EXT.glob("*.hyper"):
         z.write(f, f"Data/Extracts/{f.name}")
-# story caption export for README
+# story caption export for README, in story order
 with open(OUT / "story_captions.md", "w") as f:
     f.write("# Tableau story captions\n\n")
-    f.write("**Story point 1.** Start here: purpose, scope and who this is for.\n\n")
-    for _t, _c, _rows in INTRO:
-        f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
-    f.write("**Story points 2 and 3.** KPI definitions with formulas and worked examples. See the How the numbers work section of the README.\n\n")
-    for i, (n, s, note, hdr, cap) in enumerate(DASH, MT.FIRST_PAGE):
-        f.write(f"**Story point {i}.** {cap}\n\n{note}\n\nHow it is calculated: {CALC[n]['calc']}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
-with open(OUT / "story_captions.md", "a") as f:
-    f.write(f"**Story point {len(DASH)+MT.FIRST_PAGE}.** Recommendations: find your type and its best choice.\n\n")
-    for _t, _c, _rows in PATHS:
-        f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
-with open(OUT / "story_captions.md", "a") as f:
-    f.write(f"**Story point {len(DASH)+MT.FIRST_PAGE+1}.** Where the numbers come from. See the How the numbers work section of the README.\n")
+    for i, n, c in STORY_ORDER:
+        f.write(f"**Story point {i}.** {c}\n\n")
+        if n == "D0 Introduction":
+            for _t, _c, _rows in INTRO:
+                f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+        elif n.startswith("D0 KPIs"):
+            f.write("KPI definitions with formulas and worked examples. See the How the numbers work section of the README.\n\n")
+        elif n == "D12 Calculator":
+            f.write("Sliders set books sold (print + ebook pairs, 0 to 1,000) and the launch budget ($0 to $5,000); a picker chooses the route. "
+                    "Scorecards show year-1 profit, the breakeven point, books still needed and the share of launch costs earned back; a donut shows costs earned back; "
+                    "a smiley face per route turns green (in profit), amber (over halfway) or red (under halfway); a line chart shows profit as sales grow for every route, "
+                    "and a bar chart ranks year-1 profit by route.\n\n")
+        elif n == "D10 Recommendations":
+            for _t, _c, _rows in PATHS:
+                f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+        elif n == "D11 Number Sources":
+            f.write("See the How the numbers work section of the README.\n")
+        else:
+            note = next(d[2] for d in DASH if d[0] == n)
+            f.write(f"{note}\n\nHow it is calculated: {CALC[n]['calc']}\n\nSources: " + " | ".join(f"[{t}]({u})" for t, u in SRC_LINKS[n]) + "\n\n")
 print("ok", len(twb))

@@ -280,7 +280,9 @@ slide("kpis-2", "How the numbers work", "KPI definitions, part 2: scale, cash ti
       kpi_table(KPIS[7:]) + f'<div class="src">Worked with the {ASOF} numbers. {MT.ROUNDING} Sources: ' + msrc(["pd", "ingram", "d2d", "bn", "ingramtc", "bd", "booksby", "wwm", "kenp", "kdp", "model"]) + "</div>")
 slide("numbers", "How the numbers work", "Where each number in the story comes from",
       '<table class="tbl xs"><thead><tr><th>Story point</th><th>Numbers shown</th><th>How they are calculated</th><th>Sources</th></tr></thead><tbody>'
-      + "".join(f"<tr><td><b>{n}. {r['page']}</b></td><td>{r['numbers']}</td><td>{r['calc']}</td><td>{msrc(r['sources'])}</td></tr>" for n, r in enumerate(MPAGES, MT.FIRST_PAGE))
+      + "".join((f"<tr><td><b>{MT.PAGE_NO[r['dash']]}. {r['page']}</b></td><td>{r['numbers']}</td><td>{r['calc']}</td><td>{msrc(r['sources'])}</td></tr>"
+                 + (f"<tr><td><b>10. Profit calculator</b></td><td>Profit, breakeven books, books still needed, share of costs earned back</td><td>Profit = books sold x money kept per print + ebook pair, minus launch costs (your launch budget plus the route's setup fees, copyright registration and year-1 subscription); breakeven = launch costs / money kept per pair. Uses the same per-sale numbers as points 5 to 9.</td><td>{msrc(['model'])}</td></tr>" if MT.PAGE_NO[r['dash']] == 9 else ""))
+                for r in sorted(MPAGES, key=lambda r: MT.PAGE_NO[r["dash"]]))
       + f'</tbody></table><div class="src">Story point numbers match the <a href="{TABLEAU}" target="_blank" rel="noopener">Tableau story</a>. Every formula is also listed in the <a href="{GH}#how-the-numbers-work-kpis-and-calculations" target="_blank" rel="noopener">How the numbers work</a> section on GitHub.</div>')
 
 gl = [("A/B test", "A fair comparison of two versions on one measure, run long enough to trust the result."),

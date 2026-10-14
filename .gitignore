@@ -5,3 +5,5 @@ tableau/*.twb
 tableau/_extracts/
 hyperd*.log
 tableau/zz_*
+tableau/_build/
+tableau/_shapes/

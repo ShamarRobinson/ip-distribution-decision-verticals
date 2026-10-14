@@ -44,7 +44,10 @@ def _mn(m):
 
 
 ROUNDING = "Worked examples use unrounded values from the model, so a shown sum can differ from its parts by a cent."
-FIRST_PAGE = 4  # story point number of the first analysis page (1 = introduction, 2 and 3 = KPI definitions)
+FIRST_PAGE = 5  # story point number of the first per-sale analysis page (1 = introduction, 2 = market context, 3 and 4 = KPI definitions)
+# story point number for each analysis page, in the order the story walks through the process
+PAGE_NO = {"D1 Market": 2, "D2 Gross to Net": 5, "D3 Cost Variance": 6, "D4 Ebook": 7, "D5 Breakeven": 8, "D6 Scenarios": 9,
+           "D7 Cash": 11, "D8 Pool Volatility": 12, "D9 AB Test": 13}
 
 
 def _rows(name):
@@ -97,57 +100,57 @@ def build():
     msafe = float(bk["margin_of_safety_at_600"])
 
     kpis = [
-     dict(kpi="Net royalty per copy", full="What the creator keeps from one sale",
+     dict(kpi="Net royalty per copy", full="what the creator keeps from one sale",
           meaning="The money left for the IP (intellectual property) owner after the store, the printer and the platform are paid. The main measure in this story.",
           formula="Net royalty = list price - store's cut - printing cost - platform fee",
           worked=f"KDP paperback: {_f(LP)} - {_f(k['channel_share'])} - {_f(k['production_cost'])} - {_f(k['platform_fee'])} = {_f(kn)}. IngramSpark: {_f(LP)} - {_f(i['channel_share'])} - {_f(i['production_cost'])} - {_f(i['platform_fee'])} = {_f(inet)}.",
           sources=["kdp", "ingram", "bn", "lulu", "pd"]),
-     dict(kpi="Net margin %", full="Share of the list price the creator keeps",
+     dict(kpi="Net margin %", full="share of the list price the creator keeps",
           meaning="Lets you compare formats and prices on one scale.",
           formula="Net margin % = net royalty / list price",
           worked=f"KDP paperback: {_f(kn)} / {_f(LP)} = {kn/LP:.1%}. KDP ebook: {_f(E['Amazon KDP']['net_royalty'])} / {_f(EP)} = {float(E['Amazon KDP']['net_royalty'])/EP:.1%}.",
           sources=["model"]),
-     dict(kpi="Channel share (store's cut)", full="Also called the take rate",
+     dict(kpi="Channel share (store's cut)", full="also called the take rate",
           meaning="The part of the price the store or wholesaler keeps. It is the biggest cost on almost every route.",
           formula="Store's cut = list price x (1 - royalty rate), or list price x wholesale discount",
           worked=f"KDP pays a {A['kdp_print_rate']:.0%} print royalty, so the store keeps {_f(LP)} x {1-A['kdp_print_rate']:.0%} = {_f(k['channel_share'])}. IngramSpark's {A['is_disc']:.0%} wholesale discount: {_f(LP)} x {A['is_disc']:.0%} = {_f(i['channel_share'])}.",
           sources=["kdp", "ingram"]),
-     dict(kpi="Cost variance vs KDP", full="Gap to the Amazon KDP (Kindle Direct Publishing) baseline, split by cause",
+     dict(kpi="Cost variance vs KDP", full="gap to the Amazon KDP (Kindle Direct Publishing) baseline, split by cause",
           meaning="Shows how much more or less each route keeps than KDP, and why.",
           formula="Variance = route's net - KDP net = store-cut driver + printing driver + fee driver (each driver = KDP's cost - the route's cost)",
           worked=f"IngramSpark: store cut {_f(i['var_channel_share'])} + printing {_f(i['var_production'])} + fee {_f(i['var_platform_fee'])} = {_f(i['variance_vs_kdp'])} per copy.",
           sources=["model", "kdp", "ingram"]),
-     dict(kpi="Contribution per unit pair", full="Contribution margin for one print sale plus one ebook sale",
+     dict(kpi="Contribution per unit pair", full="contribution margin for one print sale plus one ebook sale",
           meaning="What one reader buying both formats adds toward paying back launch costs.",
           formula="Contribution per pair = print net royalty + ebook net royalty",
           worked=f"KDP: {_f(kn)} + {_f(E['Amazon KDP']['net_royalty'])} = {_f(bk['contribution_per_unit_pair'])}. IngramSpark: {_f(inet)} + {_f(E['IngramSpark']['net_royalty'])} = {_f(isn)}.",
           sources=["model"]),
-     dict(kpi="Breakeven point (unit pairs)", full="Sales needed to earn back Year-1 fixed costs",
+     dict(kpi="Breakeven point (unit pairs)", full="sales needed to earn back year-1 fixed costs",
           meaning="How many print-plus-ebook sales it takes before the work is profitable. Lower is better.",
           formula="Breakeven = Year-1 fixed costs / contribution per pair, rounded up. Fixed costs = platform setup + $85 copyright registration + $1,500 launch budget + 12 x monthly fee",
           worked=f"KDP: {_f(bk['total_fixed_year1'],0)} / {_f(bk['contribution_per_unit_pair'])} = {float(bk['total_fixed_year1'])/float(bk['contribution_per_unit_pair']):.1f}, rounded up to {bk['breakeven_unit_pairs']}. IngramSpark: {_f(bi['total_fixed_year1'],0)} / {_f(isn)} = {float(bi['total_fixed_year1'])/isn:.1f}, rounded up to {bi['breakeven_unit_pairs']}.",
           sources=["model", "uscofee", "isbn"]),
-     dict(kpi="Margin of safety", full="Cushion between planned sales and breakeven",
+     dict(kpi="Margin of safety", full="cushion between planned sales and breakeven",
           meaning="How far sales could fall before you stop covering costs.",
           formula="Margin of safety = (planned sales - breakeven) / planned sales",
           worked=f"KDP at 600 planned pairs: (600 - {bk['breakeven_unit_pairs']}) / 600 = {msafe:.1%}.",
           sources=["model"]),
-     dict(kpi="Switch point (crossover)", full="Monthly sales where a flat fee beats a per-sale fee",
+     dict(kpi="Switch point (crossover)", full="monthly sales where a flat fee beats a per-sale fee",
           meaning="Below it, pay-per-sale routes cost less; above it, a subscription costs less.",
           formula="Switch point = monthly subscription / extra money kept per pair on the subscription route",
           worked=f"PublishDrive vs IngramSpark: {_f(A['pd_sub'])} / ({_f(pdn)} - {_f(isn)}) = {cr_is:.1f} sales of each format a month. Ebook only vs Draft2Digital: {cr_d2d:.1f} a month.",
           sources=["pd", "ingram", "d2d"]),
-     dict(kpi="Year-1 net (scenarios)", full="Money kept in the first year at a given sales level",
+     dict(kpi="Year-1 net (scenarios)", full="money kept in the first year at a given sales level",
           meaning="Tests whether the ranking holds if sales are slow (10 a month), normal (50) or great (250).",
           formula="Year-1 net = 12 x (monthly sales x contribution per pair - monthly fee) - platform setup - $85 copyright registration (launch budget excluded)",
           worked=f"KDP at 50 a month: 12 x (50 x {_f(bk['contribution_per_unit_pair'])}) - $85 = {_f(SC[('Base','Amazon KDP')],0)}.",
           sources=["model"]),
-     dict(kpi="DSO", full="Days sales outstanding",
+     dict(kpi="DSO", full="days sales outstanding",
           meaning="The average number of days between a sale and the cash arriving. Longer waits need more cash on hand.",
           formula="Days to cash = payment terms in days after month end + about 15 days (the average sale happens mid-month)",
           worked=f"B&N Press pays about 30 days after month end: 30 + 15 = {PT['B&N Press']['avg_days_sale_to_cash']} days. IngramSpark pays about 90 days after month end: 90 + 15 = {PT['IngramSpark']['avg_days_sale_to_cash']} days.",
           sources=["bn", "ingramtc", "bd", "booksby"]),
-     dict(kpi="Working capital gap", full="Money earned but not yet received",
+     dict(kpi="Working capital gap", full="money earned but not yet received",
           meaning="The cash you are owed at a point in time because stores pay late.",
           formula="Gap = cumulative royalties earned - cumulative cash received",
           worked=f"Month 12 of the illustrative launch: {_f(earned12,0)} earned - {_f(cash12,0)} received = {_f(earned12-cash12,0)}.",
@@ -157,12 +160,12 @@ def build():
           formula="Pay per 1,000 pages = monthly per-page rate x 1,000; average = mean of 12 months; range = highest - lowest",
           worked=f"Average {_f(kavg)}; range {_f(max(KP))} - {_f(min(KP))} = {_f(max(KP)-min(KP))} ({max(KP)/min(KP)-1:.0%} from low to high).",
           sources=["kenp"]),
-     dict(kpi="Breakeven lift", full="Extra sales a cheaper option needs just to tie",
+     dict(kpi="Breakeven lift", full="extra sales a cheaper option needs just to tie",
           meaning="The bar an A/B test (a test of version A against version B) must clear before switching to a lower price.",
           formula="Breakeven lift = net per copy of A / net per copy of B - 1",
           worked=f"Print price test: KDP net at $16.99 = {_f(ab1['net_per_unit_A'])}; at $14.99 = $14.99 x 60% - {_f(kdp_print_cost)} = {_f(ab1['net_per_unit_B'])}; {_f(ab1['net_per_unit_A'])} / {_f(ab1['net_per_unit_B'])} - 1 = {float(ab1['breakeven_lift_required']):.1%}.",
           sources=["kdp", "model"]),
-     dict(kpi="Sample size per group", full="Shoppers each version needs for a trustworthy A/B result",
+     dict(kpi="Sample size per group", full="shoppers each version needs for a trustworthy A/B result",
           meaning="Too few shoppers and a difference may be luck.",
           formula="Two-proportion z-test at 95% confidence (z = 1.96) and 80% power (z = 0.84) for the breakeven lift",
           worked=f"Print price test at a 2% baseline conversion rate and a {float(ab1['breakeven_lift_required']):.1%} lift: {int(ab1['visitors_per_arm_80pct_power']):,} shoppers per group. Ebook test at 3%: {int(ab3['visitors_per_arm_80pct_power']):,}.",
@@ -212,7 +215,8 @@ def readme_section(kpis, pages):
     for r in kpis:
         out.append(f"| **{r['kpi']}** ({r['full']}) | {r['meaning']} | {r['formula']} | {r['worked']} | {_md_sources(r['sources'])} |")
     out += ["", "### Where each story number comes from\n", "| Story point | Numbers shown | How they are calculated | Sources |", "|---|---|---|---|"]
-    for n, r in enumerate(pages, FIRST_PAGE):
+    for r in sorted(pages, key=lambda r: PAGE_NO[r["dash"]]):
+        n = PAGE_NO[r["dash"]]
         out.append(f"| {n}. {r['page']} | {r['numbers']} | {r['calc']} | {_md_sources(r['sources'])} |")
     return "\n".join(out) + "\n"
 
@@ -222,7 +226,7 @@ if __name__ == "__main__":
     with open(D / "methods_reference.csv", "w", newline="") as f:
         w = csv.writer(f); w.writerow(["type", "name", "description", "formula_or_numbers", "worked_or_calculation", "sources"])
         for r in kpis: w.writerow(["KPI", f"{r['kpi']} ({r['full']})", r["meaning"], r["formula"], r["worked"], "; ".join(SOURCES[k][0] for k in r["sources"])])
-        for n, r in enumerate(pages, FIRST_PAGE): w.writerow(["Story point", f"{n}. {r['page']}", "", r["numbers"], r["calc"], "; ".join(SOURCES[k][0] for k in r["sources"])])
+        for r in sorted(pages, key=lambda r: PAGE_NO[r["dash"]]): w.writerow(["Story point", f"{PAGE_NO[r['dash']]}. {r['page']}", "", r["numbers"], r["calc"], "; ".join(SOURCES[k][0] for k in r["sources"])])
     rd = ROOT / "README.md"; t = rd.read_text()
     a, b = "<!--METHODS-->", "<!--/METHODS-->"
     if a in t:
