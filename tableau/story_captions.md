@@ -8,6 +8,8 @@
 
 *Stakeholders.* A. Independent creator: one or two titles, Amazon-led discovery and a tight budget. B. Small press or imprint: needs bookstore and library placement. C. Catalog or backlist owner: many titles with steady sales. D. Brand, educator or corporate IP owner: has its own audience and sells direct. E. Wide ebook strategist: digital-first, selling through many stores. Also useful for: finance, operations and marketing teams at any business that sells through middlemen.
 
+*Key terms.* KDP (Kindle Direct Publishing): Amazon's self-publishing service for print books and ebooks B&N (Barnes & Noble): the U.S. bookstore chain; B&N Press is its self-publishing service IP (intellectual property): a creative work you own, such as a book, guide or course ISBN (International Standard Book Number): the ID code every book edition gets
+
 **Story point 2.** Self-published ISBNs rose 38.7% in 2025.
 
 Every book edition gets an ID number called an ISBN, so counting ISBNs shows how many new books come out. Self-published titles (blue area) jumped 38.7% in 2025 while printed-book sales rose only 0.3%. More books are competing for the same buyers, which makes the share of each sale you keep more important.
@@ -34,7 +36,7 @@ Sources: [ScribeCount platform comparison](https://scribecount.com/tools/platfor
 
 **Story point 6.** KDP breaks even at 158 unit pairs; IngramSpark at 272.
 
-Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272. On the right, the point where each line crosses $0 is breakeven; steeper lines get there sooner.
+Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272.
 
 Sources: [USCO 2026 fee schedule (Hypebot)](https://www.hypebot.com/2-months-left-before-u-s-copyright-fees-jump-dramatically/) | [ISBN pricing (ScribeCount)](https://scribecount.com/author-resource/publishing-a-book/How-to-Publish-on-IngramSpark) | [PublishDrive plans](https://help.publishdrive.com/how-much-publishdrives-distribution-pricing-plans)
 
@@ -46,7 +48,7 @@ Sources: [PublishDrive plans](https://help.publishdrive.com/how-much-publishdriv
 
 **Story point 8.** Cash arrives two to three months after each sale.
 
-The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding: B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.
+The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding (DSO): B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.
 
 Sources: [B&N Press payments](https://help-press.barnesandnoble.com/hc/en-us/articles/5359658688923-Getting-Paid-for-Sales) | [IngramSpark](https://www.ingramspark.com/) | [Written Word Media 2025 survey](https://www.writtenwordmedia.com/2025-indie-author-survey-results/)
 

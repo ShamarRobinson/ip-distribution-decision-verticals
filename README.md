@@ -198,7 +198,7 @@ Every chart in this repository carries a short "what is going on" note written i
 
 ## Tableau story
 
-The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains an 11-point story with full-sentence captions. The first point introduces the purpose, scope and stakeholders. Each analysis dashboard has a plain-language "what is going on" note and a numbered source list where each source name is a clickable link, and the last point gathers the recommendations for all five stakeholder types on one page. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
+The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains an 11-point story with full-sentence captions. The first point introduces the purpose, scope, stakeholders and key terms. Every page names its chart type, explains it for analysts and in plain terms, and spells out each acronym. Each analysis dashboard has a plain-language "what is going on" note and a numbered source list where each source name is a clickable link, and the last point gathers the recommendations for all five stakeholder types on one page. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
 
 **[Open the Tableau story](https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals)**
 

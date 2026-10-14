@@ -72,13 +72,16 @@ def datasource(key, fname, color_field=None):
     ALIAS = {"component": {"Channel share": "Store's cut (channel share)", "Net royalty to IP owner": "What the creator keeps (net royalty)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
              "driver": {"Channel share": "Store's cut (channel share)", "Platform fee": "Platform fees", "Production cost": "Printing (production cost)"},
              "segment": {"Self-published": "Self-published (authors on their own)", "Traditional": "Traditional (publishing houses)"},
-             "channel": {"Amazon KDP (print + ebook)": "Earned through Amazon KDP (print + ebook)", "IngramSpark (print)": "Earned through IngramSpark (print)", "Draft2Digital (ebook)": "Earned through Draft2Digital (ebook)"}}
+             "test": {"Price elasticity: $16.99 (A, control) vs $14.99 (B)": "Print price: $16.99 vs $14.99",
+                      "Channel terms: 55% discount, returnable (A) vs 40% non-returnable (B)": "Store terms: 55% returnable vs 40% non-returnable",
+                      "Ebook price: $4.99 (A, control) vs $3.99 (B)": "Ebook price: $4.99 vs $3.99"},
+             "channel": {"Amazon KDP (print + ebook)": "Amazon KDP", "IngramSpark (print)": "IngramSpark (print)", "Draft2Digital (ebook)": "Draft2Digital (ebook)"}}
     for fld, amap in ALIAS.items():
         tag = f"<column datatype='string' name='[{fld}]' role='dimension' type='nominal' />"
         if tag in fields:
             al = "".join(f"<alias key='&quot;{esc(k)}&quot;' value='{esc(v)}' />" for k, v in amap.items())
             fields = fields.replace(tag, f"<column datatype='string' name='[{fld}]' role='dimension' type='nominal'><aliases>{al}</aliases></column>")
-    CAP = {"component": "Where the $16.99 goes", "driver": "Cause of the gap vs KDP", "segment": "Who published", "channel": "Sales channel",
+    CAP = {"component": "Where the $16.99 goes", "driver": "Cause of the gap vs KDP", "segment": "Who published", "channel": "Royalties earned through", "sales_level": "Sales level",
            "platform": "Platform", "stack": "Platform", "test": "Test", "scenario": "Scenario", "month": "Month", "year": "Year"}
     for fld, cap in CAP.items():
         fields = fields.replace(f"<column datatype='string' name='[{fld}]'", f"<column caption='{esc(cap)}' datatype='string' name='[{fld}]'")
@@ -124,7 +127,7 @@ def ci(key, field, kind):
 SHEETS = []
 SHEET_COLOR = {}
 HL = "#c2410c"
-def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle="", lines=(), bands=(), notes=()):
+def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None, sort=None, subtitle="", lines=(), bands=(), notes=(), no_zero=None, axis_title=None):
     """lines: (axis_ref, value, label); bands: (axis_ref, from, to, label, fill); notes: (dim_value, measure_value, text, dx, dy).
     axis_ref is a (field, kind) spec such as ("net_royalty", "sum") or ("month", "qk"). Notes work on single-dimension bar sheets."""
     ds = DS[key]["name"]
@@ -172,11 +175,15 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         _, x1 = one_line(spec, v1, "", f"paired-id='{a_id}' symmetric='false' ", z=1)
         rl_xml += x0 + x1
         band_rules += f"<format attr='fill-color' id='{a_id}' value='{fill}' />"
-    for spec, val, lab in lines:
-        _, x = one_line(spec, val, lab); rl_xml += x
+    for k, (spec, val, lab) in enumerate(lines):
+        _, x = one_line(spec, val, lab, z=3 + k); rl_xml += x
     extra_rules = ""
     if band_rules:
         extra_rules += f"<style-rule element='refband'>{band_rules}</style-rule>"
+    if no_zero:
+        f0, k0, sc = no_zero; r0, _ = ci(key, f0, k0)
+        extra_rules += (f"<style-rule element='axis'><encoding attr='space' class='0' domain-expand='false' field='[{ds}].{esc(r0)}' "
+                        f"field-type='quantitative' scope='{sc}' type='space' /></style-rule>")
     if extra_rules:
         tstyle = tstyle.replace("<style />", f"<style>{extra_rules}</style>") if tstyle == "<style />" else tstyle.replace("</style>", f"{extra_rules}</style>")
     ann = ""
@@ -212,17 +219,32 @@ with open(ROOT / "data" / "story_sources.csv", "w", newline="") as _f:
         for _i, (_t, _u) in enumerate(_lst, 1):
             _w.writerow([_d, _i, _t, _u, json.load(open(ROOT / "as_of.json"))["as_of"]])
 
+# ---------------- derived chart tables: simplified labels and friendlier units
+def _derive(src, dst, fn, extra):
+    rows = list(csv.DictReader(open(ROOT / "data" / src)))
+    with open(ROOT / "data" / dst, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()) + extra); w.writeheader()
+        for r in rows: w.writerow({**r, **fn(r)})
+_derive("price_waterfall_long.csv", "chart_gross_to_net.csv",
+        lambda r: {"keep_label": r["amount"] if r["component"] == "Net royalty to IP owner" else ""}, ["keep_label"])
+_derive("cost_variance_drivers.csv", "chart_cost_variance.csv",
+        lambda r: {"store_cut_label": r["variance"] if r["driver"] == "Channel share" and float(r["variance"]) != 0 else ""}, ["store_cut_label"])
+_SCN = {"Bear": "1. Slow (10 a month)", "Base": "2. Normal (50 a month)", "Bull": "3. Great (250 a month)"}
+_derive("scenario_analysis.csv", "chart_scenarios.csv", lambda r: {"sales_level": _SCN[r["scenario"]]}, ["sales_level"])
+_derive("kenp_pool_rate.csv", "chart_kenp_per_1000.csv",
+        lambda r: {"pay_per_1000_pages": f"{float(r['per_page_rate']) * 1000:.2f}"}, ["pay_per_1000_pages"])
+
 # ---------------- data sources
 dsx = [
  datasource("isbn", "market_bowker_isbn.csv", "segment"),
- datasource("gtn", "price_waterfall_long.csv", "component"),
- datasource("var", "cost_variance_drivers.csv", "driver"),
+ datasource("gtn", "chart_gross_to_net.csv", "component"),
+ datasource("var", "chart_cost_variance.csv", "driver"),
  datasource("ebook", "ebook_unit_economics.csv", "platform"),
  datasource("be", "breakeven.csv", "stack"),
  datasource("curve", "breakeven_curve.csv", "stack"),
- datasource("scen", "scenario_analysis.csv", "stack"),
+ datasource("scen", "chart_scenarios.csv", "stack"),
  datasource("cash", "hybrid_stack_24mo.csv", "channel"),
- datasource("kenp", "kenp_pool_rate.csv"),
+ datasource("kenp", "chart_kenp_per_1000.csv"),
  datasource("ab", "ab_test_design.csv"),
  datasource("pay", "payout_timing.csv", "platform"),
  datasource("src", "story_sources.csv"),
@@ -245,6 +267,9 @@ _cash = _r("cash")
 CASH_GAP12 = sum(float(r["cumulative_earned"]) - float(r["cumulative_cash"]) for r in _cash if int(r["month"]) == 12)
 _pay = sorted(_r("pay"), key=lambda r: int(r["avg_days_sale_to_cash"]))
 _kp = [float(r["per_page_rate"]) for r in _r("kenp")]
+import datetime as _dt
+_mname = lambda m: _dt.date(int(m[:4]), int(m[5:7]), 1).strftime("%b %Y")
+_kp_hi = _mname(_r("kenp")[_kp.index(max(_kp))]["month"]); _kp_lo = _mname(_r("kenp")[_kp.index(min(_kp))]["month"])
 _ab = _r("ab"); _ab_price = [r for r in _ab if r["test"].startswith(("Price", "Ebook"))]
 _ab_hard = max(_ab, key=lambda r: float(r["breakeven_lift_required"]))
 BAND = "#fff1de"
@@ -252,38 +277,40 @@ BAND = "#fff1de"
 sheet("01 Market ISBNs", "U.S. ISBN output by segment, 2022 to 2025 (stacked)", "isbn", [("titles","sum")], [("year","qk")], "Area", color=("segment","nk"),
       subtitle="Source: Bowker via Publishers Weekly, March 2026",
       bands=[(("year", "qk"), _y0, _y1, f"Self-published +{SP_GROWTH:.1%} in {_y1}", BAND)])
-sheet("02 Gross to Net", "Where each $16.99 of list price goes (print)", "gtn", [("platform","nk")], [("amount","sum")], "Bar", color=("component","nk"), label=("amount","sum"), filt=("format","Print"),
+sheet("02 Gross to Net", "Where each $16.99 of list price goes (print)", "gtn", [("platform","nk")], [("amount","sum")], "Bar", color=("component","nk"), label=("keep_label","sum"), filt=("format","Print"),
       subtitle="Model in this repository; platform rates from IngramSpark, KDP, B&N Press, Lulu and PublishDrive",
-      lines=[(("amount", "sum"), round(KDP_NET, 3), f"KDP keeps ${KDP_NET:.2f} per copy: teal bars short of this line keep less")])
-sheet("03 Cost Variance", "Cost variance vs Amazon KDP by driver, $ per print unit", "var", [("platform","nk")], [("variance","sum")], "Bar", color=("driver","nk"), label=("variance","sum"), filt=("format","Print"),
+      lines=[(("amount", "sum"), round(KDP_NET, 3), f"KDP keeps ${KDP_NET:.2f}")])
+sheet("03 Cost Variance", "Cost variance vs Amazon KDP by driver, $ per print unit", "var", [("platform","nk")], [("variance","sum")], "Bar", color=("driver","nk"), label=("store_cut_label","sum"), filt=("format","Print"),
       subtitle="Positive = favorable to the IP owner. Drivers sum to the total variance.",
-      lines=[(("variance", "sum"), 0, "KDP baseline: bars left of this line keep less than KDP")])
+      lines=[(("variance", "sum"), 0, "KDP baseline")])
 sheet("04 Ebook Net", "Net royalty per $4.99 ebook", "ebook", [("platform","nk")], [("net_royalty","sum")], "Bar", color=("platform","nk"), label=("net_royalty","sum"), sort=("platform","net_royalty"),
       subtitle="Store payout rates from ScribeCount; fees from KDP, Draft2Digital and the IngramSpark agreement",
       lines=[(("net_royalty", "sum"), EB_TOP, f"Best possible: ${EB_TOP:.2f} (70%)")],
       bands=[(("net_royalty", "sum"), EB_LO, EB_TOP, "", BAND)],
-      notes=[("IngramSpark", _eb["IngramSpark"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale", 120, -18)])
+      notes=[("IngramSpark", _eb["IngramSpark"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale", -170, 40)])
 sheet("05 Breakeven Units", "Unit pairs needed to recover Year-1 fixed costs", "be", [("stack","nk")], [("breakeven_unit_pairs","sum")], "Bar", color=("stack","nk"), label=("breakeven_unit_pairs","sum"),
       subtitle="Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions",
       lines=[(("breakeven_unit_pairs", "sum"), int(BE_MIN["breakeven_unit_pairs"]), f"Fastest: {BE_MIN['stack']} at {BE_MIN['breakeven_unit_pairs']} pairs")],
       notes=[(BE_MAX["stack"], BE_MAX["breakeven_unit_pairs"], f"{int(BE_MAX['breakeven_unit_pairs'])/int(BE_MIN['breakeven_unit_pairs']):.1f}x as many sales as the fastest route", -30, 42)])
 sheet("06 Breakeven Curve", "Cumulative profit by unit pairs sold", "curve", [("cumulative_profit","sum")], [("unit_pairs","qk")], "Line", color=("stack","nk"),
       subtitle="Each line crosses zero at its breakeven point",
-      lines=[(("cumulative_profit", "sum"), 0, "Breakeven: below this line you are still paying back launch costs")],
+      lines=[(("cumulative_profit", "sum"), 0, "Breakeven ($0)")],
       bands=[(("unit_pairs", "qk"), int(BE_MIN["breakeven_unit_pairs"]), int(BE_MAX["breakeven_unit_pairs"]), f"Breakeven range: {BE_MIN['breakeven_unit_pairs']} to {BE_MAX['breakeven_unit_pairs']} pairs", BAND)])
-sheet("07 Scenarios", "Year-1 net by scenario (bear 10, base 50, bull 250 units per format per month)", "scen", [("stack","nk")], [("scenario","nk"), ("year1_net","sum")], "Bar", color=("stack","nk"), label=("year1_net","sum"),
+sheet("07 Scenarios", "Year-1 net by sales level (10, 50 and 250 sales of each format a month)", "scen", [("stack","nk")], [("sales_level","nk"), ("year1_net","sum")], "Bar", color=("stack","nk"), label=("year1_net","sum"),
       subtitle="Planning scenarios, not forecasts")
 sheet("08 Accrual vs Cash", "Cumulative royalties earned by channel (stacked), 24 months", "cash", [("cumulative_earned","sum")], [("month","qk")], "Area", color=("channel","nk"),
       subtitle="Illustrative hybrid stack; launch curve and 65/35 channel mix are assumptions",
-      lines=[(("month", "qk"), 12, f"Month 12: ${CASH_GAP12:,.0f} earned but not yet paid")])
+      lines=[(("month", "qk"), 12, f"Month 12: ${CASH_GAP12:,.0f} not yet paid")])
 sheet("09 Days to Cash", "Average days from sale to cash", "pay", [("platform","nk")], [("avg_days_sale_to_cash","sum")], "Bar", color=("platform","nk"), label=("avg_days_sale_to_cash","sum"),
       subtitle="B&N Press Help Center; IngramSpark Agreement Sec. 9; The Book Designer; Books.by",
       bands=[(("avg_days_sale_to_cash", "sum"), int(_pay[0]["avg_days_sale_to_cash"]), int(_pay[-1]["avg_days_sale_to_cash"]),
-              f"{int(_pay[-1]['avg_days_sale_to_cash']) - int(_pay[0]['avg_days_sale_to_cash'])}-day difference between fastest and slowest payer", BAND)])
-sheet("10 KENP Pool Rate", "Kindle Unlimited per-page payout rate", "kenp", [("per_page_rate","sum")], [("month","ok")], "Line", label=("per_page_rate","sum"),
+              f"{int(_pay[-1]['avg_days_sale_to_cash']) - int(_pay[0]['avg_days_sale_to_cash'])}-day gap", BAND)])
+sheet("10 KENP Pool Rate", "Kindle Unlimited pay per 1,000 pages read", "kenp", [("pay_per_1000_pages","sum")], [("month","ok")], "Line",
       subtitle="Profitable.app KENP tracker (author-reported), May 2025 to April 2026",
-      lines=[(("per_page_rate", "sum"), round(sum(_kp) / len(_kp), 6), f"Average ${sum(_kp)/len(_kp)*1000:.2f} per 1,000 pages")],
-      bands=[(("per_page_rate", "sum"), min(_kp), max(_kp), f"Range ${min(_kp)*1000:.2f} to ${max(_kp)*1000:.2f} per 1,000 pages", BAND)])
+      lines=[(("pay_per_1000_pages", "sum"), round(max(_kp) * 1000, 2), f"High: ${max(_kp)*1000:.2f} ({_kp_hi})"),
+             (("pay_per_1000_pages", "sum"), round(sum(_kp) / len(_kp) * 1000, 2), f"Average: ${sum(_kp)/len(_kp)*1000:.2f}"),
+             (("pay_per_1000_pages", "sum"), round(min(_kp) * 1000, 2), f"Low: ${min(_kp)*1000:.2f} ({_kp_lo})")],
+      no_zero=("pay_per_1000_pages", "sum", "rows"))
 sheet("11 AB Breakeven Lift", "Volume lift a challenger needs to match the control", "ab", [("test","nk")], [("breakeven_lift_required","sum")], "Bar", label=("breakeven_lift_required","sum"),
       subtitle="Two-proportion z-test sizing at alpha 0.05 and power 0.80",
       bands=[(("breakeven_lift_required", "sum"), min(float(r["breakeven_lift_required"]) for r in _ab_price), max(float(r["breakeven_lift_required"]) for r in _ab_price),
@@ -308,7 +335,7 @@ def dash(name, sheets, note, header):
     zid = [10]
     def nid(): zid[0] += 1; return zid[0]
     n = len(sheets)
-    chart_h = 64000
+    chart_h = 60000
     w_each = 100000 // n
     inner = ""
     for i, s in enumerate(sheets):
@@ -318,14 +345,49 @@ def dash(name, sheets, note, header):
         else:
             inner += f"<zone h='{chart_h}' id='{nid()}' name='{esc(s)}' show-title='true' w='{w_each}' x='{i*w_each}' y='8000' />"
     hdr = f"<zone h='8000' id='{nid()}' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontcolor='#0b0b0b' fontsize='18'>{esc(header)}</run></formatted-text></zone>"
-    ann = (f"<zone h='28000' id='{nid()}' type-v2='text' w='64000' x='0' y='72000'><formatted-text>"
-           f"<run bold='true' fontcolor='#0b0b0b' fontsize='11'>As of {esc(ASOF)}: </run>"
-           f"<run fontcolor='#1f1f1f' fontsize='11'>{esc(note)}</run></formatted-text></zone>"
-           f"<zone h='28000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='72000' />")
+    ctype, tech, plain, terms = GUIDE[name]
+    term_runs = "".join(f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>{'&#10;Terms: ' if k == 0 else '; '}{esc(a)} ({esc(full)}): </run>"
+                        f"<run fontcolor='#1f1f1f' fontsize='10'>{esc(desc)}</run>" for k, (a, full, desc) in enumerate(terms))
+    ann = (f"<zone h='32000' id='{nid()}' type-v2='text' w='64000' x='0' y='68000'><formatted-text>"
+           f"<run bold='true' fontcolor='#0b0b0b' fontsize='10'>As of {esc(ASOF)}: </run>"
+           f"<run fontcolor='#1f1f1f' fontsize='10'>{esc(note)}</run>"
+           f"<run bold='true' fontcolor='#52514e' fontsize='10'>&#10;Chart type: </run><run fontcolor='#52514e' fontsize='10'>{esc(ctype)}. </run>"
+           f"<run bold='true' fontcolor='#52514e' fontsize='10'>For analysts: </run><run fontcolor='#52514e' fontsize='10'>{esc(tech[0].upper() + tech[1:])} </run>"
+           f"<run bold='true' fontcolor='#52514e' fontsize='10'>In plain terms: </run><run fontcolor='#52514e' fontsize='10'>{esc(plain)}</run>"
+           f"{term_runs}</formatted-text></zone>"
+           f"<zone h='32000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='68000' />")
     return (f"<dashboard name='{esc(name)}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{hdr}{''.join(f for f in [inner])}{ann}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 
+# ---------------- chart guide per dashboard: chart type, analyst reading, plain reading, terms
+T_KDP = ("KDP", "Kindle Direct Publishing", "Amazon's self-publishing service for print books and ebooks")
+T_BN = ("B&N", "Barnes & Noble", "the U.S. bookstore chain; B&N Press is its self-publishing service")
+T_ISBN = ("ISBN", "International Standard Book Number", "the ID code every book edition gets")
+T_DSO = ("DSO", "days sales outstanding", "the average number of days between a sale and the cash arriving")
+T_KENP = ("KENP", "Kindle Edition Normalized Pages", "Amazon's standard page count used to pay authors when Kindle Unlimited readers read their books")
+T_AB = ("A/B test", "a test of version A against version B", "real shoppers see one of two options, then you compare which earns more")
+T_IP = ("IP", "intellectual property", "a creative work you own, such as a book, guide or course")
+GUIDE = {
+ "D1 Market": ("Stacked area chart", "x is the year, y is ISBNs issued; layers stack, so the top edge is the total and each layer is one segment.",
+               "The colored layers pile up: the top edge is all new books, the blue layer is books authors published themselves.", [T_ISBN]),
+ "D2 Gross to Net": ("Stacked horizontal bar chart (a gross-to-net breakdown)", "each bar splits the $16.99 list price into store share, printing, platform fees and net royalty; the line marks KDP's net.",
+               "Each bar is one book's price cut into slices for who gets paid; the teal slice and its number is what you keep.", [T_KDP, T_BN]),
+ "D3 Cost Variance": ("Diverging stacked bar chart (a variance bridge against a baseline)", "dollars per copy versus the KDP baseline, split by driver; left of the line is unfavorable.",
+               "Bars that reach left mean you keep less than on Amazon; colors show why, and the red number is the store's cut.", [T_KDP, T_BN]),
+ "D4 Ebook": ("Sorted horizontal bar chart with a reference line and shaded band", "net royalty per $4.99 ebook; the line is the 70% royalty ceiling and the band is the aggregator gap.",
+               "Longer bars keep more money; the shaded strip shows what middlemen take from each sale.", [T_KDP, T_BN]),
+ "D5 Breakeven": ("Sorted horizontal bar chart with a reference line", "breakeven unit pairs = Year-1 fixed costs divided by contribution per print-plus-ebook pair.",
+               "Shorter bars mean you earn back your start-up money sooner; the line marks the fastest route.", [T_KDP, T_BN]),
+ "D6 Scenarios": ("Grouped bar chart in three panels (small multiples)", "Year-1 net by platform at 10, 50 and 250 sales per format per month; the same rank order in every panel shows a robust choice.",
+               "Three side-by-side charts for slow, normal and great sales; the longest bar wins in all three.", [T_KDP, T_BN]),
+ "D7 Cash": ("Stacked area chart and horizontal bar chart with a shaded range", "left: cumulative accrued royalties by channel with a month-12 marker; right: average DSO by platform.",
+               "Left: money earned piles up, but it arrives months later. Right: how long each store takes to pay you.", [T_DSO, T_KDP, T_BN]),
+ "D8 Pool Volatility": ("Line chart with reference lines", "monthly KENP rate shown as dollars per 1,000 pages; the axis starts near the lowest value so changes are visible.",
+               "The line shows what Kindle Unlimited paid each month; the three flat lines mark the best month, the average and the worst month.", [T_KENP, T_KDP]),
+ "D9 AB Test": ("Horizontal bar chart with a shaded range", "breakeven lift = net per unit of A divided by net per unit of B, minus 1; sample sizes use a two-proportion z-test at 95% confidence and 80% power.",
+               "Each bar is how many more sales a cheaper option needs just to tie; beat the bar or keep the original.", [T_AB]),
+}
 DASH = [
  ("D1 Market", ["01 Market ISBNs"], "Every book edition gets an ID number called an ISBN, so counting ISBNs shows how many new books come out. Self-published titles (blue area) jumped 38.7% in 2025 while printed-book sales rose only 0.3%. More books are competing for the same buyers, which makes the share of each sale you keep more important.", "Market context: more works are competing for the same buyers",
   "Self-published ISBNs rose 38.7% in 2025."),
@@ -335,11 +397,11 @@ DASH = [
   "Retailer discounts drive most of the cost variance."),
  ("D4 Ebook", ["04 Ebook Net"], "For a $4.99 ebook, each bar shows what the creator keeps after the store and any middleman are paid. Selling directly to Apple or B&N keeps $3.49. Aggregators like Draft2Digital keep 35 to 52 cents more per sale in exchange for sending your book to many stores with one upload.", "Ebook economics: direct uploads beat aggregators",
   "Direct ebook uploads keep the most per sale."),
- ("D5 Breakeven", ["05 Breakeven Units", "06 Breakeven Curve"], "Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272. On the right, the point where each line crosses $0 is breakeven; steeper lines get there sooner.", "Breakeven analysis",
+ ("D5 Breakeven", ["05 Breakeven Units"], "Breakeven is the number of sales needed to earn back what you spent to launch: the copyright fee, platform fees and a production budget. KDP gets there after 158 sales of a print book plus an ebook, and IngramSpark after 272.", "Breakeven analysis",
   "KDP breaks even at 158 unit pairs; IngramSpark at 272."),
  ("D6 Scenarios", ["07 Scenarios"], "Scenario analysis asks 'what if?' at three sales levels: slow (10 a month), normal (50) and great (250). KDP finishes first in every case, so the decision holds up even if the sales forecast is off. A flat monthly fee (PublishDrive) only beats a per-sale fee once you sell about 17 of each format a month.", "Scenario analysis: the ranking is stable across volumes",
   "Subscriptions win only above 16.6 units a month."),
- ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding: B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.", "Accrual vs cash and days sales outstanding",
+ ("D7 Cash", ["08 Accrual vs Cash", "09 Days to Cash"], "The stacked areas show royalties earned over 24 months. Stores pay two to three months after a sale, so at month 12 about $948 has been earned but not yet received. The bars show days sales outstanding (DSO): B&N Press pays in about 45 days, IngramSpark in about 105, so longer waits require more cash on hand.", "Accrual vs cash and days sales outstanding",
   "Cash arrives two to three months after each sale."),
  ("D8 Pool Volatility", ["10 KENP Pool Rate"], "Kindle Unlimited pays authors from one shared monthly pot, split by pages read, so the rate per page changes every month. Over the past year it ranged from $4.19 to $5.01 per 1,000 pages, averaging $4.55. Treat this income as a range, not a fixed number.", "Pool-based payouts: exclusive ebook income varies monthly",
   "Kindle Unlimited payouts vary month to month."),
@@ -376,17 +438,18 @@ PATHS = [
   ("Next move", "Go direct if you can manage several dashboards; use Draft2Digital if your time is worth more than 35 cents a sale. Test Kindle Unlimited with one title for one 90-day term (pay swings $4.19 to $5.01 per 1,000 pages), and compare a PublishDrive plan above about 40 ebook sales a month.")]),
 ]
 def rec_dash(dname, items, heading):
-    zones = (f"<zone h='8500' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
-             f"<run fontcolor='#52514e' fontsize='11'>&#10;Find your type, then read its best choice. As of {esc(ASOF)}. Decision trees for each path are in the slide deck linked from the GitHub page.</run></formatted-text></zone>")
+    zones = (f"<zone h='14000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
+             f"<run fontcolor='#52514e' fontsize='11'>&#10;Find your type, then read its best choice. As of {esc(ASOF)}. Decision trees for each path are in the slide deck linked from the GitHub page.</run>"
+             f"<run fontcolor='#52514e' fontsize='10'>&#10;Terms: KDP (Kindle Direct Publishing): Amazon's self-publishing service; KDP Select: Amazon's 90-day ebook exclusivity program; B&amp;N (Barnes &amp; Noble): the bookstore chain behind B&amp;N Press; IP (intellectual property): the creative work you own.</run></formatted-text></zone>")
     cols = [items[:3], items[3:]]
     zid = 20
     for ci_, col in enumerate(cols):
-        h = (100000 - 9000) // 3
+        h = (100000 - 14500) // 3
         for ri, (t, c, rows) in enumerate(col):
             runs = f"<run bold='true' fontcolor='{c}' fontsize='14'>{esc(t)}</run>"
             for lab, txt in rows:
                 runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(txt)}</run>"
-            zones += f"<zone h='{h}' id='{zid}' type-v2='text' w='49000' x='{ci_*51000}' y='{9000 + ri*h}'><formatted-text>{runs}</formatted-text></zone>"
+            zones += f"<zone h='{h}' id='{zid}' type-v2='text' w='49000' x='{ci_*51000}' y='{14500 + ri*h}'><formatted-text>{runs}</formatted-text></zone>"
             zid += 1
     return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
@@ -407,16 +470,17 @@ INTRO = [
   ("D. Brand, educator or corporate IP owner", "has its own audience and sells direct."),
   ("E. Wide ebook strategist", "digital-first, selling through many stores."),
   ("Also useful for", "finance, operations and marketing teams at any business that sells through middlemen.")]),
+ ("Key terms", "#6250d6", [(f"{a} ({full})", desc) for a, full, desc in (T_KDP, T_BN, T_IP, T_ISBN)]),
 ]
 def intro_dash(dname, items, heading):
     zones = (f"<zone h='10000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
              f"<run fontcolor='#52514e' fontsize='11'>&#10;Prices, fees and rates as of {esc(ASOF)}. Use the arrows or the cards above to move through the story.</run></formatted-text></zone>")
-    hs = [26000, 32000, 31500]
+    hs = [18000, 25000, 26000, 20500]
     y = 10500
     for i, ((t, c, rows), h) in enumerate(zip(items, hs)):
         runs = f"<run bold='true' fontcolor='{c}' fontsize='17'>{esc(t)}</run>"
         for lab, txt in rows:
-            runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='12'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='12'>{esc(txt)}</run>"
+            runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='11'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='11'>{esc(txt)}</run>"
         zones += f"<zone h='{h}' id='{20+i}' type-v2='text' w='100000' x='0' y='{y}'><formatted-text>{runs}</formatted-text></zone>"
         y += h
     return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
@@ -432,15 +496,15 @@ ACTIONS = "".join(
     for i, d in enumerate(DASH))
 
 # ---------------- story
-points = "<story-point captured-sheet='D0 Introduction' caption='Start here: purpose, scope and who this is for.' id='1' />"
-points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{esc(cap)}' id='{i+2}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
-points += f"<story-point captured-sheet='D10 Recommendations' caption='Recommendations: find your type and its best choice.' id='{len(DASH)+2}' />"
-story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='964' maxwidth='1366' minheight='964' minwidth='1366' sizing-mode='fixed' />"
+points = "<story-point captured-sheet='D0 Introduction' caption='1. Start here: purpose, scope and who this is for.' id='1' />"
+points += "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i+2}. {esc(cap)}' id='{i+2}' />" for i, (n, s, note, hdr, cap) in enumerate(DASH))
+points += f"<story-point captured-sheet='D10 Recommendations' caption='{len(DASH)+2}. Recommendations: find your type and its best choice.' id='{len(DASH)+2}' />"
+story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style /><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
-         f"<zone h='5000' id='3' type-v2='text' w='98800' x='600' y='1000'><formatted-text><run bold='true' fontsize='18'>IP Distribution Decision Verticals</run><run fontcolor='#52514e' fontsize='11'>   Prices, fees and rates as of {esc(ASOF)}; refreshed quarterly</run></formatted-text></zone>"
-         f"<zone h='17000' id='4' is-fixed='true' paired-zone-id='5' removable='false' type-v2='flipboard-nav' w='98800' x='600' y='6000' />"
-         f"<zone h='75000' id='5' paired-zone-id='4' removable='false' type-v2='flipboard' w='98800' x='600' y='23000'><flipboard active-id='1' nav-type='caption' show-nav-arrows='true'>"
+         f"<zone h='4000' id='3' type-v2='text' w='98800' x='600' y='800'><formatted-text><run bold='true' fontsize='18'>IP Distribution Decision Verticals</run><run fontcolor='#52514e' fontsize='11'>   Prices, fees and rates as of {esc(ASOF)}; refreshed quarterly</run></formatted-text></zone>"
+         f"<zone h='13500' id='4' is-fixed='true' paired-zone-id='5' removable='false' type-v2='flipboard-nav' w='98800' x='600' y='4800' />"
+         f"<zone h='81200' id='5' paired-zone-id='4' removable='false' type-v2='flipboard' w='98800' x='600' y='18300'><flipboard active-id='1' nav-type='caption' show-nav-arrows='true'>"
          f"<story-points>{points}</story-points></flipboard></zone></zone></zone></zones>"
          f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
 

@@ -1,0 +1,57 @@
+format,platform,component,amount,share_of_price,as_of,keep_label
+Print,Amazon KDP,Channel share,6.796,0.4,2026-10-11,
+Print,Amazon KDP,Production cost,3.4,0.2001,2026-10-11,
+Print,Amazon KDP,Platform fee,0.0,0.0,2026-10-11,
+Print,Amazon KDP,Net royalty to IP owner,6.794,0.3999,2026-10-11,6.794
+Print,KDP Expanded Distribution,Channel share,10.194,0.6,2026-10-11,
+Print,KDP Expanded Distribution,Production cost,3.4,0.2001,2026-10-11,
+Print,KDP Expanded Distribution,Platform fee,0.0,0.0,2026-10-11,
+Print,KDP Expanded Distribution,Net royalty to IP owner,3.396,0.1999,2026-10-11,3.396
+Print,IngramSpark,Channel share,9.3445,0.55,2026-10-11,
+Print,IngramSpark,Production cost,4.0,0.2354,2026-10-11,
+Print,IngramSpark,Platform fee,0.3186,0.0188,2026-10-11,
+Print,IngramSpark,Net royalty to IP owner,3.3269,0.1958,2026-10-11,3.3269
+Print,B&N Press,Channel share,7.6455,0.45,2026-10-11,
+Print,B&N Press,Production cost,3.5,0.206,2026-10-11,
+Print,B&N Press,Platform fee,0.0,0.0,2026-10-11,
+Print,B&N Press,Net royalty to IP owner,5.8445,0.344,2026-10-11,5.8445
+Print,Lulu Bookstore,Channel share,0.0,0.0,2026-10-11,
+Print,Lulu Bookstore,Production cost,5.0,0.2943,2026-10-11,
+Print,Lulu Bookstore,Platform fee,2.398,0.1411,2026-10-11,
+Print,Lulu Bookstore,Net royalty to IP owner,9.592,0.5646,2026-10-11,9.592
+Print,Lulu Retail,Channel share,8.495,0.5,2026-10-11,
+Print,Lulu Retail,Production cost,5.0,0.2943,2026-10-11,
+Print,Lulu Retail,Platform fee,0.699,0.0411,2026-10-11,
+Print,Lulu Retail,Net royalty to IP owner,2.796,0.1646,2026-10-11,2.796
+Print,PublishDrive,Channel share,9.3445,0.55,2026-10-11,
+Print,PublishDrive,Production cost,4.0,0.2354,2026-10-11,
+Print,PublishDrive,Platform fee,0.0,0.0,2026-10-11,
+Print,PublishDrive,Net royalty to IP owner,3.6455,0.2146,2026-10-11,3.6455
+Ebook,Amazon KDP,Channel share,1.407,0.282,2026-10-11,
+Ebook,Amazon KDP,Production cost,0.3,0.0601,2026-10-11,
+Ebook,Amazon KDP,Platform fee,0.0,0.0,2026-10-11,
+Ebook,Amazon KDP,Net royalty to IP owner,3.283,0.6579,2026-10-11,3.283
+Ebook,Apple Books direct,Channel share,1.497,0.3,2026-10-11,
+Ebook,Apple Books direct,Production cost,0,0.0,2026-10-11,
+Ebook,Apple Books direct,Platform fee,0.0,0.0,2026-10-11,
+Ebook,Apple Books direct,Net royalty to IP owner,3.493,0.7,2026-10-11,3.493
+Ebook,B&N Press,Channel share,1.497,0.3,2026-10-11,
+Ebook,B&N Press,Production cost,0,0.0,2026-10-11,
+Ebook,B&N Press,Platform fee,0.0,0.0,2026-10-11,
+Ebook,B&N Press,Net royalty to IP owner,3.493,0.7,2026-10-11,3.493
+Ebook,Draft2Digital,Channel share,1.497,0.3,2026-10-11,
+Ebook,Draft2Digital,Production cost,0,0.0,2026-10-11,
+Ebook,Draft2Digital,Platform fee,0.3493,0.07,2026-10-11,
+Ebook,Draft2Digital,Net royalty to IP owner,3.1437,0.63,2026-10-11,3.1437
+Ebook,IngramSpark,Channel share,1.497,0.3,2026-10-11,
+Ebook,IngramSpark,Production cost,0,0.0,2026-10-11,
+Ebook,IngramSpark,Platform fee,0.5239,0.105,2026-10-11,
+Ebook,IngramSpark,Net royalty to IP owner,2.9691,0.595,2026-10-11,2.9691
+Ebook,PublishDrive,Channel share,1.497,0.3,2026-10-11,
+Ebook,PublishDrive,Production cost,0,0.0,2026-10-11,
+Ebook,PublishDrive,Platform fee,0.0,0.0,2026-10-11,
+Ebook,PublishDrive,Net royalty to IP owner,3.493,0.7,2026-10-11,3.493
+Ebook,Lulu Retail,Channel share,2.495,0.5,2026-10-11,
+Ebook,Lulu Retail,Production cost,0,0.0,2026-10-11,
+Ebook,Lulu Retail,Platform fee,0.499,0.1,2026-10-11,
+Ebook,Lulu Retail,Net royalty to IP owner,1.996,0.4,2026-10-11,1.996
