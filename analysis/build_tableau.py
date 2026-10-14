@@ -357,8 +357,8 @@ def dash(name, sheets, note, header):
            f"<run bold='true' fontcolor='#0b0b0b' fontsize='10'>As of {esc(ASOF)}: </run>"
            f"<run fontcolor='#1f1f1f' fontsize='10'>{esc(note)}</run>"
            f"<run bold='true' fontcolor='#52514e' fontsize='10'>&#10;Chart type: </run><run fontcolor='#52514e' fontsize='10'>{esc(ctype)}. </run>"
-           f"<run bold='true' fontcolor='#52514e' fontsize='10'>For analysts: </run><run fontcolor='#52514e' fontsize='10'>{esc(tech[0].upper() + tech[1:])} </run>"
-           f"<run bold='true' fontcolor='#52514e' fontsize='10'>In plain terms: </run><run fontcolor='#52514e' fontsize='10'>{esc(plain)}</run>"
+           f"<run bold='true' fontcolor='#52514e' fontsize='10'>Technical/analytic audience: </run><run fontcolor='#52514e' fontsize='10'>{esc(tech[0].upper() + tech[1:])} </run>"
+           f"<run bold='true' fontcolor='#52514e' fontsize='10'>In plain terms (non-technical audiences): </run><run fontcolor='#52514e' fontsize='10'>{esc(plain)}</run>"
            f"<run bold='true' fontcolor='#c2410c' fontsize='10'>&#10;How it is calculated: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(CALC[name]['calc'])}</run>"
            f"{term_runs}</formatted-text></zone>"
            f"<zone h='36000' id='{nid()}' name='Sources {esc(name[:2])}' show-title='true' w='36000' x='64000' y='64000' />")
