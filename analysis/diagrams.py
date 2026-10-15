@@ -2,6 +2,9 @@
 import subprocess
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from titlecase import tc
 OUT = ROOT / "diagrams"
 NODES = {
  "q1": ("Where will most\nbuyers come from?", "q"),
@@ -24,9 +27,10 @@ def dot(highlight=None, title="Decision tree: which distribution stack fits your
     on_edges = set(zip(path, path[1:]))
     hcol = NODES[highlight][1] if highlight else None
     out = ['digraph G { rankdir=TB; bgcolor="#fcfcfb"; pad=0.3; nodesep=0.35; ranksep=0.5;',
-           f'labelloc=t; label=<<b>{title}</b>>; fontname="Inter"; fontsize=16;',
+           f'labelloc=t; label=<<b>{tc(title)}</b>>; fontname="Inter"; fontsize=16;',
            'node [fontname="Inter", fontsize=12, penwidth=1.3]; edge [fontname="Inter", fontsize=10.5, arrowsize=0.75];']
     for k, (lab, kind) in NODES.items():
+        lab = "\n".join(tc(ln) for ln in lab.split("\n"))  # node titles in title case
         lit = (not highlight) or k in path
         if kind == "q":
             fill = "#fff6dc" if (highlight and lit) else "#f0efec"

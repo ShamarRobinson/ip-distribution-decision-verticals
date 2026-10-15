@@ -14,25 +14,25 @@
 ---
 
 ## Contents
-1. [The decision](#the-decision)
-2. [Key findings](#key-findings)
-3. [Why this matters beyond publishing](#why-this-matters-beyond-publishing)
-4. [Market context from mainstream sources](#market-context-from-mainstream-sources)
-5. [The IP value chain](#the-ip-value-chain)
-6. [Cost variance analysis](#cost-variance-analysis)
-7. [Breakeven analysis](#breakeven-analysis)
-8. [Scenario, sensitivity and cash timing](#scenario-sensitivity-and-cash-timing)
-9. [A/B test design](#ab-test-design)
-10. [Decision trees and choice options](#decision-trees-and-choice-options)
-    - [Stakeholder decision paths](#stakeholder-decision-paths)
-11. [Tableau story](#tableau-story)
-12. [Repository structure and reproducibility](#repository-structure-and-reproducibility) (see also [MAINTENANCE.md](MAINTENANCE.md))
-13. [How the numbers work: KPIs and calculations](#how-the-numbers-work-kpis-and-calculations)
-14. [Methodology and assumptions](#methodology-and-assumptions)
-15. [Quarterly refresh](#quarterly-refresh)
+1. [The Decision](#the-decision)
+2. [Key Findings](#key-findings)
+3. [Why This Matters Beyond Publishing](#why-this-matters-beyond-publishing)
+4. [Market Context from Mainstream Sources](#market-context-from-mainstream-sources)
+5. [The IP Value Chain](#the-ip-value-chain)
+6. [Cost Variance Analysis](#cost-variance-analysis)
+7. [Breakeven Analysis](#breakeven-analysis)
+8. [Scenario, Sensitivity and Cash Timing](#scenario-sensitivity-and-cash-timing)
+9. [A/B Test Design](#ab-test-design)
+10. [Decision Trees and Choice Options](#decision-trees-and-choice-options)
+    - [Stakeholder Decision Paths](#stakeholder-decision-paths)
+11. [Tableau Story](#tableau-story)
+12. [Repository Structure and Reproducibility](#repository-structure-and-reproducibility) (see also [MAINTENANCE.md](MAINTENANCE.md))
+13. [How the Numbers Work: KPIs and Calculations](#how-the-numbers-work-kpis-and-calculations)
+14. [Methodology and Assumptions](#methodology-and-assumptions)
+15. [Quarterly Refresh](#quarterly-refresh)
 16. [Sources](#sources)
 
-## The decision
+## The Decision
 
 Every owner of intellectual property faces the same distribution question: **which channels turn a protected work into the most contribution margin, at acceptable risk and cash timing?** The answer differs by business type, so the analysis is organized into five decision verticals:
 
@@ -46,7 +46,7 @@ Every owner of intellectual property faces the same distribution question: **whi
 
 Platforms compared: **Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital.**
 
-## Key findings
+## Key Findings
 
 1. **Channel share drives the cost variance.** On a $16.99 paperback, KDP returns $6.79 per unit and IngramSpark's bookstore route returns $3.33. About $2.55 of the $3.47 gap is the retailer discount, not printing or fees.
 2. **Breakeven depends on contribution per sale.** KDP recovers Year-1 fixed costs at 158 unit pairs (one print plus one ebook); IngramSpark needs 272. Platform fees alone are recovered within 42 pairs on every route.
@@ -56,7 +56,7 @@ Platforms compared: **Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, Publi
 
 **Recommendation:** a two-channel launch (KDP plus one wide route chosen by vertical), print non-returnable at launch, and one 90-day A/B test per quarter before committing to exclusivity or a subscription.
 
-## Why this matters beyond publishing
+## Why This Matters Beyond Publishing
 
 The same toolkit applies to any business that licenses or sells intellectual property, and to most businesses that sell through intermediaries.
 
@@ -72,7 +72,7 @@ The same toolkit applies to any business that licenses or sells intellectual pro
 | Pool-based payouts | Kindle Unlimited per-page rate | Music streaming pro-rata pools, ad networks |
 | Returns reserve and counterparty risk | Returnable wholesale terms; retailer non-payment | Retail, distribution, insurance |
 
-## Market context from mainstream sources
+## Market Context from Mainstream Sources
 
 | Metric | Value | Source |
 |---|---|---|
@@ -86,7 +86,7 @@ The same toolkit applies to any business that licenses or sells intellectual pro
 ![Stacked line chart of U.S. ISBN output](charts/01_market_isbn_stacked.png)
 ![2025 revenue by format](charts/02_market_aap_formats.png)
 
-## The IP value chain
+## The IP Value Chain
 
 ```mermaid
 flowchart LR
@@ -102,7 +102,7 @@ flowchart LR
   J -. A/B tests, re-pricing .-> E
 ```
 
-## Cost variance analysis
+## Cost Variance Analysis
 
 Base case: $16.99 paperback, 200 pages. Variance is measured against the Amazon KDP baseline, and the three drivers sum exactly to the total.
 
@@ -120,7 +120,7 @@ Base case: $16.99 paperback, 200 pages. Variance is measured against the Amazon 
 ![Cost variance drivers](charts/04_cost_variance_drivers.png)
 ![Ebook net per unit](charts/05_ebook_net_per_unit.png)
 
-## Breakeven analysis
+## Breakeven Analysis
 
 `Breakeven unit pairs = Year-1 fixed costs / contribution per unit pair`
 Fixed costs = platform one-time fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions.
@@ -138,7 +138,7 @@ Fixed costs = platform one-time fees + $85 copyright registration + $1,500 illus
 ![Breakeven curves](charts/08_breakeven_curve.png)
 ![Crossover](charts/09_crossover_breakeven.png)
 
-## Scenario, sensitivity and cash timing
+## Scenario, Sensitivity and Cash Timing
 
 ![Sensitivity tornado](charts/06_sensitivity_tornado.png)
 ![Scenario analysis](charts/10_scenario_analysis.png)
@@ -146,7 +146,7 @@ Fixed costs = platform one-time fees + $85 copyright registration + $1,500 illus
 ![Days to cash](charts/12_payout_timing_dso.png)
 ![Pool payout volatility](charts/13_kenp_pool_volatility.png)
 
-## A/B test design
+## A/B Test Design
 
 | Test | Control vs challenger | Breakeven lift | Visitors per arm (80% power) |
 |---|---|---|---|
@@ -157,7 +157,7 @@ Fixed costs = platform one-time fees + $85 copyright registration + $1,500 illus
 ![A/B workflow](diagrams/d5_ab_test_flow.png)
 ![A/B breakeven lift](charts/14_ab_test_breakeven_lift.png)
 
-## Decision trees and choice options
+## Decision Trees and Choice Options
 
 ```mermaid
 flowchart TD
@@ -183,7 +183,7 @@ flowchart TD
 | E. Wide ebook strategist | KDP + direct Apple, Kobo, B&N | KDP + Draft2Digital | KDP + PublishDrive (above 40/mo) |
 
 
-### Stakeholder decision paths
+### Stakeholder Decision Paths
 
 Every chart in this repository carries a short "what is going on" note written in plain language, so readers from any industry can follow it. The deck ends with a walkthrough for each stakeholder type: the highlighted path through the decision tree, a summary, key numbers and what to do now, test next and watch.
 
@@ -197,13 +197,13 @@ Every chart in this repository carries a short "what is going on" note written i
 
 **What each team should do:** Finance and FP&A own the model and the monthly variance review; Marketing owns price tests and traffic; Rights and legal own copyright registration and contract terms; Investors ask for breakeven units, margin of safety, DSO and the scenario range; Operations turns on distribution only at launch and keeps metadata consistent.
 
-## Tableau story
+## Tableau Story
 
-The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains a 15-point story with numbered cards and full-sentence captions, ordered the way a real launch unfolds. Point 1 introduces the purpose, scope, stakeholders and key terms; point 2 shows the market; points 3 and 4 define every KPI (key performance indicator) with its formula and a worked example; points 5 to 9 compare money kept per sale, cost variance, ebooks, breakeven and sales scenarios; point 10 is an interactive profit calculator (sliders for books sold and launch budget, scorecards, a donut of costs earned back, smiley faces for each route, a profit curve and a ranked leaderboard); points 11 to 13 cover getting paid, Kindle Unlimited swings and price testing; point 14 gathers the recommendations for all five stakeholder types; point 15 shows where every number comes from. Every analysis page names its chart type, explains it for a technical/analytic audience and in plain terms (non-technical audiences), shows how its numbers are calculated, spells out each acronym, and lists its sources by name as clickable links. The text-only cards carry infographics rendered by [analysis/story_images.py](analysis/story_images.py) from [data/story_diagrams.csv](data/story_diagrams.csv): a launch-flow diagram, KPI scorecard tiles, a decision tree and the data pipeline. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
+The Tableau workbook ([tableau/IP_Distribution_Decision_Verticals.twbx](tableau/IP_Distribution_Decision_Verticals.twbx)) contains a 15-point story with numbered cards and full-sentence captions, ordered the way a real launch unfolds. Point 1 introduces the purpose, scope, stakeholders and key terms; point 2 shows the market; points 3 and 4 define every KPI (key performance indicator) with its formula and a worked example; points 5 to 9 compare money kept per sale, cost variance, ebooks, breakeven and sales scenarios; point 10 is an interactive profit calculator (sliders for books sold and launch budget, scorecards, a donut of costs earned back, smiley faces for each route, a profit curve and a ranked leaderboard); points 11 to 13 cover getting paid, Kindle Unlimited swings and price testing; point 14 shows where every number comes from; point 15 gathers the recommendations for all five stakeholder types. Every analysis page names its chart type, explains it for a technical/analytic audience and in plain terms (non-technical audiences), shows how its numbers are calculated, spells out each acronym, and lists its sources by name as clickable links. The text-only cards carry infographics rendered by [analysis/story_images.py](analysis/story_images.py) from [data/story_diagrams.csv](data/story_diagrams.csv): a launch-flow diagram, KPI scorecard tiles, a decision tree and the data pipeline. Captions and annotations are listed in [tableau/story_captions.md](tableau/story_captions.md).
 
 **[Open the Tableau story](https://public.tableau.com/app/profile/shamar.robinson/viz/IPDistributionDecisionVerticals/IPDistributionDecisionVerticals)**
 
-## Repository structure and reproducibility
+## Repository Structure and Reproducibility
 
 ```
 analysis/        model.py (all datasets), charts.py, diagrams.py, build_deck.py, build_tableau.py, stamp_workbook.py
@@ -221,12 +221,12 @@ pip install tableauhyperapi openpyxl
 python analysis/model.py && python analysis/methods.py && python analysis/charts.py && python analysis/diagrams.py && python analysis/build_deck.py && python analysis/build_tableau.py && python analysis/stamp_workbook.py
 ```
 
-## How the numbers work: KPIs and calculations
+## How the Numbers Work: KPIs and Calculations
 
 <!--METHODS-->
 Every figure below is computed from the files in [/data](data), which [analysis/model.py](analysis/model.py) builds from one assumptions list. Worked examples use the October 11, 2026 values and update with each quarterly refresh. Worked examples use unrounded values from the model, so a shown sum can differ from its parts by a cent.
 
-### KPI definitions
+### KPI Definitions
 
 | KPI (key performance indicator) | What it tells you | Formula | Worked example | Sources |
 |---|---|---|---|---|
@@ -245,7 +245,7 @@ Every figure below is computed from the files in [/data](data), which [analysis/
 | **KPI 13. Breakeven lift** (extra sales a cheaper option needs just to tie) | The bar an A/B test (a test of version A against version B) must clear before switching to a lower price. | Breakeven lift = net per copy of A / net per copy of B - 1 | Print price test: KDP net at $16.99 = $6.79; at $14.99 = $14.99 x 60% - $3.40 = $5.59; $6.79 / $5.59 - 1 = 21.4%. | [Profitable.app KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator); [Model in this repository (analysis/model.py)](https://github.com/ShamarRobinson/ip-distribution-decision-verticals/blob/main/analysis/model.py) |
 | **KPI 14. Sample size per group** (shoppers each version needs for a trustworthy A/B result) | Too few shoppers and a difference may be luck. | Two-proportion z-test at 95% confidence (z = 1.96) and 80% power (z = 0.84) for the breakeven lift | Print price test at a 2% baseline conversion rate and a 21.4% lift: 18,467 shoppers per group. Ebook test at 3%: 7,814. | [Model in this repository (analysis/model.py)](https://github.com/ShamarRobinson/ip-distribution-decision-verticals/blob/main/analysis/model.py) |
 
-### Where each story number comes from
+### Where Each Story Number Comes From
 
 | Story point | Numbers shown | How they are calculated | Sources |
 |---|---|---|---|
@@ -260,7 +260,7 @@ Every figure below is computed from the files in [/data](data), which [analysis/
 | 13. A/B test | Price cuts need 21% to 27% more sales; store terms 77% | Ebook: KDP net at $4.99 = $3.28, at $3.99 = $2.58, lift = 27.1%. Store terms: IngramSpark net at a 40% non-returnable discount ($5.88) / at 55% returnable ($3.33) - 1 = 76.6%. | [Profitable.app KDP royalty calculator](https://profitable.app/tools/kdp-royalty-calculator); [IngramSpark Help Center: 2026 pricing changes](https://help.ingramspark.com/hc/en-us/articles/41657495062029-Changes-in-Print-Cost-Market-Access-Fee-and-More); [Model in this repository (analysis/model.py)](https://github.com/ShamarRobinson/ip-distribution-decision-verticals/blob/main/analysis/model.py) |
 <!--/METHODS-->
 
-## Methodology and assumptions
+## Methodology and Assumptions
 
 - One model writes every dataset, so the deck, Excel model and Tableau story agree.
 - Base case: $16.99 paperback (200 pages), $4.99 ebook (2 MB), equal unit volume per platform.
@@ -270,7 +270,7 @@ Every figure below is computed from the files in [/data](data), which [analysis/
 - All prices, fees and rates are as of the date in `as_of.json`.
 - Contract terms summarize the IngramSpark Agreement (last updated March 20, 2025) in plain language; this is not legal or financial advice.
 
-## Quarterly refresh
+## Quarterly Refresh
 
 Platform prices, fees and rates change often, so every figure is stamped with an **as of** date held in [`as_of.json`](as_of.json). Every three months a scheduled refresh:
 

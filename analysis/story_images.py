@@ -9,6 +9,9 @@ so the images update with each quarterly refresh.
 import csv
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from titlecase import tc
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "tableau" / "_images"
@@ -62,7 +65,7 @@ def canvas(w, h, title, sub):
     im = Image.new("RGB", (w * S, h * S), "#ffffff")
     d = ImageDraw.Draw(im)
     y = 4 * S
-    d.text((6 * S, y), title, font=font("semibold", 14), fill=INK)
+    d.text((6 * S, y), tc(title), font=font("semibold", 14), fill=INK)
     y += 22 * S
     if sub:
         d.text((6 * S, y), sub, font=font("regular", 10), fill=MUTED)
@@ -85,6 +88,7 @@ def load():
     by = {}
     for r in rows:
         r["col"], r["row"] = int(r["col"]), int(r["row"])
+        r["title"] = tc(r["title"])  # box titles are headings, so they take title case
         by.setdefault(r["diagram"], []).append(r)
     return by
 

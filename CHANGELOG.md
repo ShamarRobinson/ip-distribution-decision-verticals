@@ -1,8 +1,11 @@
-# Change log
+# Change Log
 
 Each quarterly refresh records what changed in prices, fees, rates and market figures.
 
 ## October 14, 2026
+
+- All titles and subheadings now use Title Case across the Tableau story, its infographics, the slide deck, charts, diagrams and docs (body text stays in sentence case), through one shared rule in `analysis/titlecase.py`.
+- Story order: Where the Numbers Come From is now point 14, right before Recommendations (point 15).
 - Tableau story: infographics are now rendered as images so they look the same on Tableau Public as in Desktop; the launch flow starts at point 1; the ebook chart runs to the full $4.99 price and its call-out sits in the open space beside the shaded strip instead of over the value labels. No rates changed.
 - Tableau story: infographics on every text-only card, built from data/story_diagrams.csv: a launch-flow diagram on the introduction, KPI scorecard tiles (headline value plus one line of context) on both KPI cards, a decision tree on the recommendations card and a five-step pipeline on the sources card. KPIs are numbered 1 to 14 in the story, deck and README. No rates changed.
 - Tableau story: the market chart's year axis now runs 2022 to 2025 with no empty margins, and a call-out with a marker explains the shaded 2024 to 2025 range. Text boxes are sized by how much text they hold so nothing is clipped. No rates changed.

@@ -135,7 +135,7 @@ def _ws(name, title, key, calcs, insts, filters, rows, cols, mark, enc, extra_pa
     ds = DS[key]["name"]
     st = f"<style>{style_rules}</style>" if style_rules else "<style />"
     subrun = f"<run fontcolor='#5b6475' fontsize='9'>&#10;{esc(sub)}</run>" if sub else ""
-    x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontcolor='{CALC_INK}' fontsize='11'>{esc(title)}</run>{subrun}</formatted-text></title></layout-options>"
+    x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontcolor='{CALC_INK}' fontsize='11'>{esc(tc(title))}</run>{subrun}</formatted-text></title></layout-options>"
          f"<table><view><datasources><datasource caption='{esc(DS[key]['caption'])}' name='{ds}' /><datasource name='Parameters' /></datasources>"
          f"{_deps(key, calcs, insts)}{''.join(filters)}<aggregation value='true' /></view>{st}"
          f"<panes><pane selection-relaxation-option='selection-relaxation-allow'><view><breakdown value='auto' /></view>"

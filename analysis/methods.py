@@ -211,10 +211,10 @@ def _md_sources(keys):
 def readme_section(kpis, pages):
     asof = json.load(open(ROOT / "as_of.json"))["as_of_label"]
     out = [f"Every figure below is computed from the files in [/data](data), which [analysis/model.py](analysis/model.py) builds from one assumptions list. Worked examples use the {asof} values and update with each quarterly refresh. {ROUNDING}\n",
-           "### KPI definitions\n", "| KPI (key performance indicator) | What it tells you | Formula | Worked example | Sources |", "|---|---|---|---|---|"]
+           "### KPI Definitions\n", "| KPI (key performance indicator) | What it tells you | Formula | Worked example | Sources |", "|---|---|---|---|---|"]
     for i, r in enumerate(kpis, 1):
         out.append(f"| **KPI {i}. {r['kpi']}** ({r['full']}) | {r['meaning']} | {r['formula']} | {r['worked']} | {_md_sources(r['sources'])} |")
-    out += ["", "### Where each story number comes from\n", "| Story point | Numbers shown | How they are calculated | Sources |", "|---|---|---|---|"]
+    out += ["", "### Where Each Story Number Comes From\n", "| Story point | Numbers shown | How they are calculated | Sources |", "|---|---|---|---|"]
     for r in sorted(pages, key=lambda r: PAGE_NO[r["dash"]]):
         n = PAGE_NO[r["dash"]]
         out.append(f"| {n}. {r['page']} | {r['numbers']} | {r['calc']} | {_md_sources(r['sources'])} |")

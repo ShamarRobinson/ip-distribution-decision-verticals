@@ -12,6 +12,14 @@ import matplotlib.patches
 from matplotlib import font_manager as fm
 from matplotlib.lines import Line2D
 from matplotlib.ticker import PercentFormatter, FuncFormatter
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from titlecase import tc
+# every chart title and axis title is set in title case
+from matplotlib.axes import Axes as _Ax
+for _m in ("set_title", "set_xlabel", "set_ylabel"):
+    _orig = getattr(_Ax, _m)
+    setattr(_Ax, _m, (lambda o: lambda self, label, *a, **k: o(self, tc(label) if isinstance(label, str) else label, *a, **k))(_orig))
 
 ROOT = Path(__file__).resolve().parents[1]
 D, C = ROOT / "data", ROOT / "charts"

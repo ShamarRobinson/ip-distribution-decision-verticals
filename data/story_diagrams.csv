@@ -21,7 +21,7 @@ Launch flow,1,5,orange,Points 8 and 9: breakeven,When launch costs are earned ba
 Launch flow,1,6,green,Point 10: profit calculator,Try your own sales and budget, ,1
 Launch flow,1,7,teal,Points 11 and 12: getting paid,Cash timing and Kindle Unlimited swings, ,1
 Launch flow,1,8,red,Point 13: price testing,The sales lift a price cut needs, ,1
-Launch flow,1,9,pink,Points 14 and 15: decide,"Best route per owner, and every source", ,1
+Launch flow,1,9,pink,Points 14 and 15: check and decide,"Every source, then the best route per owner", ,1
 Decision tree,1,1,gray light,Buyers come to you directly?, , ,1
 Decision tree,2,1,arrow,Yes  →, , ,1
 Decision tree,3,1,yellow,D. Own store + KDP, , ,1

@@ -433,5 +433,12 @@ document.addEventListener('keydown', e => {{
 }});
 </script>
 </body></html>"""
+import re as _re_tc
+from titlecase import tc as _tc
+def _tc_tag(m):
+    # title-case only the text between inline tags, never the tags or attributes
+    parts = _re_tc.split(r"(<[^>]+>)", m.group(2))
+    return m.group(1) + "".join(p if p.startswith("<") else _tc(p) for p in parts) + m.group(3)
+html = _re_tc.sub(r"(<(?:h[1-4]|title)\b[^>]*>)(.*?)(</(?:h[1-4]|title)>)", _tc_tag, html, flags=_re_tc.S)
 (ROOT / "docs" / "index.html").write_text(html)
 print("slides:", n)

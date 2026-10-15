@@ -7,6 +7,7 @@ ASOF = json.load(open(ROOT / "as_of.json"))["as_of_label"]
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import methods as MT
+from titlecase import tc
 KPIS, MPAGES = MT.build()
 CALC = {r["dash"]: r for r in MPAGES}
 OUT = ROOT / "tableau"
@@ -204,7 +205,7 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         # axis_title: (field, kind, scope, text); independent: (field, kind, scope)
         ax_rules = ""
         if axis_title:
-            fa, ka, sa, ta = axis_title; ra, _ = ci(key, fa, ka)
+            fa, ka, sa, ta = axis_title; ra, _ = ci(key, fa, ka); ta = tc(ta)
             ax_rules += f"<format attr='title' class='0' field='[{ds}].{esc(ra)}' scope='{sa}' value='{esc(ta)}' />"
         if independent:
             fi, ki, si = independent; ri, _ = ci(key, fi, ki)
@@ -241,7 +242,7 @@ def sheet(name, title, key, rows, cols, mark, color=None, label=None, filt=None,
         ann = f"<annotations>{raw_ann(ds)}</annotations>"
     lbl_style = "<style><style-rule element='mark'><format attr='mark-labels-show' value='true' /><format attr='mark-labels-cull' value='true' />" + ("<format attr='mark-markers-mode' value='all' />" if mark == 'Line' else "") + "</style-rule></style>" if label else ("<style><style-rule element='mark'><format attr='mark-markers-mode' value='all' /></style-rule></style>" if mark == 'Line' else "")
     sub = f"<run fontcolor='#52514e' fontsize='10'>&#10;{esc(subtitle)}</run>" if subtitle else ""
-    x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontsize='14'>{esc(title)}</run>{sub}</formatted-text></title></layout-options>"
+    x = (f"<worksheet name='{esc(name)}'><layout-options><title><formatted-text><run bold='true' fontsize='14'>{esc(tc(title))}</run>{sub}</formatted-text></title></layout-options>"
          f"<table><view><datasources><datasource caption='{esc(DS[key]['caption'])}' name='{ds}' /></datasources>"
          f"<datasource-dependencies datasource='{ds}'>{deps}{''.join(used.values())}</datasource-dependencies>"
          f"{filt_xml}{sort_xml}<aggregation value='true' /></view>{tstyle}"
@@ -321,7 +322,7 @@ _FLOW = [("yellow", "Point 1: start here (you are here)", "Purpose, scope and wh
          ("green", "Point 10: profit calculator", "Try your own sales and budget"),
          ("teal", "Points 11 and 12: getting paid", "Cash timing and Kindle Unlimited swings"),
          ("red", "Point 13: price testing", "The sales lift a price cut needs"),
-         ("pink", "Points 14 and 15: decide", "Best route per owner, and every source")]
+         ("pink", "Points 14 and 15: check and decide", "Every source, then the best route per owner")]
 for r, (tone, t, l1) in enumerate(_FLOW, 1):
     _cell("Launch flow", 1, r, tone, t, l1)
 _TREE = [("Buyers come to you directly?", "Yes", "yellow", "D. Own store + KDP"),
@@ -400,7 +401,7 @@ sheet("01 Market ISBNs", "U.S. ISBN output by segment, 2022 to 2025 (stacked)", 
       fixed=("year", "qk", "cols", _yrs[0], _yrs[-1]),
       raw_ann=lambda ds: (
         f"<annotation class='point' id='0' mark-position='1' pullback='0' text-width='260'>"
-        f"<formatted-text><run bold='true' fontcolor='{HL}'>Shaded {_y0} to {_y1}: the jump</run>"
+        f"<formatted-text><run bold='true' fontcolor='{HL}'>Shaded {_y0} to {_y1}: The Jump</run>"
         f"<run fontcolor='#1f1f1f'>&#10;Self-published ISBNs rose {SP_GROWTH:.1%} in one year, from "
         f"{_iso[(_y0, 'Self-published')]/1e6:.2f}M to {_iso[(_y1, 'Self-published')]/1e6:.2f}M.</run></formatted-text>"
         f"<point><visual-coordinate class='mark'><tuple-reference><tuple-descriptor><pane-descriptor>"
@@ -657,7 +658,7 @@ def rec_dash(dname, items, heading):
 INTRO = [
  ("Purpose", "#2a78d6", [
   ("The question", "Where should you sell a creative work, such as a book, guide or course, so you keep the most money from each sale, with risk and payment timing you can live with?"),
-  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The points follow the order of a real launch: point 2 shows the market, points 3 and 4 define each KPI (key performance indicator) with its formula, points 5 to 9 compare money kept and breakeven, point 10 is a profit calculator you can try, points 11 to 13 cover getting paid and testing prices, point 14 gives a recommendation for each type of owner, and point 15 shows where every number comes from.")]),
+  ("What you get", "Each story point compares the same six platforms using their published prices, fees and payout rates, explains the result in plain language, and names its sources. The points follow the order of a real launch: point 2 shows the market, points 3 and 4 define each KPI (key performance indicator) with its formula, points 5 to 9 compare money kept and breakeven, point 10 is a profit calculator you can try, points 11 to 13 cover getting paid and testing prices, point 14 shows where every number comes from, and point 15 gives a recommendation for each type of owner.")]),
  ("Scope", "#eb6834", [
   ("Platforms", "Amazon KDP, IngramSpark, Barnes & Noble Press, Lulu, PublishDrive and Draft2Digital."),
   ("Base case", "A $16.99 paperback (200 pages) and a $4.99 ebook sold in the United States."),
@@ -807,6 +808,11 @@ for _k, _d in enumerate(dash_xml):
     if "<dashboard name='D4 Ebook'>" in _d:
         _i = _d.rindex("</zone></zones>"); dash_xml[_k] = _d[:_i] + _ov + _d[_i:]
 dash_xml = [theme_dash(d) for d in dash_xml]
+def _tc_run(m):
+    t = m.group(2)
+    if "&lt;" in t: return m.group(0)  # field references stay as written
+    return m.group(1) + esc(tc(html.unescape(t))).replace("\n", "&#10;") + "</run>"
+dash_xml = [_re.sub(r"(<run bold='true'[^>]*>)(.*?)</run>", _tc_run, d) for d in dash_xml]
 
 # ---------------- story
 # story order follows a launch: market, KPI definitions, money kept per sale, breakeven, scenarios, the calculator, getting paid, testing
@@ -817,11 +823,11 @@ _order = [("D0 Introduction", "Start here: purpose, scope and who this is for.")
           ("D2 Gross to Net", None), ("D3 Cost Variance", None), ("D4 Ebook", None), ("D5 Breakeven", None), ("D6 Scenarios", None),
           ("D12 Calculator", "Profit calculator: slide to see when each route turns a profit."),
           ("D7 Cash", None), ("D8 Pool Volatility", None), ("D9 AB Test", None),
-          ("D10 Recommendations", "Recommendations: find your type and its best choice."),
-          ("D11 Number Sources", "Where the numbers come from.")]
+          ("D11 Number Sources", "Where the numbers come from."),
+          ("D10 Recommendations", "Recommendations: find your type and its best choice.")]
 _caps = {n: cap for n, s_, note, hdr, cap in DASH}
 STORY_ORDER = [(i, n, c or _caps[n]) for i, (n, c) in enumerate(_order, 1)]
-points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i}. {esc(c)}' id='{i}' />" for i, n, c in STORY_ORDER)
+points = "".join(f"<story-point captured-sheet='{esc(n)}' caption='{i}. {esc(tc(c))}' id='{i}' />" for i, n, c in STORY_ORDER)
 story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard'><style><style-rule element='story-point-caption'><format attr='background-color' value='{TH['accent']}' /><format attr='color' value='#06101f' /></style-rule></style><size maxheight='1110' maxwidth='1366' minheight='1110' minwidth='1366' sizing-mode='fixed' />"
          f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>"
          f"<zone h='98000' id='2' param='vert' removable='false' type-v2='layout-flow' w='98800' x='600' y='1000'>"
@@ -879,12 +885,12 @@ with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
         z.write(f, f"Image/{f.name}")
 # story caption export for README, in story order
 with open(OUT / "story_captions.md", "w") as f:
-    f.write("# Tableau story captions\n\n")
+    f.write("# Tableau Story Captions\n\n")
     for i, n, c in STORY_ORDER:
-        f.write(f"**Story point {i}.** {c}\n\n")
+        f.write(f"**Story Point {i}.** {tc(c)}\n\n")
         if n == "D0 Introduction":
             for _t, _c, _rows in INTRO:
-                f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+                f.write(f"*{tc(_t)}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
         elif n.startswith("D0 KPIs"):
             f.write("KPI definitions with formulas and worked examples. See the How the numbers work section of the README.\n\n")
         elif n == "D12 Calculator":
@@ -894,7 +900,7 @@ with open(OUT / "story_captions.md", "w") as f:
                     "and a bar chart ranks year-1 profit by route.\n\n")
         elif n == "D10 Recommendations":
             for _t, _c, _rows in PATHS:
-                f.write(f"*{_t}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
+                f.write(f"*{tc(_t)}.* " + " ".join(f"{_l}: {_x}" for _l, _x in _rows) + "\n\n")
         elif n == "D11 Number Sources":
             f.write("See the How the numbers work section of the README.\n")
         else:

@@ -1,8 +1,8 @@
-# Maintenance and troubleshooting
+# Maintenance and Troubleshooting
 
 How to rebuild, back up and debug this repository's three outputs: the slide deck on GitHub Pages, the Tableau Public story, and this repository itself.
 
-## Where everything lives
+## Where Everything Lives
 
 | Output | Location | Built from |
 |---|---|---|
@@ -15,7 +15,7 @@ How to rebuild, back up and debug this repository's three outputs: the slide dec
 
 Backups: the GitHub repository (with dated restore-point tags), a git clone on the author's Mac in `~/Documents/Github/ip-distribution-decision-verticals`, and the published Tableau Public workbook.
 
-## Rebuild everything
+## Rebuild Everything
 
 ```bash
 pip install matplotlib tableauhyperapi openpyxl playwright
@@ -31,7 +31,7 @@ python analysis/stamp_workbook.py
 
 Then regenerate the PDF from `docs/index.html`, delete any `hyperd*.log` files, commit and push. GitHub Pages redeploys within a minute or two.
 
-## Restore a working version
+## Restore a Working Version
 
 Each known-good state is tagged `restore-YYYY-MM-DD`.
 
@@ -42,7 +42,7 @@ git checkout restore-2026-10-12 -- .   # bring files back from a restore point
 
 To restore the Tableau story, open `tableau/IP_Distribution_Decision_Verticals.twbx` from the restore point in Tableau Public and use File > Save to Tableau Public As with the title "IP Distribution Decision Verticals" (overwrite).
 
-## Known Tableau gotchas (learned while building)
+## Known Tableau Gotchas (Learned While Building)
 
 - **Tableau Public only opens workbooks with extracts.** Every datasource carries an `<extract>` block pointing to a `.hyper` file in `Data/Extracts/` inside the `.twbx`. The `.hyper` files are created by the Hyper API in `build_tableau.py`.
 - **Schema order matters.** Inside a datasource the order is connection, aliases, columns, extract, layout, style. `<layout>` needs `dim-percentage` and `measure-percentage`.
@@ -59,12 +59,12 @@ To restore the Tableau story, open `tableau/IP_Distribution_Decision_Verticals.t
 - **A reference line on a parameter** needs a calculated field equal to the parameter placed on Detail, with the line using `min` of that field.
 - **Text-box line breaks:** start a run with `&#10;` followed by text; a run that holds only a line break is dropped.
 
-## Plain-language and style rules
+## Plain-Language and Style Rules
 
 - Notes are written for readers about 14 to 15 years old, start with "As of <date>:", and name the colors exactly as drawn.
 - No em dashes in body text; keep the established naming (IP Distribution Decision Verticals, "verticals", "stakeholders").
 - Every figure carries a source, shown by name, with the name as the clickable link.
 
-## Quarterly refresh
+## Quarterly Refresh
 
 A scheduled task runs on January 11, April 11, July 11 and October 11. It re-checks every rate and source, updates `as_of.json`, rebuilds all outputs, logs changes in `CHANGELOG.md`, pushes to GitHub and republishes the Tableau story.
