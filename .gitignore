@@ -7,3 +7,4 @@ hyperd*.log
 tableau/zz_*
 tableau/_build/
 tableau/_shapes/
+tableau/_images/

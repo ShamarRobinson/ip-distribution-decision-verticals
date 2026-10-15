@@ -313,7 +313,8 @@ def _cell(d, c, r, tone, title, l1="", l2=""):
 for i, (tone, val, ctx) in enumerate(_KPI_VAL):
     d = "KPI strip 1" if i < 7 else "KPI strip 2"
     _cell(d, i % 7 + 1, 1, tone, f"KPI {i+1}  {_short.get(KPIS[i]['kpi'], KPIS[i]['kpi'])}", val, ctx)
-_FLOW = [("gray", "Point 2: the market", "More books chase the same buyers"),
+_FLOW = [("yellow", "Point 1: start here (you are here)", "Purpose, scope and who this is for"),
+         ("gray", "Point 2: the market", "More books chase the same buyers"),
          ("purple", "Points 3 and 4: the KPIs", "14 measures, each with a formula"),
          ("blue", "Points 5 to 7: money kept", "What each store leaves you per sale"),
          ("orange", "Points 8 and 9: breakeven", "When launch costs are earned back"),
@@ -341,6 +342,10 @@ for k, (tone, t, l1, l2) in enumerate(_PIPE):
     _cell("Pipeline", k + 1, 1, tone, f"{k+1}. {t}" + ("  →" if k < len(_PIPE) - 1 else ""), l1, l2)
 with open(ROOT / "data" / "story_diagrams.csv", "w", newline="") as _f:
     _w = csv.DictWriter(_f, fieldnames=list(DIAG[0].keys())); _w.writeheader(); _w.writerows(DIAG)
+import story_images as SI
+IMG = SI.render({"launch": (487, 696), "kpi": (1260, 136), "tree": (617, 208), "pipe": (1260, 104)})
+def img_zone(key, h, w, x, y, zid):
+    return f"<zone h='{h}' id='{zid}' is-scaled='1' param='Image/{IMG[key].name}' type-v2='bitmap' w='{w}' x='{x}' y='{y}' />"
 
 # ---------------- data sources
 dsx = [
@@ -520,11 +525,6 @@ def diag_sheet(name, title, diagram, sub="", title_size=10, line_size=9, ban=Fal
          f"<style-rule element='mark'><format attr='mark-labels-show' value='true' /><format attr='mark-labels-cull' value='false' />{f"<format attr='size' value='{size}' />" if size else ""}</style-rule></style></pane></panes>"
          f"<rows>{rr}</rows><cols>({cc} / {ww})</cols></table><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></worksheet>")
     SHEETS.append((name, x))
-diag_sheet("Info Launch Flow", "How the story follows a launch", "Launch flow", "Read top to bottom; each step is one or more story points", lines=2)
-diag_sheet("Info KPI Strip 1", "KPIs 1 to 7 at a glance", "KPI strip 1", "Blue: money kept per sale. Orange: breakeven. Headline values use the KDP route", ban=True, size=6)
-diag_sheet("Info KPI Strip 2", "KPIs 8 to 14 at a glance", "KPI strip 2", "Purple: scale. Teal: cash timing. Gray: Kindle Unlimited. Red: testing", ban=True, size=6)
-diag_sheet("Info Decision Tree", "Which path fits you?", "Decision tree", "Start at the top; a different answer moves you down a row", title_size=9, line_size=8, size=5, lines=1)
-diag_sheet("Info Pipeline", "How every number is made: change a rate once and every page updates", "Pipeline", "", size=8, lines=2)
 
 exec(open(Path(__file__).resolve().parent / 'calc_block.py').read())
 
@@ -638,7 +638,7 @@ PATHS = [
 ]
 def rec_dash(dname, items, heading):
     zones = (f"<zone h='14000' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
-             f"<run fontcolor='#52514e' fontsize='11'>&#10;Find your type, then read its best choice. As of {esc(ASOF)}. Decision trees for each path are in the slide deck linked from the GitHub page.</run>"
+             f"<run fontcolor='#52514e' fontsize='11'>&#10;Find your type, then read its best choice, or follow the questions in the box at the lower right. As of {esc(ASOF)}.</run>"
              f"<run fontcolor='#52514e' fontsize='10'>&#10;Terms: KDP (Kindle Direct Publishing): Amazon's self-publishing service; KDP Select: Amazon's 90-day ebook exclusivity program; B&amp;N (Barnes &amp; Noble): the bookstore chain behind B&amp;N Press; IP (intellectual property): the creative work you own.</run></formatted-text></zone>")
     cols = [items[:3], items[3:]]
     zid = 20
@@ -650,7 +650,7 @@ def rec_dash(dname, items, heading):
                 runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(txt)}</run>"
             zones += f"<zone h='{h}' id='{zid}' type-v2='text' w='49000' x='{ci_*51000}' y='{14500 + ri*h}'><formatted-text>{runs}</formatted-text></zone>"
             zid += 1
-    zones += f"<zone h='{h}' id='{zid}' name='Info Decision Tree' show-title='true' w='49000' x='51000' y='{14500 + 2*h}' />"
+    zones += img_zone("tree", h, 49000, 51000, 14500 + 2*h, zid)
     return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
@@ -683,7 +683,7 @@ def intro_dash(dname, items, heading):
             runs += f"<run bold='true' fontcolor='#1f1f1f' fontsize='10'>&#10;{esc(lab)}: </run><run fontcolor='#1f1f1f' fontsize='10'>{esc(txt)}</run>"
         zones += f"<zone h='{h}' id='{20+i}' type-v2='text' w='61000' x='0' y='{y}'><formatted-text>{runs}</formatted-text></zone>"
         y += h
-    zones += f"<zone h='{sum(hs)}' id='30' name='Info Launch Flow' show-title='true' w='39000' x='61000' y='10500' />"
+    zones += img_zone("launch", sum(hs), 39000, 61000, 10500, 30)
     return (f"<dashboard name='{dname}'><style /><size maxheight='800' maxwidth='1300' minheight='800' minwidth='1300' sizing-mode='fixed' />"
             f"<zones><zone h='100000' id='1' type-v2='layout-basic' w='100000' x='0' y='0'>{zones}</zone></zones>"
             f"<simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></dashboard>")
@@ -694,10 +694,10 @@ def text_page(dname, heading, sub, items, cols=2, top=10000, info=None):
     zones = (f"<zone h='{top}' id='11' type-v2='text' w='100000' x='0' y='0'><formatted-text><run bold='true' fontsize='18'>{esc(heading)}</run>"
              f"<run fontcolor='#52514e' fontsize='10'>&#10;{esc(sub)}</run></formatted-text></zone>")
     if info:
-        zones += f"<zone h='{info[1]}' id='19' name='{esc(info[0])}' show-title='true' w='100000' x='0' y='{top}' />"
+        zones += img_zone(info[0], info[1], 100000, 0, top, 19)
         top += info[1]
     avail = 100000 - top - 500; zid = 20
-    _w = lambda it: 180 + len(it[0]) + sum(len(l) + len(x) for l, x in it[1])
+    _w = lambda it: 300 + len(it[0]) + sum(len(l) + len(x) for l, x in it[1])
     if cols == 2:  # split where the two columns hold about the same amount of text
         tot = sum(_w(it) for it in items); acc = 0; cut = len(items)
         for k, it in enumerate(items):
@@ -709,7 +709,7 @@ def text_page(dname, heading, sub, items, cols=2, top=10000, info=None):
     for c in range(cols):
         col_items = groups[c]
         # each box gets height in proportion to its text (plus a fixed share for its heading and padding)
-        wts = [180 + len(t) + sum(len(l) + len(x) for l, x in rows) for t, rows in col_items]
+        wts = [300 + len(t) + sum(len(l) + len(x) for l, x in rows) for t, rows in col_items]
         ys = [top + 500]
         for wv in wts: ys.append(ys[-1] + int(avail * wv / sum(wts)))
         for r, (t, rows) in enumerate(col_items):
@@ -725,9 +725,9 @@ def text_page(dname, heading, sub, items, cols=2, top=10000, info=None):
 import math
 KPI_ITEMS = [(f"KPI {i}. {r['kpi']} ({r['full']})", [("What it tells you", r["meaning"]), ("Formula", r["formula"]), ("Example", r["worked"])]) for i, r in enumerate(KPIS, 1)]
 dash_xml.insert(1, text_page("D0 KPIs", "KPI (key performance indicator) definitions, part 1: money kept per sale",
-    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[:7], info=("Info KPI Strip 1", 19500)))
+    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[:7], info=("kpi1", 19500)))
 dash_xml.insert(2, text_page("D0 KPIs 2", "KPI definitions, part 2: scale, cash timing and testing",
-    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[7:], info=("Info KPI Strip 2", 19500)))
+    f"Each formula is worked with the {ASOF} numbers. {MT.ROUNDING}", KPI_ITEMS[7:], info=("kpi2", 19500)))
 SRC_ITEMS = [(f"{MT.PAGE_NO[r['dash']]}. {r['page']}", [("Numbers shown", r["numbers"]), ("Sources", "; ".join(MT.SOURCES[k][0] for k in r["sources"]))]) for r in sorted(MPAGES, key=lambda r: MT.PAGE_NO[r["dash"]])]
 SRC_ITEMS.insert(6, ("10. Profit calculator", [("Numbers shown", "Profit, breakeven point, books still needed and share of launch costs earned back, for the books sold and launch budget you choose"), ("Sources", "Contribution per unit pair and fixed costs from the Breakeven page; same sources as points 5 to 9")]))
 SRC_ITEMS.append(("How the model works", [("Estimates", "Print costs for IngramSpark, B&N Press and Lulu, the $1,500 launch budget, the 65/35 channel mix and the launch curve are planning assumptions, not published rates."),
@@ -735,7 +735,7 @@ SRC_ITEMS.append(("How the model works", [("Estimates", "Print costs for IngramS
 dash_xml.append(calc_dash("D12 Calculator"))
 dash_xml.append(rec_dash("D10 Recommendations", PATHS, "Recommendations: the best route for each type of owner"))
 dash_xml.append(text_page("D11 Number Sources", "Where the numbers come from",
-    f"Prices, fees and rates as of {ASOF}; refreshed quarterly. Each analysis page also shows its calculation under How it is calculated.", SRC_ITEMS, info=("Info Pipeline", 15500)))
+    f"Prices, fees and rates as of {ASOF}; refreshed quarterly. Each analysis page also shows its calculation under How it is calculated.", SRC_ITEMS, info=("pipe", 15500)))
 
 ACTIONS = "".join(
     f"<action caption='Open source: {esc(d[0])}' name='[Action_url_{i}]'><activation auto-clear='true' type='on-select' />"
@@ -825,13 +825,14 @@ story = (f"<dashboard name='IP Distribution Decision Verticals' type='storyboard
 
 windows = "".join(f"<window class='worksheet' name='{esc(n)}'><cards><edge name='left'><strip size='160'><card type='pages' /><card type='filters' /><card type='marks' /></strip></edge><edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip><strip size='31'><card type='title' /></strip></edge></cards><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for n, _ in SHEETS)
 windows += "".join(f"<window class='dashboard' name='{esc(d[0])}'><viewpoints>{''.join(f"<viewpoint name='{esc(x)}'><zoom type='entire-view' /></viewpoint>" for x in d[1] + ['Sources ' + d[0][:2]])}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>" for d in DASH)
-windows += f"<window class='dashboard' name='D0 Introduction'><viewpoints><viewpoint name='Info Launch Flow'><zoom type='entire-view' /></viewpoint></viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' name='D0 KPIs 2'><viewpoints><viewpoint name='Info KPI Strip 2'><zoom type='entire-view' /></viewpoint></viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' name='D0 KPIs'><viewpoints><viewpoint name='Info KPI Strip 1'><zoom type='entire-view' /></viewpoint></viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' name='D11 Number Sources'><viewpoints><viewpoint name='Info Pipeline'><zoom type='entire-view' /></viewpoint></viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' name='D10 Recommendations'><viewpoints><viewpoint name='Info Decision Tree'><zoom type='entire-view' /></viewpoint></viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 Introduction'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 KPIs 2'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D0 KPIs'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D11 Number Sources'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+windows += f"<window class='dashboard' name='D10 Recommendations'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 windows += f"<window class='dashboard' name='D12 Calculator'><viewpoints>{''.join(f"<viewpoint name='{x}'><zoom type='entire-view' /></viewpoint>" for x in CALC_SHEETS)}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
-windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints /><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
+_story_vp = ""
+windows += f"<window class='dashboard' maximized='true' name='IP Distribution Decision Verticals'><viewpoints>{_story_vp}</viewpoints><active id='-1' /><simple-id uuid='{{{str(uuid.uuid4()).upper()}}}' /></window>"
 
 PAL_XML = ''.join("<color-palette name='" + esc(n) + "' type='regular'>" + ''.join('<color>' + c + '</color>' for c in cs) + '</color-palette>' for n, cs in list(PALETTES.items()) + list(CALC_PALETTES.items()))
 PREFS = "<preferences><preference name='ui.encoding.shelf.height' value='24' /><preference name='ui.shelf.height' value='26' />" + PAL_XML + "</preferences>"
@@ -866,6 +867,8 @@ with zipfile.ZipFile(OUT / f"{name}.twbx", "w", zipfile.ZIP_DEFLATED) as z:
         z.write(f, f"Data/data/{f.name}")
     for f in EXT.glob("*.hyper"):
         z.write(f, f"Data/Extracts/{f.name}")
+    for f in IMG.values():
+        z.write(f, f"Image/{f.name}")
 # story caption export for README, in story order
 with open(OUT / "story_captions.md", "w") as f:
     f.write("# Tableau story captions\n\n")

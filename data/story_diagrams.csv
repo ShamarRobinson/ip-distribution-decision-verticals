@@ -13,14 +13,15 @@ KPI strip 2,4,1,teal,KPI 11  Working capital gap,$948,"earned, not yet paid, mon
 KPI strip 2,5,1,gray,KPI 12  Kindle Unlimited rate,$4.55,"average per 1,000 pages",1
 KPI strip 2,6,1,red,KPI 13  Breakeven lift,21.4%,more sales for a $2 price cut,1
 KPI strip 2,7,1,red,KPI 14  Test sample size,"18,467",shoppers per test group,1
-Launch flow,1,1,gray,Point 2: the market,More books chase the same buyers, ,1
-Launch flow,1,2,purple,Points 3 and 4: the KPIs,"14 measures, each with a formula", ,1
-Launch flow,1,3,blue,Points 5 to 7: money kept,What each store leaves you per sale, ,1
-Launch flow,1,4,orange,Points 8 and 9: breakeven,When launch costs are earned back, ,1
-Launch flow,1,5,green,Point 10: profit calculator,Try your own sales and budget, ,1
-Launch flow,1,6,teal,Points 11 and 12: getting paid,Cash timing and Kindle Unlimited swings, ,1
-Launch flow,1,7,red,Point 13: price testing,The sales lift a price cut needs, ,1
-Launch flow,1,8,pink,Points 14 and 15: decide,"Best route per owner, and every source", ,1
+Launch flow,1,1,yellow,Point 1: start here (you are here),"Purpose, scope and who this is for", ,1
+Launch flow,1,2,gray,Point 2: the market,More books chase the same buyers, ,1
+Launch flow,1,3,purple,Points 3 and 4: the KPIs,"14 measures, each with a formula", ,1
+Launch flow,1,4,blue,Points 5 to 7: money kept,What each store leaves you per sale, ,1
+Launch flow,1,5,orange,Points 8 and 9: breakeven,When launch costs are earned back, ,1
+Launch flow,1,6,green,Point 10: profit calculator,Try your own sales and budget, ,1
+Launch flow,1,7,teal,Points 11 and 12: getting paid,Cash timing and Kindle Unlimited swings, ,1
+Launch flow,1,8,red,Point 13: price testing,The sales lift a price cut needs, ,1
+Launch flow,1,9,pink,Points 14 and 15: decide,"Best route per owner, and every source", ,1
 Decision tree,1,1,gray light,Buyers come to you directly?, , ,1
 Decision tree,2,1,arrow,Yes  →, , ,1
 Decision tree,3,1,yellow,D. Own store + KDP, , ,1
