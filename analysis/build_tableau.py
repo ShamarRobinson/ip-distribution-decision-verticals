@@ -425,9 +425,9 @@ sheet("04 Ebook Net", "Net royalty per $4.99 ebook", "ebook", [("platform","nk")
       subtitle="Store payout rates from ScribeCount; fees from KDP, Draft2Digital and the IngramSpark agreement",
       lines=[(("net_royalty", "sum"), EB_TOP, f"Best possible: ${EB_TOP:.2f} (70%)")],
       bands=[(("net_royalty", "sum"), EB_LO, EB_TOP, "", BAND)],
-      notes=[("Lulu Retail", _eb["Lulu Retail"]["net_royalty"], f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale (shaded strip)", 100, 8)],
-      note_width=150,
-      axis_title=("net_royalty", "sum", "cols", "Creator keeps per $4.99 ebook"))
+      fixed=("net_royalty", "sum", "cols", 0, 4.99),
+      axis_title=("net_royalty", "sum", "cols", "Creator keeps per $4.99 ebook (axis runs to the full $4.99 price)"))
+EBOOK_NOTE = f"Middlemen cost {round((EB_TOP-EB_HI)*100)} to {round((EB_TOP-EB_LO)*100)} cents a sale"
 sheet("05 Breakeven Units", "Unit pairs needed to recover year-1 fixed costs", "be", [("stack","nk")], [("breakeven_unit_pairs","sum")], "Bar", color=("stack","nk"), label=("breakeven_unit_pairs","sum"),
       subtitle=f"Fixed costs = platform fees + $85 copyright registration + $1,500 illustrative launch budget + subscriptions. Black line: fastest route, {BE_MIN['stack']} at {BE_MIN['breakeven_unit_pairs']} pairs",
       lines=[(("breakeven_unit_pairs", "sum"), int(BE_MIN["breakeven_unit_pairs"]), "")],
@@ -798,6 +798,14 @@ def theme_dash(x):
     body = "".join(out) + _zstyle(TH["bg"], margin=0, padding=0 if tight else 10) + "</zone>"
     return x[:i0] + body + x[i1:]
 import re as _re
+# ebook card: call-out in the empty right side of the plot, so it never covers a bar or a value label
+_ov = (f"<zone h='8500' id='90' type-v2='text' w='15500' x='60500' y='41500'><formatted-text>"
+       f"<run bold='true' fontcolor='{HL}' fontsize='11'>\u25c0 Shaded strip</run>"
+       f"<run fontcolor='#2b3445' fontsize='10'>&#10;{esc(EBOOK_NOTE)}.</run></formatted-text>"
+       f"<zone-style><format attr='margin' value='0' /><format attr='padding' value='4' /><format attr='background-color' value='#ffffff' /></zone-style></zone>")
+for _k, _d in enumerate(dash_xml):
+    if "<dashboard name='D4 Ebook'>" in _d:
+        _i = _d.rindex("</zone></zones>"); dash_xml[_k] = _d[:_i] + _ov + _d[_i:]
 dash_xml = [theme_dash(d) for d in dash_xml]
 
 # ---------------- story
